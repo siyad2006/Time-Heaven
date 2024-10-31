@@ -4,7 +4,7 @@ let selectedImage;
 function handleImageUpload(event) {
     const files = event.target.files;
     const previewsContainer = document.getElementById('imagePreviews');
-    previewsContainer.innerHTML = ''; // Clear previous previews
+    previewsContainer.innerHTML = ''; 
 
     if (files.length > 3) {
         alert("Please upload a maximum of 3 images.");
@@ -20,7 +20,7 @@ function handleImageUpload(event) {
             img.style.width = '100px';
             previewsContainer.appendChild(img);
 
-            // Set the selected image for cropping
+           
             if (i === 0) { // Only for the first image for this example
                 selectedImage = img.src;
                 setupCropper(selectedImage);

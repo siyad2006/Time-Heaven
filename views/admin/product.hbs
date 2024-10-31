@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,25 +11,29 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f6f9;
-      overflow-x: hidden; /* Prevent horizontal scrolling */
+      overflow-x: hidden;
+      /* Prevent horizontal scrolling */
     }
+
     .sidebar {
       background: linear-gradient(180deg, #111, #222);
-      width: 260px; 
-      height: 100vh; 
+      width: 260px;
+      height: 100vh;
       position: fixed;
       top: 0;
       left: 0;
       padding-top: 20px;
-      overflow-y: auto; 
+      overflow-y: auto;
       transition: transform 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); 
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
     }
+
     .sidebar.hidden {
       transform: translateX(-100%);
     }
+
     .sidebar .nav-link {
       color: white;
       padding: 15px;
@@ -37,13 +42,16 @@
       display: flex;
       align-items: center;
     }
+
     .sidebar .nav-link:hover {
       background-color: #ff4444;
       color: white;
     }
+
     .sidebar .nav-link.active {
       background-color: #ff4444;
     }
+
     .sidebar-toggler {
       background-color: #ff4444;
       border: none;
@@ -56,46 +64,63 @@
       border-radius: 50%;
       width: 45px;
       height: 45px;
-      display: none; /* Hidden on larger screens */
+      display: none;
+      /* Hidden on larger screens */
     }
+
     .content {
-      margin-left: 260px; /* Match this to the sidebar width */
+      margin-left: 260px;
+      /* Match this to the sidebar width */
       padding: 20px;
       transition: margin-left 0.3s ease;
     }
+
     .content.expanded {
       margin-left: 0;
     }
+
     .card {
-      margin-bottom: 20px; /* Space between cards */
+      margin-bottom: 20px;
+      /* Space between cards */
     }
+
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
+
       .sidebar.hidden {
         transform: translateX(0);
       }
+
       .content {
-        margin-left: 0; /* Remove left margin on smaller screens */
+        margin-left: 0;
+        /* Remove left margin on smaller screens */
       }
+
       .sidebar-toggler {
-        display: block; /* Show toggle button on smaller screens */
+        display: block;
+        /* Show toggle button on smaller screens */
       }
     }
+
     @media (min-width: 769px) {
       .sidebar-toggler {
-        display: none; /* Hide toggle button on larger screens */
+        display: none;
+        /* Hide toggle button on larger screens */
       }
+
       .sidebar {
-        transform: translateX(0); 
+        transform: translateX(0);
       }
+
       .content {
-        margin-left: 260px; 
+        margin-left: 260px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -134,111 +159,117 @@
     </ul>
   </div>
 
- 
+
   <button class="sidebar-toggler" id="sidebar-toggler">
-    &#x22EE; 
+    &#x22EE;
   </button>
 
-  
+
   <div class="content" id="content">
     <h1>Product Manage </h1>
-  
+
 
     <div class="d-flex justify-content-end">
-        
+
       <form action="/admin/addproduct" method="get">
         <input type="submit" class="btn btn-danger" value="Add product">
       </form>
     </div>
-    
-      
+
+
+    <!-- product.hbs -->
 
     <table class="table table-striped table-bordered">
-    <thead>
+      <thead>
         <tr>
-            <th scope="col">Product Image</th>
-            <th scope="col">Product Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Is Blocked</th>
-            <th scope="col">Added Date</th>
-            <th scope="col">Regular Price</th>
-            <th scope="col">Stock</th>
-            <th scope="col">Status</th>
-            <th scope="col">Actions</th>
+          <th scope="col">Product Image</th>
+          <th scope="col">Product Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Is Blocked</th>
+          <th scope="col">Added Date</th>
+          <th scope="col">Regular Price</th>
+          <th scope="col">Stock</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
         </tr>
-    </thead>
-    <tbody>
-        {{#each products}} 
-            <tr>
-                <td>
-                    <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid" style="width: 100px; height: auto;">
-                </td>
-                <td>{{this.name}}</td>
-                <td>{{this.discription}}</td>
-                <td>{{this.isblocked}}</td>
-                <td>{{this.createdAt}}</td>
-                <td>{{this.regularprice}}</td>
-                <td>{{this.quantity}}</td>
-                <td>{{this.status}}</td>
-                <td>
-                   
+      </thead>
+      <tbody>
+        {{#each products}}
+        <tr>
+          <td><img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid" style="width: 100px; height: auto;">
+          </td>
+          <td>{{this.name}}</td>
+          <td>{{this.discription}}</td>
+          <td>{{this.isblocked}}</td>
+          <td>{{this.createdAt}}</td>
+          <td>{{this.regularprice}}</td>
+          <td>{{this.quantity}}</td>
+          <td>{{this.status}}</td>
+          <td>
+            <div class="d-flex flex-column">
+              <div class="d-flex justify-content-between mb-2">
+                <form action="/admin/block/{{this.id}}" method="post" class="me-1">
+                  <input type="submit" value="Block" class="btn btn-danger">
+                </form>
+                <form action="/admin/unblock/{{this.id}}" method="post" class="me-1">
+                  <input type="submit" value="Unblock" class="btn btn-primary">
+                </form>
+                <form action="/admin/deleteproduct/{{this.id}}" method="post">
+                  <input type="submit" value="Delete" class="btn btn-warning">
+                </form>
+              </div>
+              <form action="/admin/editproduct/{{this.id}}" method="get">
+                <input type="submit" value="Edit" class="btn ms-5" style="background-color: black; color:white;">
+              </form>
+            </div>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center">
+        {{#if (gt currentPage 1)}}
+        <li class="page-item">
+          <a class="page-link" href="?page={{subtract currentPage 1}}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {{/if}}
+
+        {{#each (range 1 totalPages)}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="?page={{this}}">{{this}}</a>
+        </li>
+        {{/each}}
+
+        {{#if (lt currentPage totalPages)}}
+        <li class="page-item">
+          <a class="page-link" href="?page={{add currentPage 1}}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        {{/if}}
+      </ul>
+    </nav>
 
 
-{{!-- <div class="d-flex justify-content-between">
-    <form action="/admin/block/{{this.id}}" method="post" class="me-1">
-        <input type="submit" value="Block" class="btn btn-danger">
-    </form>
-    <form action="/admin/unblock/{{this.id}}" method="post" class="me-1">
-        <input type="submit" value="Unblock" class="btn btn-primary">
-    </form>
-   
-    <form action="/admin/deleteproduct/{{this.id}}" method="post" class="me-1">
-    <input type="submit" value="Delete" class="btn btn-warning">
-</form> 
-<form action="/admin/editproduct" method="get">
-<br>
-<input type="submit" value="Edit" style="background-color: black; color:white" >
-</form>
-</div> --}}
-
-<div class="d-flex flex-column">
-    <div class="d-flex justify-content-between mb-2">
-        <form action="/admin/block/{{this.id}}" method="post" class="me-1">
-            <input type="submit" value="Block" class="btn btn-danger">
-        </form>
-        <form action="/admin/unblock/{{this.id}}" method="post" class="me-1">
-            <input type="submit" value="Unblock" class="btn btn-primary">
-        </form>
-        <form action="/admin/deleteproduct/{{this.id}}" method="post" >
-            <input type="submit" value="Delete" class="btn btn-warning">
-        </form>
-    </div>
-    <form action="/admin/editproduct" method="get">
-        <input type="submit" value="Edit" class="btn ms-5" style="background-color: black; color:white;">
-    </form>
-</div>
 
 
+    <script>
+      const sidebar = document.getElementById('sidebar');
+      const sidebarToggler = document.getElementById('sidebar-toggler');
+      const content = document.getElementById('content');
 
-                </td>
-            </tr>
-        {{/each}}   
-    </tbody>
-</table>
+      sidebarToggler.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        content.classList.toggle('expanded');
+      });
+    </script>
 
-
-
-  <script>
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggler = document.getElementById('sidebar-toggler');
-    const content = document.getElementById('content');
-
-    sidebarToggler.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-      content.classList.toggle('expanded');
-    });
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

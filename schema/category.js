@@ -1,27 +1,4 @@
-
-const mongoose=require('mongoose')
-// const { Types } = require('mysql')
-
-// const category=new mongoose.Schema({
-//     categoryname:{
-//         type:String,
-//         require:true
-//     },
-//     discription:{
-//         type:String,
-//         require:false
-//     },
-//     isblocked:{
-//         type:String,
-//         default:'Unlist'
-//     }
-// })
-
-// const categoryModel= mongoose.model('categoryModel',category)
-
-// module.exports=categoryModel
-
-
+const mongoose = require('mongoose')
 
 const categorySchema = new mongoose.Schema({
     categoryname: {
@@ -38,7 +15,7 @@ const categorySchema = new mongoose.Schema({
     }
 });
 
-// Register model with the name "category"
+
 const categoryModel = mongoose.model('category', categorySchema);
 
 module.exports = categoryModel;

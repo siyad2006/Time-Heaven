@@ -1,18 +1,23 @@
-// upload.js
+// upload.js   this is for upload image . 
 const multer = require('multer');
 const path = require('path');
 
-// Configure storage for multer
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Ensure this folder exists
+        cb(null, 'uploads/'); 
     },
     filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Create a unique filename
+        cb(null, Date.now() + path.extname(file.originalname)); 
     }
 });
 
-// Use multer to handle multiple file uploads
-const upload = multer({ storage: storage }).fields([{ name: 'image', maxCount: 3 }]);
+
+const upload = multer({ storage: storage }).fields([
+    { name: 'image1', maxCount: 1 },
+    { name: 'image2', maxCount: 1 },
+    { name: 'image3', maxCount: 1 }
+]);
+
 
 module.exports = upload;

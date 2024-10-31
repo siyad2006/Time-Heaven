@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,25 +11,29 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f6f9;
-      overflow-x: hidden; /* Prevent horizontal scrolling */
+      overflow-x: hidden;
+      /* Prevent horizontal scrolling */
     }
+
     .sidebar {
       background: linear-gradient(180deg, #111, #222);
-      width: 260px; 
-      height: 100vh; 
+      width: 260px;
+      height: 100vh;
       position: fixed;
       top: 0;
       left: 0;
       padding-top: 20px;
-      overflow-y: auto; 
+      overflow-y: auto;
       transition: transform 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); 
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
     }
+
     .sidebar.hidden {
       transform: translateX(-100%);
     }
+
     .sidebar .nav-link {
       color: white;
       padding: 15px;
@@ -37,13 +42,16 @@
       display: flex;
       align-items: center;
     }
+
     .sidebar .nav-link:hover {
       background-color: #ff4444;
       color: white;
     }
+
     .sidebar .nav-link.active {
       background-color: #ff4444;
     }
+
     .sidebar-toggler {
       background-color: #ff4444;
       border: none;
@@ -56,46 +64,63 @@
       border-radius: 50%;
       width: 45px;
       height: 45px;
-      display: none; /* Hidden on larger screens */
+      display: none;
+      /* Hidden on larger screens */
     }
+
     .content {
-      margin-left: 260px; /* Match this to the sidebar width */
+      margin-left: 260px;
+      /* Match this to the sidebar width */
       padding: 20px;
       transition: margin-left 0.3s ease;
     }
+
     .content.expanded {
       margin-left: 0;
     }
+
     .card {
-      margin-bottom: 20px; /* Space between cards */
+      margin-bottom: 20px;
+      /* Space between cards */
     }
+
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
+
       .sidebar.hidden {
         transform: translateX(0);
       }
+
       .content {
-        margin-left: 0; /* Remove left margin on smaller screens */
+        margin-left: 0;
+        /* Remove left margin on smaller screens */
       }
+
       .sidebar-toggler {
-        display: block; /* Show toggle button on smaller screens */
+        display: block;
+        /* Show toggle button on smaller screens */
       }
     }
+
     @media (min-width: 769px) {
       .sidebar-toggler {
-        display: none; /* Hide toggle button on larger screens */
+        display: none;
+        /* Hide toggle button on larger screens */
       }
+
       .sidebar {
-        transform: translateX(0); 
+        transform: translateX(0);
       }
+
       .content {
-        margin-left: 260px; 
+        margin-left: 260px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -142,76 +167,69 @@
   <!-- Main content -->
   <div class="content" id="content">
     <h1>Brand </h1>
-    <!-- <p>Welcome to the admin dashboard.</p> -->
 
-    <!-- <button type="button" class=""></button> -->
 
     <div class="d-flex justify-content-end">
-        {{!-- <button class="btn btn-primary" >Add Brand</button> --}}
-        <form action="/admin/getbrand" method="post">
+
+      <form action="/admin/getbrand" method="post">
         <input type="submit" value="Add Brand">
-        </form>
-      </div>
-      
-      <table class="table table-striped">
-        <thead>
-            <tr>
-              <th scope="col"> Logo </th>
-              <th scope="col">brand name Name</th>
-              <th scope="col">Listed/UnListed </th>
-              <!-- <th scope="col">Handle</th> -->
-            </tr>
-          </thead>
-         
-            <!-- <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr> -->
-            {{#each brands}}
- <tbody>
-            <td>
-                <img src="{{this.logo}}" alt="{{this.brandname}}" style="width: 50px; height: auto;"/>
-            </td>
-            <td>
-                {{this.brandname}}
-            </td>
-            <td style="color: green;">
-                {{this.islisted}}
-            </td>
-            <td>
-                <form action="/admin/unlistbrand" method="post">
-                <input type="submit" value="unlist" style="background-color: red; color:white">
-                </form>
-               
-            </td>
-            <td >
-                <form action="/admin/listbrand" method="post">
-                <input type="submit" value="List" style="background-color: green; color:white">
-                </form>
-            </td>
-            <td>
-                <form action="/admin/editbrand" method="post">
-                <input type="submit" value="edit" style="background-color: white; color:#111">
-                </form>
-            </td>
-          
-            </tbody>
-              {{/each}}
-      </table>
+      </form>
+    </div>
 
-  <script>
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggler = document.getElementById('sidebar-toggler');
-    const content = document.getElementById('content');
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col"> Logo </th>
+          <th scope="col">brand name Name</th>
+          <th scope="col">Listed/UnListed </th>
+          <!-- <th scope="col">Handle</th> -->
+        </tr>
+      </thead>
 
-    sidebarToggler.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-      content.classList.toggle('expanded');
-    });
-  </script>
+      {{#each brands}}
+      <tbody>
+        <td>
+          <img src="{{this.logo}}" alt="{{this.brandname}}" style="width: 50px; height: auto;" />
+        </td>
+        <td>
+          {{this.brandname}}
+        </td>
+        <td style="color: green;">
+          {{this.islisted}}
+        </td>
+        <td>
+          <form action="/admin/unlistbrand" method="post">
+            <input type="submit" value="unlist" style="background-color: red; color:white">
+          </form>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+        </td>
+        <td>
+          <form action="/admin/listbrand" method="post">
+            <input type="submit" value="List" style="background-color: green; color:white">
+          </form>
+        </td>
+        <td>
+          <form action="/admin/editbrand" method="post">
+            <input type="submit" value="edit" style="background-color: white; color:#111">
+          </form>
+        </td>
+
+      </tbody>
+      {{/each}}
+    </table>
+
+    <script>
+      const sidebar = document.getElementById('sidebar');
+      const sidebarToggler = document.getElementById('sidebar-toggler');
+      const content = document.getElementById('content');
+
+      sidebarToggler.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        content.classList.toggle('expanded');
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

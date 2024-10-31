@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,25 +11,29 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f6f9;
-      overflow-x: hidden; /* Prevent horizontal scrolling */
+      overflow-x: hidden;
+      /* Prevent horizontal scrolling */
     }
+
     .sidebar {
       background: linear-gradient(180deg, #111, #222);
-      width: 260px; 
-      height: 100vh; 
+      width: 260px;
+      height: 100vh;
       position: fixed;
       top: 0;
       left: 0;
       padding-top: 20px;
-      overflow-y: auto; 
+      overflow-y: auto;
       transition: transform 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); 
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
     }
+
     .sidebar.hidden {
       transform: translateX(-100%);
     }
+
     .sidebar .nav-link {
       color: white;
       padding: 15px;
@@ -37,13 +42,16 @@
       display: flex;
       align-items: center;
     }
+
     .sidebar .nav-link:hover {
       background-color: #ff4444;
       color: white;
     }
+
     .sidebar .nav-link.active {
       background-color: #ff4444;
     }
+
     .sidebar-toggler {
       background-color: #ff4444;
       border: none;
@@ -56,46 +64,63 @@
       border-radius: 50%;
       width: 45px;
       height: 45px;
-      display: none; /* Hidden on larger screens */
+      display: none;
+      /* Hidden on larger screens */
     }
+
     .content {
-      margin-left: 260px; /* Match this to the sidebar width */
+      margin-left: 260px;
+      /* Match this to the sidebar width */
       padding: 20px;
       transition: margin-left 0.3s ease;
     }
+
     .content.expanded {
       margin-left: 0;
     }
+
     .card {
-      margin-bottom: 20px; /* Space between cards */
+      margin-bottom: 20px;
+      /* Space between cards */
     }
+
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
+
       .sidebar.hidden {
         transform: translateX(0);
       }
+
       .content {
-        margin-left: 0; /* Remove left margin on smaller screens */
+        margin-left: 0;
+        /* Remove left margin on smaller screens */
       }
+
       .sidebar-toggler {
-        display: block; /* Show toggle button on smaller screens */
+        display: block;
+        /* Show toggle button on smaller screens */
       }
     }
+
     @media (min-width: 769px) {
       .sidebar-toggler {
-        display: none; /* Hide toggle button on larger screens */
+        display: none;
+        /* Hide toggle button on larger screens */
       }
+
       .sidebar {
-        transform: translateX(0); 
+        transform: translateX(0);
       }
+
       .content {
-        margin-left: 260px; 
+        margin-left: 260px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -134,44 +159,37 @@
     </ul>
   </div>
 
-  <!-- Sidebar toggle button -->
+
   <button class="sidebar-toggler" id="sidebar-toggler">
-    &#x22EE; <!-- Unicode for 3 vertical dots -->
+    &#x22EE;
   </button>
 
-  <!-- Main content -->
   <div class="content" id="content">
 
-<h1>add Brand</h1>
+    <h1>add Brand</h1>
 
     <form action="/admin/postbrand" method="post" enctype="multipart/form-data">
 
-        <!-- <div>
-
-        </div> -->
 
 
-        <div class="mb-3 justify-content-center w-50 h-25 p-3 mt-5">
-          <label for="exampleInputEmail1" class="form-label">Category name</label>
-          <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="brandname">
-          <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+
+      <div class="mb-3 justify-content-center w-50 h-25 p-3 mt-5">
+        <label for="exampleInputEmail1" class="form-label">Category name</label>
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="brandname">
+      </div>
+      <div class="mb-3  w-50 h-25 p-3">
+        <div class="form-group">
+          <label for="image">Choose Logo</label>
+          <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
         </div>
-        <div class="mb-3  w-50 h-25 p-3">
-            <div class="form-group">
-                <label for="image">Choose Logo</label>
-                <input type="file" class="form-control-file" id="image" name="image" accept="image/*" required>
-            </div>
-        </div>
+      </div>
 
 
 
 
-        <!-- <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="exampleCheck1">
-          <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div> -->
-        <button type="submit" class="btn btn-primary ms-3">Add category </button>
-      </form>
+
+      <button type="submit" class="btn btn-primary ms-3">Add category </button>
+    </form>
   </div>
   <script>
     const sidebar = document.getElementById('sidebar');
@@ -186,4 +204,5 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

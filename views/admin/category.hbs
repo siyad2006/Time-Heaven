@@ -142,9 +142,20 @@
   <!-- Main content -->
   <div class="content" id="content">
     <h1>Dashboard</h1>
-    <p>Welcome to the admin dashboard.</p>
+  {{#if category_err}}
+        <div style="color: green;">
+          <h1>
+             {{category_err}}
+          </h1>
+         
+          
+          </div> <!-- Display success message -->
+       
+        
+    {{/if}}
 
-    <!-- <button type="button" class=""></button> -->
+
+
 
     <div class="d-flex justify-content-end">
       <form action="/admin/addcategory" method="post">
