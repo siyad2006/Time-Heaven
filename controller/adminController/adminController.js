@@ -94,10 +94,53 @@ const unblockuser = async (req, res) => {
 
 
 // for get catrgory page 
+// const category = async (req, res) => {
+//     const category = await CategoryDB.find()
+//     res.render('admin/category', { category })
+// }
+
+// const category = async (req, res) => {
+//     const page = parseInt(req.query.page) || 1; 
+//     const limit = 10; 
+//     const skip = (page - 1) * limit;
+
+
+//     const [categories, totalCategories] = await Promise.all([
+//         CategoryDB.find().skip(skip).limit(limit),
+//         CategoryDB.countDocuments()
+//     ]);
+
+
+//     const totalPages = Math.ceil(totalCategories / limit);
+
+//     res.render('admin/category', {
+//         categories,
+//         currentPage: page,
+//         totalPages,
+//     });
+// };
+
 const category = async (req, res) => {
-    const category = await CategoryDB.find()
-    res.render('admin/category', { category })
-}
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+
+    try {
+        const totalCategories = await CategoryDB.countDocuments();
+        const categories = await CategoryDB.find()
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        res.render('admin/category', {
+            categories,
+            currentPage: page,
+            totalPages: Math.ceil(totalCategories / limit),
+        });
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        res.status(500).send("Server Error");
+    }
+};
+
 
 
 // for add category
@@ -303,7 +346,10 @@ const postbrand = async (req, res) => {
 
 
 
-
+const logout= async (req,res)=>{
+    delete req.session.admin;
+    res.redirect('/admin/login')
+}
 
 
 module.exports = {
@@ -321,6 +367,7 @@ module.exports = {
     editcategory,
     editing,
     addbrand,
-    postbrand
+    postbrand,
+    logout
 
 }

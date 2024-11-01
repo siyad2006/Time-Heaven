@@ -175,7 +175,7 @@
             </tr>
           </thead>
           <tbody>
-            {{#each category}}
+            {{#each categories}}
             <tr>
               {{!-- <th scope="row">1</th> --}}
               <td>{{this.categoryname}}</td>
@@ -205,6 +205,53 @@
            
             </tbody>
       </table>
+
+      <div class="pagination">
+  {{#if (gt totalPages 1)}}
+    <ul>
+      {{!-- Previous Button --}}
+      {{#if (gt currentPage 1)}}
+        <li><a href="?page={{subtract currentPage 1}}">Previous</a></li>
+      {{/if}}
+
+      {{!-- Page Numbers --}}
+      {{#each (range 1 totalPages)}}
+        <li class="{{#eq this ../currentPage}}active{{/eq}}">
+          <a href="?page={{this}}">{{this}}</a>
+        </li>
+      {{/each}}
+
+      {{!-- Next Button --}}
+      {{#if (lt currentPage totalPages)}}
+        <li><a href="?page={{add currentPage 1}}">Next</a></li>
+      {{/if}}
+    </ul>
+  {{/if}}
+</div>
+
+<style>
+  .pagination ul {
+    list-style-type: none;
+    display: flex;
+    gap: 10px;
+}
+
+.pagination ul li a {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination ul li.active a {
+    font-weight: bold;
+    color: red; /* Highlight the active page */
+}
+
+.pagination ul li a:hover {
+    background-color: #ddd;
+}
+
+</style>
 
   <script>
     const sidebar = document.getElementById('sidebar');

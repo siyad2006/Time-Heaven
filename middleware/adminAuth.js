@@ -10,7 +10,12 @@ function isAdmin(req, res, next) {
     }
 }
 
+function adminLogin(req,res,next){
+   if(req.session.admin){
+    res.redirect('/admin/dashboard')
+   }else{
+    next()
+   }
+}
 
-
-
-module.exports = { isAdmin };
+module.exports = { isAdmin,adminLogin };

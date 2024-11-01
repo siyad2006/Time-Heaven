@@ -208,7 +208,7 @@ const postlogin = async (req, res) => {
 
         if (!name) {
 
-            res.json({ success: false, message: 'incorrect username or password' })
+            res.json({ success: false, message: 'ithere is no user Exists in this  Email' })
         }
 
 
@@ -241,6 +241,7 @@ const postlogin = async (req, res) => {
         console.log(err);
 
         console.error('there is no user exists ')
+        // res.json({ success: false, message: 'there is no user eixts in the Email ' })
     }
 
 }

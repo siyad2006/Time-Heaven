@@ -1,4 +1,4 @@
-// upload.js   this is for upload image . 
+//   this is for upload image . 
 const multer = require('multer');
 const path = require('path');
 

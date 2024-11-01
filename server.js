@@ -80,12 +80,12 @@ app.use('/user', userRouter)
 app.use('/admin', adminRouter)
 
 
-app.use((err, req, res) => {
-    console.log(err);
-    console.log('en error occured in the code ');
+// app.use((err, req, res) => {
+//     console.log(err);
+//     console.log('en error occured in the code ');
 
 
-})
+// })
 
 
 app.listen(3000, () => {
