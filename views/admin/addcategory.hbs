@@ -174,18 +174,41 @@
 
       <div class="mb-3 justify-content-center w-50 h-25 p-3 mt-5">
         <label for="exampleInputEmail1" class="form-label">Category name</label>
-        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+        <input type="text" class="form-control" id="name" aria-describedby="emailHelp"
           name="categoryname">
       </div>
       <div class="mb-3  w-50 h-25 p-3">
         <label for="exampleInputPassword1" class="form-label">discription</label>
-        <input type="text" class="form-control" id="exampleInputPassword1" name="discription">
+        <input type="text" class="form-control" id="discription" name="discription">
 
       </div>
 
-      <button type="submit" class="btn btn-primary ms-3">Add category </button>
+      <button type="submit" class="btn btn-primary ms-3" onclick="return validation()">Add category </button>
     </form>
   </div>
+
+<script>
+    
+
+    function validation (){
+
+      const x=  document.getElementById('name').value;
+    const y=document.getElementById('discription').value;
+
+      if( x.trim() == "" ){
+        alert('this name should be filled ')
+        return false
+      }
+      if (y.trim()==""){
+        alert('please fill the discription')
+        return false
+      }
+      return true 
+    }
+
+</script>
+
+
   <script>
     const sidebar = document.getElementById('sidebar');
     const sidebarToggler = document.getElementById('sidebar-toggler');

@@ -80,6 +80,12 @@ app.use('/user', userRouter)
 app.use('/admin', adminRouter)
 
 
+app.use((req, res, next) => {
+    res.status(404);
+    res.render('error', { message: "Page Not Found" });
+});
+
+
 // app.use((err, req, res) => {
 //     console.log(err);
 //     console.log('en error occured in the code ');
@@ -87,6 +93,12 @@ app.use('/admin', adminRouter)
 
 // })
 
+
+app.use((err, req, res, next) => {
+    console.error(err.stack); 
+    res.status(500); 
+    res.render('error', { message: "Internal Server Error" });
+});
 
 app.listen(3000, () => {
     console.log('server runned sucessfullly ');
