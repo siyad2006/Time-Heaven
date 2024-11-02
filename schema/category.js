@@ -11,7 +11,7 @@ const categorySchema = new mongoose.Schema({
     },
     isblocked: {
         type: String,
-        default: 'Unlist'
+        default: 'Unlisted'
     }
 });
 

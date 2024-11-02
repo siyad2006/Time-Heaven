@@ -123,13 +123,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="/user/home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Shopping</a>
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact Us</a>
@@ -419,9 +419,9 @@
 
                         <img src="/{{this.image.[0]}}" class="card-img-top product-image" alt="{{this.name}}">
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title product-title">{{this.name}}</h5>
-                            <p class="card-text product-text flex-grow-1">{{this.discription}}</p>
-                            <p class="product-price">RS: {{this.regularprice}}</p>
+                            <h5 class="card-title product-title" style="text-align:center">{{this.name}}</h5>
+                            {{!-- <p class="card-text product-text flex-grow-1">{{this.discription}}</p> --}}
+                            <p class="product-price" style="text-align:center">RS: {{this.regularprice}}</p>
                             <a href="/user/details/{{this.id}}" class="btn btn-danger mt-2">Show</a>
                         </div>
                     </div>

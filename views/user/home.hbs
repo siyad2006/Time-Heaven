@@ -24,7 +24,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="/user/home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact</a>
@@ -47,7 +47,7 @@
                     <a href="#" class="text-white ms-3">
                         <i class="bi bi-cart"></i>
                     </a>
-                    <a href="#" class="text-white ms-3">
+                    <a href="/user/login" class="text-white ms-3">
                         <i class="bi bi-person"></i>
                     </a>
                 </div>
@@ -171,7 +171,7 @@
 
 
 
-    <div class="container mt-5">
+    <div class="container mt-5 mb-3">
         <div class="row ">
             {{#each products}}
             <div class="col-12 col-sm-6 col-md-4 mb-4">
@@ -179,8 +179,8 @@
                     <img src="/{{this.image.[0]}}" class="card-img-top" alt="{{this.title}}">
                     <div class="card-body">
                         <h5 class="card-title text-center">{{this.name}}</h5>
-                        <i class="card-text"> {{this.discription}} </i>
-                        <p class="card-text price-tag"> RS : {{this.regularprice}}</p>
+                        {{!-- <i class="card-text"> {{this.discription}} </i> --}}
+                        <p class="card-text price-tag" style="text-align: center;margin: 10px; "> RS : {{this.regularprice}}</p>
 
                         <div class="d-flex justify-content-center">
                             <a href="/user/details/{{this.id}}" class="btn btn-shadow"

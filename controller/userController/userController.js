@@ -36,6 +36,7 @@ const postregister = async (req, res) => {
     req.session.username = username;
     req.session.Email = Email;
     req.session.password = password;
+    req.session.forOTP = true
 
     const generateNumericOtp = (length = 6) => {
         let otp = '';
@@ -79,6 +80,7 @@ const postregister = async (req, res) => {
         console.log('Error sending OTP:', error);
     }
 
+    req.session.isRegistered = true
 
     res.redirect('/user/otp');
 }
@@ -116,6 +118,8 @@ const otpVerification = async (req, res) => {
 
             await saveUser.save()
             res.json({ success: true, message: 'ok success not', redirectUrl: '/user/home' });
+
+            req.session.forOTP = true
         } catch (err) {
             console.log(err)
         }
@@ -187,6 +191,7 @@ const resentotp = async (req, res) => {
 
 
 const userlogin = async (req, res) => {
+    req.session.userlogin = true
     res.render('user/userLogin')
 }
 
@@ -287,6 +292,8 @@ const shoping = async (req, res) => {
     });
 };
 
+const demo = async (req, res) => {
+    res.redirect('/user/home')
+}
 
-
-module.exports = { postregister, userRegister, otp, otpVerification, resentotp, userlogin, postlogin, lo, productDetails, shoping };
+module.exports = { postregister, userRegister, otp, otpVerification, resentotp, userlogin, postlogin, lo, productDetails, shoping, demo };

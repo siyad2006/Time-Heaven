@@ -18,7 +18,7 @@ const postLogin = async (req, res) => {
     const { adminname, password } = req.body;
 
     console.log('Admin name:', adminname);
-    if (adminname === process.env.ADMIN_NAME && password === process.env.ADMIN_PASSWORD) {
+    if (adminname.trim() === process.env.ADMIN_NAME && password.trim() === process.env.ADMIN_PASSWORD) {
         console.log(adminname)
         req.session.admin = true;
         console.log('Admin logged in:', req.session.admin);
@@ -150,33 +150,62 @@ const addcateory = async (req, res) => {
 
 
 // create a new category
+// const creatcategory = async (req, res) => {
+//     const { categoryname, discription } = req.body
+//     console.log(req.body)
+//     const cheack = await CategoryDB.find({categoryname:categoryname.trim()})
+//     console.log(cheack,'dsljflsjf')
+//     if (cheack) {
+//         res.redirect('/admin/category')
+//         return req.flash('category_err', 'the category name is already exists ')
+//         // console.log(req.flash('category_err'));
+//     } else {
+
+
+
+//         try {
+//             const category = new CategoryDB({
+//                 categoryname,
+//                 discription
+//             })
+
+//             await category.save()
+//             res.redirect('/admin/category')
+//             req.flash('success_msg', 'saved sucessfully')
+//         } catch {
+//             console.log('an error occured when save category ')
+//         }
+//     }
+// }
+
+
 const creatcategory = async (req, res) => {
-    const { categoryname, discription } = req.body
-
-    const cheack = await CategoryDB.findOne({ categoryname: categoryname })
-
-    if (cheack) {
-        res.redirect('/admin/category')
-        req.flash('category_err', 'the category name is already exists ')
-        console.log(req.flash('category_err'));
-    } else {
-
-
-
-        try {
-            const category = new CategoryDB({
-                categoryname,
-                discription
-            })
-
-            await category.save()
-            res.redirect('/admin/category')
-            req.flash('success_msg', 'saved sucessfully')
-        } catch {
-            console.log('an error occured when save category ')
+    const { categoryname, discription } = req.body;
+    
+    try {
+        const existingCategory = await CategoryDB.findOne({ categoryname: categoryname.trim() });
+        
+        if (existingCategory) {
+            req.flash('category_err', 'The category name already exists');
+            return res.redirect('/admin/category');
         }
+
+        const category = new CategoryDB({
+            categoryname: categoryname.trim(),
+            discription: discription.trim()
+        });
+
+        await category.save();
+        req.flash('success_msg', 'Category saved successfully');
+        res.redirect('/admin/category');
+    } catch (error) {
+        console.error('An error occurred when saving the category:', error);
+        req.flash('error_msg', 'An error occurred while saving the category');
+        res.redirect('/admin/category');
     }
-}
+};
+
+
 
 
 // for List category
@@ -241,14 +270,45 @@ const editcategory = async (req, res) => {
 
 
 // Edit category
-const editing = async (req, res) => {
-    const ID = req.params.id
-    const categoryname = req.body.categoryname
-    const discription = req.body.discription
-    await CategoryDB.updateOne({ _id: ID }, { categoryname: categoryname, discription: discription })
+// const editing = async (req, res) => {
+//     const ID = req.params.id
+//     const categoryname = req.body.categoryname
+//     const discription = req.body.discription
+//     let val=categoryname.trim()
+//      const test = await CategoryDB.find({categoryname: val})
+//      console.log(test)
+//     if(!test){
+//        return  await CategoryDB.updateOne({ _id: ID }, { categoryname: categoryname.trim(), discription: discription.trim()})
 
-    res.redirect('/admin/category')
-}
+//     }else{
+//          res.redirect('/admin/category')
+//     }
+    
+   
+// }
+
+const editing = async (req, res) => {
+    const ID = req.params.id;
+    const categoryname = req.body.categoryname.trim();
+    const discription = req.body.discription.trim();
+
+    try {
+        
+        const existingCategory = await CategoryDB.findOne({ categoryname });
+
+        if (existingCategory && existingCategory._id.toString() !== ID) {
+                       return res.redirect('/admin/category');
+        } else {
+           
+            await CategoryDB.updateOne({ _id: ID }, { categoryname, discription });
+            res.redirect('/admin/category'); 
+        }
+    } catch (error) {
+        console.error('Error updating category:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 
 const addbrand = async (req, res) => {
 

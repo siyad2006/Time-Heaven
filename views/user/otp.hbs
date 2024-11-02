@@ -148,11 +148,11 @@
     <div class="container-fluid otp-div mt-5 text-white text-center">
         <form id="otp-form" action="" onsubmit="return validateOtp(event)">
             <div class="mb-3">
-                <label for="otpInput" class="form-label">Enter OTP</label>
+                <label for="otpInput" class="form-label" id="verifyname">Enter OTP</label>
                 <input type="text" class="form-control" id="otpInput">
             </div>
             <div id="timer" class="mb-3 text-warning">Time left: 2:00</div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" id="submitotp">Submit</button>
         </form>
 
         {{!-- <form action="/user/log" method="post"> --}}
@@ -168,35 +168,35 @@
         let countdown = 120; // 2 minutes in seconds
         let timerInterval;
 
-        // Start the countdown on page load
+
         function startTimer() {
             timerInterval = setInterval(() => {
                 const minutes = Math.floor(countdown / 60);
                 const seconds = countdown % 60;
 
-                // Update the timer display
+
                 document.getElementById('timer').textContent = `Time left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 
-                // If countdown reaches 0, show the resend button and stop the timer
+
                 if (countdown <= 0) {
                     clearInterval(timerInterval);
                     document.getElementById('timer').textContent = "Time's up!";
                     document.getElementById('resendOtpBtn').style.display = 'inline-block';
+                    document.getElementById('otpInput').style.display = "none";
+                    document.getElementById('submitotp').style.display = "none";
+                    document.getElementById('verifyname').style.display = "none";
                 } else {
                     countdown--;
                 }
             }, 1000);
         }
 
-        // Function to handle OTP resending
 
-
-        // Start the timer when the page loads
         window.onload = startTimer;
 
         function validateOtp(event) {
             event.preventDefault();
-            // Prevent default form submission --}}
+
             const OTP = document.getElementById('otpInput').value;
 
 
@@ -246,6 +246,7 @@
 
     <script>
         function resendOtp(event) {
+                event.preventDefault();
 
             $.ajax({
                 type: 'POST',
@@ -275,12 +276,6 @@
 
         }
     </script>
-
-
-
-
-
-
 
 
     <footer class="bg-dark text-white mt-5">

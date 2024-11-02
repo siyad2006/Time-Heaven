@@ -84,13 +84,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="/user/home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Shopping</a>
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact Us</a>
@@ -146,17 +146,17 @@
             font-weight: 700;
             /* Bold */
             color: #1a0b0b;
-            /* Dark color for visibility */
+            
         }
 
         .price-tag2 {
             font-family: 'Montserrat', sans-serif;
             font-size: 24px;
-            /* Adjust size as needed */
+           
             font-weight: 700;
-            /* Bold */
+          
             color: #333;
-            /* Dark color for visibility */
+          
         }
 
         .card {
@@ -255,41 +255,12 @@
     </style>
 
 
-    <!-- <div class="container-fluid  " style="margin-top: 70px; ">
-    <div id="carouselExampleFade" class="carousel slide carousel-fade " style="padding:10px;">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="/img/4549459121.jpg" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="img/4549459.jpg" class="d-block w-100" alt="...">
-          </div>
-          <div class="carousel-item">
-            <img src="/img/banner1.jpg" class="d-block w-100" alt="...">
-          </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Next</span>
-        </button>
-      </div>
-     -->
-    <!-- </div> -->
-    <!-- <nav aria-label="breadcrumb" style="margin-top: 70px;">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item active" aria-current="page">Home</li>
-      <li class="breadcrumb-item active" aria-current="page">Library</li>
-    </ol>
-  </nav> -->
+
     <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);margin-top: 70px; margin-left: 20px;"
         aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Library</li>
+            <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Ordering</li>
         </ol>
     </nav>
 
@@ -340,13 +311,12 @@
     </div>
 
     <style>
-     
         .zoom-container {
             position: relative;
             overflow: hidden;
         }
 
-       
+
         .zoom-overlay {
             position: absolute;
             display: none;
@@ -374,7 +344,7 @@
                 overlay.style.left = `${xPos - overlay.offsetWidth / 2}px`;
                 overlay.style.top = `${yPos - overlay.offsetHeight / 2}px`;
 
-               
+
                 overlay.style.backgroundImage = `url(${img.src})`;
                 overlay.style.backgroundSize = `${img.width * 2}px ${img.height * 2}px`;
                 overlay.style.backgroundPosition = `-${xPos * 2}px -${yPos * 2}px`;
@@ -473,12 +443,7 @@
             <!-- Select Color -->
             <div class="color-selection mb-3">
                 <h5> Color</h5>
-                {{!-- <select class="form-select w-50 mx-auto">
-                    <option selected>Select color</option>
-                    <option value="black">Black</option>
-                    <option value="silver">Silver</option>
-                    <option value="gold">Gold</option>
-                </select> --}}
+
                 <p>{{product.color}}</p>
                 <h4>Brand</h4>
                 <p>{{product.brand}}</p>
@@ -639,7 +604,7 @@
                 const ratingValue = this.getAttribute('data-value');
                 document.getElementById('ratingValue').value = ratingValue;
 
-                // Update star display
+
                 document.querySelectorAll('.rating-star').forEach((s, index) => {
                     s.innerHTML = index < ratingValue ? '&#9733;' : '&#9734;';
                 });

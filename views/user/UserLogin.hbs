@@ -75,13 +75,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="/user/home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Shopping</a>
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact Us</a>
@@ -144,8 +144,15 @@
                         <i class="bi bi-google   "></i>
                         Login with google
                     </a></span>
-            </form>
 
+                    <a href="/user/register" style="display: block;">don't you have an account?</a> 
+                    <a href="/user/demo">Demo login</a>
+                   
+            </form>
+                        
+           
+           
+            
 
 
 
@@ -158,8 +165,8 @@
         function userlogin(event) {
             event.preventDefault()
 
-            let x = document.getElementById('exampleInputEmail1').value;
-            let y = document.getElementById('Name').value;
+            let x = document.getElementById('exampleInputEmail1').value.trim();
+            let y = document.getElementById('Name').value.trim();
             let z = document.getElementById('pass').value;
 
             $.ajax({

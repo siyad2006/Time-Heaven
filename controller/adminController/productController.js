@@ -34,13 +34,13 @@ const add = async (req, res) => {
         }
 
         const newProduct = new productDB({
-            name: val.productname,
-            discription: val.discription,
-            brand: val.brand,
+            name: val.productname.trim(),
+            discription: val.discription.trim(),
+            brand: val.brand.trim(),
             category: val.category,
             regularprice: val.regularprice,
             quantity: val.quantity,
-            color: val.color,
+            color: val.color.trim(),
             image: imagePaths,
             status: val.status || "available"
         });
@@ -89,13 +89,13 @@ const add = async (req, res) => {
             await productDB.findByIdAndUpdate(
                 productId,
                 {
-                    name: val.productname,
-                    discription: val.discription,
-                    brand: val.brand,
+                    name: val.productname.trim(),
+                    discription: val.discription.trim(),
+                    brand: val.brand.trim(),
                     category: val.category,
                     regularprice: val.regularprice,
                     quantity: val.quantity,
-                    color: val.color,
+                    color: val.color.trim(),
                     image: imagePaths.length > 0 ? imagePaths : existingProduct.image,
                     status: val.status || "available"
                 },

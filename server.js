@@ -16,10 +16,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 const session = require('express-session');
 const mongoose = require('mongoose')
-require('dotenv').config();
-
+require('dotenv').config()
 app.use(nocache())
-
 app.use('/uploads', express.static('uploads'));
 
 
@@ -84,15 +82,6 @@ app.use((req, res, next) => {
     res.status(404);
     res.render('error', { message: "Page Not Found" });
 });
-
-
-// app.use((err, req, res) => {
-//     console.log(err);
-//     console.log('en error occured in the code ');
-
-
-// })
-
 
 app.use((err, req, res, next) => {
     console.error(err.stack); 
