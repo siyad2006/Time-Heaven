@@ -2,11 +2,10 @@ const UserDB = require('../../schema/userModel')
 const bcrypt = require('bcrypt')
 const OTP = require('../../schema/otpverification')
 const dotenv = require('dotenv').config()
-
 const otpGenerator = require('otp-generator')
 const nodemailer = require('nodemailer')
 const productDB = require('../../schema/productschema')
-const category=require('../../schema/category')
+const category = require('../../schema/category')
 
 
 
@@ -192,7 +191,7 @@ const resentotp = async (req, res) => {
 
 
 const userlogin = async (req, res) => {
-    req.session.userlogin = true
+    console.log(req.session)
     res.render('user/userLogin')
 }
 
@@ -227,8 +226,11 @@ const postlogin = async (req, res) => {
                 if (name.isblocked) {
                     res.json({ success: false, message: 'you are blocked by the admin ' })
                 } else {
+                    req.session.email_profile = Email
+                    req.session.loginuser = true;
+                    // console.log(req.session)
                     res.json({ success: true, message: 'the message is sucess', redirectUrl: '/user/home' })
-                    req.session.loginuser = true
+
                     console.log('Admin logged in:', req.session.loginuser);
 
                 }
@@ -277,7 +279,7 @@ const shoping = async (req, res) => {
     const { page = 1, limit = 12 } = req.query;
     const skip = (page - 1) * limit;
 
-    const categories=await category.find({isblocked:"Listed"});
+    const categories = await category.find({ isblocked: "Listed" });
     const products = await productDB.find({ isblocked: false })
         .skip(skip)
         .limit(limit)
@@ -298,4 +300,65 @@ const demo = async (req, res) => {
     res.redirect('/user/home')
 }
 
-module.exports = { postregister, userRegister, otp, otpVerification, resentotp, userlogin, postlogin, lo, productDetails, shoping, demo };
+const userprofile = async (req, res) => {
+    // console.log(req.session)
+    try {
+        const userid = await UserDB.aggregate([{ $match: { Email: req.session.email_profile } }, { $project: { _id: 1 } }])
+        // const out=userid._id
+        // console.log(out)
+        if (userid.length > 0) {
+            const userdata = userid[0]._id
+            const user = await UserDB.findById(userdata)
+
+            res.render('user/profile', { user ,success:req.flash('sucess_update')});
+        } else {
+            console.log('an error occured when fatch data from user ')
+        }
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+}
+
+const logout = async (req, res) => {
+    delete req.session.loginuser
+    console.log(req.session.userlogin)
+    res.redirect('/user/login')
+}
+
+const editprofile = async (req, res) => {
+    const ID = req.params.id
+    const user=await UserDB.findById(ID)
+    res.render('user/editprofile',{user})
+}
+
+const updateprofile=async (req,res)=>{
+    const ID = req.params.id
+   const username= req.body.username
+   const email=req.body.email
+   const phone=req.body.phone
+   console.log(username,email,phone)
+    await UserDB.findByIdAndUpdate(ID,{username:username,Email:email,phonenumber:phone})
+    req.flash('sucess_update','sucessfully updated profile')
+    res.redirect('/user/profile')    
+}
+
+module.exports = {
+    postregister,
+    userRegister,
+    otp,
+    otpVerification,
+    resentotp,
+    userlogin,
+    postlogin,
+    lo,
+    productDetails,
+    shoping,
+    demo,
+    userprofile,
+    logout,
+    editprofile,
+    updateprofile
+};

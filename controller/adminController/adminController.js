@@ -94,32 +94,6 @@ const unblockuser = async (req, res) => {
 }
 
 
-// for get catrgory page 
-// const category = async (req, res) => {
-//     const category = await CategoryDB.find()
-//     res.render('admin/category', { category })
-// }
-
-// const category = async (req, res) => {
-//     const page = parseInt(req.query.page) || 1; 
-//     const limit = 10; 
-//     const skip = (page - 1) * limit;
-
-
-//     const [categories, totalCategories] = await Promise.all([
-//         CategoryDB.find().skip(skip).limit(limit),
-//         CategoryDB.countDocuments()
-//     ]);
-
-
-//     const totalPages = Math.ceil(totalCategories / limit);
-
-//     res.render('admin/category', {
-//         categories,
-//         currentPage: page,
-//         totalPages,
-//     });
-// };
 
 const category = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -269,24 +243,6 @@ const editcategory = async (req, res) => {
 }
 
 
-
-// Edit category
-// const editing = async (req, res) => {
-//     const ID = req.params.id
-//     const categoryname = req.body.categoryname
-//     const discription = req.body.discription
-//     let val=categoryname.trim()
-//      const test = await CategoryDB.find({categoryname: val})
-//      console.log(test)
-//     if(!test){
-//        return  await CategoryDB.updateOne({ _id: ID }, { categoryname: categoryname.trim(), discription: discription.trim()})
-
-//     }else{
-//          res.redirect('/admin/category')
-//     }
-    
-   
-// }
 
 const editing = async (req, res) => {
     const ID = req.params.id;

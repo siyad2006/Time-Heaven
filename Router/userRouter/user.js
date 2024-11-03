@@ -14,9 +14,8 @@ router.post('/resentotp', userController.resentotp)
 router.get('/details/:id', userController.productDetails)
 router.get('/shop', userController.shoping)
 router.get('/demo', userController.demo)
-router.get('/logout', (req, res) => {
-    res.redirect('/user/login')
-})
-
-
+router.get('/logout',userController.logout)
+router.get('/profile',userAuth.loginuser,userController.userprofile)
+router.get('/editprofile/:id',userAuth.loginuser,userController.editprofile)
+router.post('/editprofile/change/:id',userController.updateprofile)
 module.exports = router

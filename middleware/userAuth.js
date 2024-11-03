@@ -7,6 +7,15 @@ function isRegistered(req, res, next) {
 }
 
 
+function loginuser(req,res,next){
+  if(req.session.loginuser == true){
+    // res.redirect()
+    next()
+  }else{
+    res.redirect('/user/login')
+  }
+}
+
 // function checkLogin(req, res, next) {
 //   if (req.session.loginuser) {
 
@@ -28,4 +37,4 @@ function isRegistered(req, res, next) {
 
 
 
-module.exports = { isRegistered}
+module.exports = { isRegistered,loginuser}
