@@ -1,7 +1,7 @@
 const UserDB = require('../../schema/userModel')
 const CategoryDB = require('../../schema/category')
 const multer = require('multer')
-const BarandModel = require('../../schema/brandModel')
+// const BarandModel = require('../../schema/brandModel')
 const fs = require('fs');
 const path = require('path');
 const BrandModel = require('../../schema/brandModel');
@@ -55,7 +55,8 @@ const usermanage = async (req, res) => {
 
 // for get dashboard
 const dashboard = async (req, res) => {
-    res.render('admin/dashboard')
+    const totalUsers= await UserDB.countDocuments();
+    res.render('admin/dashboard',{totalUsers})
 }
 
 
@@ -315,7 +316,8 @@ const addbrand = async (req, res) => {
     try {
         const brands = await BrandModel.find();
 
-        // Convert Buffer to Base64
+      
+        
         const brandsWithImages = brands.map(brand => ({
             ...brand.toObject(),
             logo: `data:${brand.logo.contentType};base64,${brand.logo.data.toString('base64')}`

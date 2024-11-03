@@ -1,5 +1,3 @@
-
-
 function isRegistered(req, res, next) {
   if (req.session.forOTP==true) {
     next()
@@ -9,25 +7,25 @@ function isRegistered(req, res, next) {
 }
 
 
-function checkLogin(req, res, next) {
-  if (req.session.loginuser) {
+// function checkLogin(req, res, next) {
+//   if (req.session.loginuser) {
 
-    res.redirect('/user/home');
-  } else {
+//     res.redirect('/user/home');
+//   } else {
 
-    res.redirect('/user/login');
-  }
-}
-
-
-function checkLoggedIn(req, res, next) {
-  if (req.session.loginuser) {
-    return res.redirect('/user/home');
-  }
-
-  next();
-}
+//     res.redirect('/user/login');
+//   }
+// }
 
 
+// function checkLoggedIn(req, res, next) {
+//   if (req.session.loginuser) {
+//     return res.redirect('/user/home');
+//   }
 
-module.exports = { isRegistered, checkLogin , checkLoggedIn}
+//   next();
+// }
+
+
+
+module.exports = { isRegistered}

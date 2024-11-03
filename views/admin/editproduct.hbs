@@ -163,7 +163,7 @@
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="fas fa-cog"></i> Settings</a>
       </li>
-        <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout </a>
       </li>
     </ul>
@@ -175,8 +175,16 @@
 
 
   <div class="content" id="content">
-    <h1>Add product</h1>
+    <h1>Edit product</h1>
 
+    <nav
+      style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);margin-top: 70px; margin-left: 20px;"
+      aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/products">Product</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit product</li>
+      </ol>
+    </nav>
 
 
     <form action="/admin/Edit/{{product.id}}" method="post" enctype="multipart/form-data"
@@ -195,8 +203,11 @@
         <select class="form-select" id="categorySelect" name="category" required>
           <option value="">Select a category</option>
           {{#each categoris}}
+          {{!-- {{#if (eq this.isblocked "Listed")}} --}}
           <option value="{{this._id}}">{{this.categoryname}}</option>
+          {{!-- {{/if}} --}}
           {{/each}}
+
         </select>
       </div>
       <div class="mb-3">
@@ -272,7 +283,7 @@
 
 
         if (!priceRegex.test(regularPrice)) {
-          alert('Regular Price must be in the correct format (e.g., 200, 2000, 2,000, 20,000, etc.).');
+          alert('Regular Price must be in the correct format ');
           return false;
         }
 
@@ -300,8 +311,8 @@
             const img = document.createElement('img');
             img.src = e.target.result;
             img.classList.add('img-thumbnail', 'mr-2');
-            img.style.width = '100px'; 
-            img.style.height = 'auto';  
+            img.style.width = '100px';
+            img.style.height = 'auto';
             imagePreview.appendChild(img);
           };
 

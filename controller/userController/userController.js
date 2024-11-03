@@ -6,6 +6,7 @@ const dotenv = require('dotenv').config()
 const otpGenerator = require('otp-generator')
 const nodemailer = require('nodemailer')
 const productDB = require('../../schema/productschema')
+const category=require('../../schema/category')
 
 
 
@@ -267,7 +268,7 @@ const lo = async (req, res) => {
 
 let productDetails = async (req, res) => {
     const ID = req.params.id;
-    const product = await productDB.findById(ID);
+    const product = await productDB.findById(ID).populate('category')
     res.render('user/productdetailied', { product });
 };
 
@@ -276,7 +277,7 @@ const shoping = async (req, res) => {
     const { page = 1, limit = 12 } = req.query;
     const skip = (page - 1) * limit;
 
-
+    const categories=await category.find({isblocked:"Listed"});
     const products = await productDB.find({ isblocked: false })
         .skip(skip)
         .limit(limit)
@@ -288,7 +289,8 @@ const shoping = async (req, res) => {
     res.render('user/shoping', {
         products,
         currentPage: Number(page),
-        totalPages: Math.ceil(totalProducts / limit)
+        totalPages: Math.ceil(totalProducts / limit),
+        categories
     });
 };
 

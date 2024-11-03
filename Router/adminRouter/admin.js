@@ -9,7 +9,7 @@ const router = express.Router()
 
 const upload = require('../../multer/upload')
 const product = require('../../schema/productschema')
-router.get('/login',adminAuth.adminLogin, AdminController.login)
+router.get('/login', adminAuth.adminLogin, AdminController.login)
 router.post('/login', AdminController.postLogin)
 router.get('/usermanage', adminAuth.isAdmin, AdminController.usermanage)
 router.get('/dashboard', adminAuth.isAdmin, AdminController.dashboard);
@@ -36,8 +36,7 @@ router.post('/unblock/:id', productController.unblockproduct)
 router.post('/deleteproduct/:id', productController.deleteproduct)
 router.get('/editproduct/:id', upload, productController.editproduct)
 router.post('/Edit/:id', upload, productController.postEdit)
-
-router.get('/logout',AdminController.logout)
+router.get('/logout', AdminController.logout)
 
 
 module.exports = router
