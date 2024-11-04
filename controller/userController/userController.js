@@ -6,7 +6,7 @@ const otpGenerator = require('otp-generator')
 const nodemailer = require('nodemailer')
 const productDB = require('../../schema/productschema')
 const category = require('../../schema/category')
-
+const addressDB=require('../../schema/address')
 
 
 const userRegister = async (req, res) => {
@@ -369,13 +369,13 @@ const updateprofile = async (req, res) => {
     const ID = req.params.id
     const username = req.body.username
     const email = req.body.email
-    const phone =Number(req.body.phone)
+    const phone = Number(req.body.phone)
     console.log(username, email, phone)
     const isactive = await UserDB.findOne({ username: username.trim() })
     const emailactive = await UserDB.findOne({ Email: email.trim() })
     if (!isactive || !emailactive) {
-        req.session.email_profile=email.trim();
-        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), Email: email.trim(), phonenumber:phone  })
+        req.session.email_profile = email.trim();
+        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), Email: email.trim(), phonenumber: phone })
         req.flash('sucess_update', 'sucessfully updated profile')
         res.redirect('/user/profile')
 
@@ -387,10 +387,10 @@ const updateprofile = async (req, res) => {
 
 }
 
-const changepassword= async(req,res)=>{
-    const ID=req.params.id
-    const user= await UserDB.findById(ID)
-    res.render('user/changepassword',{user})
+const changepassword = async (req, res) => {
+    const ID = req.params.id
+    const user = await UserDB.findById(ID)
+    res.render('user/changepassword', { user })
 }
 
 
@@ -431,6 +431,50 @@ const updatepassword = async (req, res) => {
     }
 };
 
+const address = async (req, res) => {
+    const ID = req.params.id
+    const user = await UserDB.findById(ID)
+    res.render('user/address', { user })
+}
+
+const createaddress = async (req, res) => {
+    const ID = req.params.id
+    // console.log(ID)
+    const {nam,
+        phone,
+        address,
+        city,
+        state,
+        pincode,
+        country
+    }= req.body
+    try {
+        // const user = await UserDB.findById(ID)
+
+        const addresssave=new addressDB({
+                user:ID,
+                name:nam,
+                phone:phone,
+                houseAddress:address,
+                city:city,
+                state:state,
+                pincode:pincode,
+                country:country
+                
+        })
+        await addresssave.save()
+        res.json({success:true,message:'address saved sucessfully',redirectUrl:`/user/address/${ID}`})
+
+
+
+    } catch (err) {
+        console.log('an error occured when fetch userdata for address', err)
+    }
+
+
+
+}
+
 module.exports = {
     postregister,
     userRegister,
@@ -448,5 +492,7 @@ module.exports = {
     editprofile,
     updateprofile,
     changepassword,
-    updatepassword
+    updatepassword,
+    address,
+    createaddress
 };
