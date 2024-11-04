@@ -13,12 +13,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl5+J6w9S5Xh6gZn5o36z1u1F0tG2YzXlM5zZ2/3K"
         crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <!-- SweetAlert2 CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 
 
@@ -70,7 +70,7 @@
     </nav>
 
     <!-- Saved Addresses Section -->
-    <div class="container mt-5 pt-4">
+    {{!-- <div class="container mt-5 pt-4">
         <h4 class="text-center mb-4">Saved Addresses</h4>
         <div class="row justify-content-center">
             <!-- Address Card 1 -->
@@ -113,7 +113,33 @@
                 </div>
             </div>
         </div>
+    </div> --}}
+
+    <div class="container mt-5 pt-4">
+        <h4 class="text-center mb-4">Saved Addresses</h4>
+        <div class="row justify-content-center">
+            {{#each address}} <!-- Loop through each address -->
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{this.name}}</h5> <!-- Use the address title -->
+                        <p class="card-text">{{this.houseAddress}}, {{this.city}}, {{this.state}} {{this.pincode}},
+                            {{this.country}}</p> <!-- Display address details -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-outline-primary btn-sm">Edit</button>
+                            <form action="/user/deleteaddress/{{this.id}}/{{user._id}}" method="post">
+                             <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                            </form>
+                            
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
     </div>
+
 
     <!-- Address Form -->
     <div class="container-fluid edit-container justify-content-center">
@@ -161,96 +187,98 @@
         </div>
     </div>
     <script>
-function validation(event) {
-    event.preventDefault();
-    console.log('entered to ajax code ');
-    const userid = document.getElementById('userId').value;
-    const nam = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('street').value.trim();
-    const city = document.getElementById('city').value.trim();
-    const state = document.getElementById('state').value.trim();
-    const pincode = document.getElementById('postalCode').value.trim();
-    const country = document.getElementById('country').value.trim();
+        function validation(event) {
+            event.preventDefault();
+            console.log('entered to ajax code ');
+            const userid = document.getElementById('userId').value;
+            const nam = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('street').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const pincode = document.getElementById('postalCode').value.trim();
+            const country = document.getElementById('country').value.trim();
 
-    // Check for empty fields
-    if (!nam || !phone || !address || !city || !state || !pincode || !country) {
-        swal.fire({
-            icon: 'warning',
-            title: 'Missing Fields',
-            text: 'Please fill in all fields.'
-        });
-        return false;
-    }
-
-    // Validate phone number (must be exactly 10 digits)
-    const phoneRegex = /^\d{10}$/; // Regex for exactly 10 digits
-    if (!phoneRegex.test(phone)) {
-        swal.fire({
-            icon: 'warning',
-            title: 'Invalid Phone Number',
-            text: 'Phone number must contain exactly 10 digits.'
-        });
-        return false;
-    }
-   
-    // Validate name (must only contain alphabets and spaces)
-    const nameRegex = /^[A-Za-z\s]+$/; // Regex for alphabets and spaces only
-    if (!nameRegex.test(nam)) {
-        swal.fire({
-            icon: 'warning',
-            title: 'Invalid Name',
-            text: 'Name must only contain alphabets and spaces, no numbers or special characters.'
-        });
-        return false;
-    }
-     const pincodeRegex = /^\d{6}$/; // Regex for exactly 6 digits
-    if (!pincodeRegex.test(pincode)) {
-        swal.fire({
-            icon: 'warning',
-            title: 'Invalid Pincode',
-            text: 'Pincode must contain exactly 6 digits.'
-        });
-        return false;
-    }
-
-    // AJAX request if all validations pass
-    $.ajax({
-        method: 'post',
-        url: `/user/createaddress/${userid}`,
-        data: {
-            nam: nam,
-            phone: phone,
-            address: address,
-            city: city,
-            state: state,
-            pincode: pincode,
-            country: country
-        },
-        success: function (response) {
-            if (response.success) {
+            // Check for empty fields
+            if (!nam || !phone || !address || !city || !state || !pincode || !country) {
                 swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: response.message
-                }).then(() => {
-                    window.location.href = response.redirectUrl;
+                    icon: 'warning',
+                    title: 'Missing Fields',
+                    text: 'Please fill in all fields.'
                 });
-            } else {
-                swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: response.redirectUrl
-                });
+                return false;
             }
+
+            // Validate phone number (must be exactly 10 digits)
+            const phoneRegex = /^\d{10}$/; // Regex for exactly 10 digits
+            if (!phoneRegex.test(phone)) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Phone Number',
+                    text: 'Phone number must contain exactly 10 digits.'
+                });
+                return false;
+            }
+
+            // Validate name (must only contain alphabets and spaces)
+            const nameRegex = /^[A-Za-z\s]+$/; // Regex for alphabets and spaces only
+            if (!nameRegex.test(nam)) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Name',
+                    text: 'Name must only contain alphabets and spaces, no numbers or special characters.'
+                });
+                return false;
+            }
+            const pincodeRegex = /^\d{6}$/; // Regex for exactly 6 digits
+            if (!pincodeRegex.test(pincode)) {
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Pincode',
+                    text: 'Pincode must contain exactly 6 digits.'
+                });
+                return false;
+            }
+
+            // AJAX request if all validations pass
+            $.ajax({
+                method: 'post',
+                url: `/user/createaddress/${userid}`,
+                data: {
+                    nam: nam,
+                    phone: phone,
+                    address: address,
+                    city: city,
+                    state: state,
+                    pincode: pincode,
+                    country: country
+                },
+                success: function (response) {
+                    if (response.success) {
+                        swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                            buttons: false,
+                            timer: 3000
+                        }).then(() => {
+                            window.location.href = response.redirectUrl;
+                        });
+                    } else {
+                        swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.redirectUrl
+                        });
+                    }
+                }
+            });
+
+            return false; // Prevent form submission
         }
-    });
-
-    return false; // Prevent form submission
-}
 
 
-</script>
+    </script>
 
     <!-- Footer -->
     <footer class="bg-dark text-white mt-5">

@@ -6,7 +6,7 @@ const otpGenerator = require('otp-generator')
 const nodemailer = require('nodemailer')
 const productDB = require('../../schema/productschema')
 const category = require('../../schema/category')
-const addressDB=require('../../schema/address')
+const addressDB = require('../../schema/address')
 
 
 const userRegister = async (req, res) => {
@@ -299,27 +299,7 @@ const demo = async (req, res) => {
     res.redirect('/user/home')
 }
 
-// const userprofile = async (req, res) => {
-//     // console.log(req.session)
-//     try {
-//         const userid = await UserDB.aggregate([{ $match: { Email: req.session.email_profile } }, { $project: { _id: 1 } }])
-//         // const out=userid._id
-//         // console.log(out)
-//         if (userid.length > 0) {
-//             const userdata = userid[0]._id
-//             const user = await UserDB.findById(userdata)
 
-//             res.render('user/profile', { user, success: req.flash('sucess_update') });
-//         } else {
-//             console.log('An error occurred when fetching data from user');
-//         }
-
-//     } catch (err) {
-//         console.log(err);
-
-//     }
-
-// }
 
 const userprofile = async (req, res) => {
     try {
@@ -433,37 +413,39 @@ const updatepassword = async (req, res) => {
 
 const address = async (req, res) => {
     const ID = req.params.id
+    const address = await addressDB.find({ user: ID }).limit(3)
     const user = await UserDB.findById(ID)
-    res.render('user/address', { user })
+
+    res.render('user/address', { user, address: address })
 }
 
 const createaddress = async (req, res) => {
     const ID = req.params.id
     // console.log(ID)
-    const {nam,
+    const { nam,
         phone,
         address,
         city,
         state,
         pincode,
         country
-    }= req.body
+    } = req.body
     try {
         // const user = await UserDB.findById(ID)
 
-        const addresssave=new addressDB({
-                user:ID,
-                name:nam,
-                phone:phone,
-                houseAddress:address,
-                city:city,
-                state:state,
-                pincode:pincode,
-                country:country
-                
+        const addresssave = new addressDB({
+            user: ID,
+            name: nam,
+            phone: phone,
+            houseAddress: address,
+            city: city,
+            state: state,
+            pincode: pincode,
+            country: country
+
         })
         await addresssave.save()
-        res.json({success:true,message:'address saved sucessfully',redirectUrl:`/user/address/${ID}`})
+        res.json({ success: true, message: 'address saved sucessfully', redirectUrl: `/user/address/${ID}` })
 
 
 
@@ -474,6 +456,15 @@ const createaddress = async (req, res) => {
 
 
 }
+
+const deleteaddress = async (req, res) => {
+    const ID = req.params.id
+    const userid = req.params.user
+    // console.log(userid)
+    await addressDB.findByIdAndDelete(ID)
+    res.redirect(`/user/address/${userid}`)
+}
+
 
 module.exports = {
     postregister,
@@ -494,5 +485,6 @@ module.exports = {
     changepassword,
     updatepassword,
     address,
-    createaddress
+    createaddress,
+    deleteaddress
 };

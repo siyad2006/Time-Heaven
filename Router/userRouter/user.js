@@ -22,4 +22,8 @@ router.get('/changepassword/:id', userAuth.loginuser,userController.changepasswo
 router.post('/updatepassword/:id',userController.updatepassword)
 router.get('/address/:id',userController.address)
 router.post('/createaddress/:id',userController.createaddress)
+router.post('/deleteaddress/:id/:user',userController.deleteaddress)
+
+
+
 module.exports = router
