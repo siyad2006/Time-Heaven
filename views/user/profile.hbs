@@ -182,8 +182,10 @@
                 <form action="/user/editprofile/{{user.id}}" method="get">
                  <button class="btn btn-custom btn-edit" type="submit">Edit</button>
                 </form>
-               
-                <button class="btn btn-custom btn-password">Change Password</button>
+               <form action="/user/changepassword/{{user.id}}" method="get">
+               <button class="btn btn-custom btn-password" type="submit">Change Password</button>
+               </form>
+                
                 <button class="btn btn-custom btn-address">Address</button>
                 <form action="/user/logout" method="get">
                  <button class="btn btn-custom btn-logout">Logout</button>

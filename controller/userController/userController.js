@@ -202,7 +202,6 @@ const postlogin = async (req, res) => {
 
 
 
-
     try {
         const { username, Email, password } = req.body
 
@@ -300,27 +299,59 @@ const demo = async (req, res) => {
     res.redirect('/user/home')
 }
 
-const userprofile = async (req, res) => {
-    // console.log(req.session)
-    try {
-        const userid = await UserDB.aggregate([{ $match: { Email: req.session.email_profile } }, { $project: { _id: 1 } }])
-        // const out=userid._id
-        // console.log(out)
-        if (userid.length > 0) {
-            const userdata = userid[0]._id
-            const user = await UserDB.findById(userdata)
+// const userprofile = async (req, res) => {
+//     // console.log(req.session)
+//     try {
+//         const userid = await UserDB.aggregate([{ $match: { Email: req.session.email_profile } }, { $project: { _id: 1 } }])
+//         // const out=userid._id
+//         // console.log(out)
+//         if (userid.length > 0) {
+//             const userdata = userid[0]._id
+//             const user = await UserDB.findById(userdata)
 
-            res.render('user/profile', { user ,success:req.flash('sucess_update')});
-        } else {
-            console.log('an error occured when fatch data from user ')
+//             res.render('user/profile', { user, success: req.flash('sucess_update') });
+//         } else {
+//             console.log('An error occurred when fetching data from user');
+//         }
+
+//     } catch (err) {
+//         console.log(err);
+
+//     }
+
+// }
+
+const userprofile = async (req, res) => {
+    try {
+        // Check if email is present in session
+        if (!req.session.email_profile) {
+            console.log('Session email_profile is missing');
+            return res.redirect('/login'); // Redirect to login if email is missing
         }
 
+        // Aggregate to find the user ID based on the session email
+        const userid = await UserDB.aggregate([
+            { $match: { Email: req.session.email_profile } },
+            { $project: { _id: 1 } }
+        ]);
+
+        // Check if a user was found
+        if (userid.length > 0) {
+            const userdata = userid[0]._id;
+            const user = await UserDB.findById(userdata);
+
+            // Render the profile page with the user data and flash message
+            res.render('user/profile', { user, success: req.flash('success_update') });
+        } else {
+            console.log('No user found with the specified email');
+            res.status(404).send('User not found');
+        }
     } catch (err) {
-        console.log(err);
-
+        console.log('Error:', err);
+        res.status(500).send('An error occurred while fetching user data');
     }
+};
 
-}
 
 const logout = async (req, res) => {
     delete req.session.loginuser
@@ -330,20 +361,75 @@ const logout = async (req, res) => {
 
 const editprofile = async (req, res) => {
     const ID = req.params.id
-    const user=await UserDB.findById(ID)
-    res.render('user/editprofile',{user})
+    const user = await UserDB.findById(ID)
+    res.render('user/editprofile', { user })
 }
 
-const updateprofile=async (req,res)=>{
+const updateprofile = async (req, res) => {
     const ID = req.params.id
-   const username= req.body.username
-   const email=req.body.email
-   const phone=req.body.phone
-   console.log(username,email,phone)
-    await UserDB.findByIdAndUpdate(ID,{username:username,Email:email,phonenumber:phone})
-    req.flash('sucess_update','sucessfully updated profile')
-    res.redirect('/user/profile')    
+    const username = req.body.username
+    const email = req.body.email
+    const phone =Number(req.body.phone)
+    console.log(username, email, phone)
+    const isactive = await UserDB.findOne({ username: username.trim() })
+    const emailactive = await UserDB.findOne({ Email: email.trim() })
+    if (!isactive || !emailactive) {
+        req.session.email_profile=email.trim();
+        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), Email: email.trim(), phonenumber:phone  })
+        req.flash('sucess_update', 'sucessfully updated profile')
+        res.redirect('/user/profile')
+
+    } else {
+        req.flash('sucess_update', 'this username or Email already in use')
+        res.redirect('/user/profile')
+
+    }
+
 }
+
+const changepassword= async(req,res)=>{
+    const ID=req.params.id
+    const user= await UserDB.findById(ID)
+    res.render('user/changepassword',{user})
+}
+
+
+const updatepassword = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { password, newPassword, confirmPassword } = req.body;
+
+        if (!password || !newPassword || !confirmPassword) {
+            return res.json({ success: false, message: "All fields are required" });
+        }
+
+        if (password.length < 6) {
+            return res.json({ success: false, message: "Current password must be 6 or more characters" });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.json({ success: false, message: "New password and confirmation do not match" });
+        }
+
+        const user = await UserDB.findById(userId);
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.json({ success: false, message: "Current password is incorrect" });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await UserDB.findByIdAndUpdate(userId, { password: hashedPassword });
+
+        return res.json({ success: true, message: "Password changed successfully", redirectUrl: '/user/profile' });
+    } catch (error) {
+        console.error("Error updating password:", error);
+        return res.json({ success: false, message: "An error occurred, please try again later" });
+    }
+};
 
 module.exports = {
     postregister,
@@ -360,5 +446,7 @@ module.exports = {
     userprofile,
     logout,
     editprofile,
-    updateprofile
+    updateprofile,
+    changepassword,
+    updatepassword
 };
