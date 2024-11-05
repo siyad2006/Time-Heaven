@@ -39,12 +39,14 @@ async (accessToken,refreshToken,profile,done)=>{
 
 
 passport.serializeUser((user,done)=>{
+    
     done(null,user.id)
 })
 
 
 passport.deserializeUser((id,done)=>{
     UserDB.findById(id).then(user=>{
+        // req.session.loginuser = true
         done(null,user)
     }).catch(err=>{
         done(err,null)

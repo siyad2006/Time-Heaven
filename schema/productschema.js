@@ -22,7 +22,7 @@ const productSchema = new Schema({
     },
 
     regularprice: {
-        type: String,
+        type: Number,
         required: true
     },
     quantity: {

@@ -227,6 +227,7 @@ const postlogin = async (req, res) => {
                 } else {
                     req.session.email_profile = Email
                     req.session.loginuser = true;
+                    req.session.userId = name._id;
                     // console.log(req.session)
                     res.json({ success: true, message: 'the message is sucess', redirectUrl: '/user/home' })
 
@@ -269,29 +270,104 @@ const lo = async (req, res) => {
 
 let productDetails = async (req, res) => {
     const ID = req.params.id;
+    let userid = req.session.userId
+    //    const user=await UserDB.findById(userid)
+    //    console.log(user)
+
+    console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
-    res.render('user/productdetailied', { product });
+    res.render('user/productdetailied', { product, userid });
 };
 
 
+// const shoping = async (req, res) => {
+//     const { page = 1, limit = 12 } = req.query;
+//     const skip = (page - 1) * limit;
+
+//     const categories = await category.find({ isblocked: "Listed" });
+//     const products = await productDB.find({ isblocked: false })
+//         .skip(skip)
+//         .limit(limit)
+//         .populate('category')
+//         .exec();
+
+//     const totalProducts = await productDB.countDocuments({ isblocked: false });
+
+//     res.render('user/shoping', {
+//         products,
+//         currentPage: Number(page),
+//         totalPages: Math.ceil(totalProducts / limit),
+//         categories
+//     });
+// };
+
 const shoping = async (req, res) => {
-    const { page = 1, limit = 12 } = req.query;
+    const { page = 1, limit = 12, sort = 'default' } = req.query;
     const skip = (page - 1) * limit;
 
     const categories = await category.find({ isblocked: "Listed" });
-    const products = await productDB.find({ isblocked: false })
-        .skip(skip)
-        .limit(limit)
-        .populate('category')
-        .exec();
 
+    let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
+
+    // if (sort === 'lowToHigh') {
+    //     productsQuery = productsQuery.sort({ pregularprice: 1 });
+    // } else if (sort === 'highToLow') {
+    //     productsQuery = productsQuery.sort({ regularprice: -1 });
+    // }
+
+    // switch (sort) {
+    //     case 'lowToHigh':
+    //         productsQuery = productsQuery.sort({ pregularprice: 1 });
+    //         break;
+
+    //     case 'highToLow':
+    //         productsQuery = productsQuery.sort({ regularprice: -1 });
+    //         break;
+
+    //     case 'aA-zZ':
+    //         productsQuery = productsQuery.sort({ name: 1 });
+    //         break;
+    //     case 'zZ-aA':
+    //         productsQuery = productsQuery.sort({ name: -1 });
+    //         break;
+    //     case 'New arrivals':
+    //         productsQuery = productsQuery.sort({ createdAt: -1 });
+    //         break;
+    //     default:
+
+    //         break;
+    // }
+
+    switch (sort) {
+        case 'lowToHigh':
+            productsQuery = productsQuery.sort({ regularprice: 1 });
+            break;
+        case 'highToLow':
+            productsQuery = productsQuery.sort({ regularprice: -1 });
+            break;
+        case 'aA-zZ':
+            productsQuery = productsQuery.sort({ name: 1 });
+            break;
+        case 'zZ-aA':
+            productsQuery = productsQuery.sort({ name: -1 });
+            break;
+        case 'New arrivals':
+            productsQuery = productsQuery.sort({ createdAt: -1 });
+            break;
+        default:
+            break;
+    }
+
+
+    const products = await productsQuery.exec();
     const totalProducts = await productDB.countDocuments({ isblocked: false });
 
     res.render('user/shoping', {
         products,
         currentPage: Number(page),
         totalPages: Math.ceil(totalProducts / limit),
-        categories
+        categories,
+        sortOption: sort
     });
 };
 
@@ -516,8 +592,8 @@ const updatingAddress = async (req, res) => {
             state: state,
             pincode: pincode,
             country: country
-        }).then((data)=> console.log('changed successfully')).catch(err=> console.log(err))
-        
+        }).then((data) => console.log('changed successfully')).catch(err => console.log(err))
+
         res.redirect(`/user/address/${userid}`)
     } catch (err) {
         console.log('error occured when update address', err)

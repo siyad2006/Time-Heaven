@@ -17,7 +17,7 @@ const addproduct = async (req, res) => {
 
 const add = async (req, res) => {
     const val = req.body;
-
+        console.log(val.regularprice)
 
     const imagePaths = [];
 

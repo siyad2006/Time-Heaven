@@ -2,6 +2,8 @@ const express = require('express')
 const userAuth = require('../../middleware/userAuth')
 const userController = require('../../controller/userController/userController');
 const router = express.Router()
+const cartController = require('../../controller/userController/cartController')
+
 
 router.get('/register', userController.userRegister)
 router.post('/postregister', userController.postregister)
@@ -23,7 +25,9 @@ router.post('/updatepassword/:id', userController.updatepassword)
 router.get('/address/:id', userController.address)
 router.post('/createaddress/:id', userController.createaddress)
 router.post('/deleteaddress/:id/:user', userController.deleteaddress)
-router.get('/updateaddress/:id/:user',userController.updateaddress)
-router.post('/postchange/:id/:user',userController.updatingAddress)
+router.get('/updateaddress/:id/:user', userController.updateaddress)
+router.post('/postchange/:id/:user', userController.updatingAddress)
+router.get('/cart/:user', userAuth.loginuser,cartController.getcart)
+router.post('/addcart/:id/:user',cartController.addcart)
 
 module.exports = router

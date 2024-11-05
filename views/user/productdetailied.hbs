@@ -463,9 +463,12 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons d-flex justify-content-around mt-4">
-            <button class="btn btn-primary d-flex align-items-center">
+            <form action="/user/addcart/{{product.id}}/{{userid}}" method="post">
+             <button class="btn btn-primary d-flex align-items-center">
                 <i class="fas fa-shopping-cart me-2"></i> Add to Cart
             </button>
+            </form>
+           
             <button class="btn btn-outline-secondary d-flex align-items-center">
                 <i class="fas fa-heart me-2"></i> Add to Wishlist
             </button>
