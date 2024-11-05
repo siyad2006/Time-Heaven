@@ -126,12 +126,14 @@
                         <p class="card-text">{{this.houseAddress}}, {{this.city}}, {{this.state}} {{this.pincode}},
                             {{this.country}}</p> <!-- Display address details -->
                         <div class="d-flex justify-content-end gap-2">
-                            <button class="btn btn-outline-primary btn-sm">Edit</button>
-                            <form action="/user/deleteaddress/{{this.id}}/{{user._id}}" method="post">
-                             <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                            <form action="/user/updateaddress/{{this.id}}/{{user._id}}" method="get">
+                                <button class="btn btn-outline-primary btn-sm" type="submit">Edit</button>
                             </form>
-                            
-                           
+                            <form action="/user/deleteaddress/{{this.id}}/{{user._id}}" method="post">
+                                <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                            </form>
+
+
                         </div>
                     </div>
                 </div>

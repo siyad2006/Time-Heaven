@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer')
 const productDB = require('../../schema/productschema')
 const category = require('../../schema/category')
 const addressDB = require('../../schema/address')
-
+const mongoose = require('mongoose')
 
 const userRegister = async (req, res) => {
     console.log('User registration page accessed successfully.');
@@ -465,6 +465,68 @@ const deleteaddress = async (req, res) => {
     res.redirect(`/user/address/${userid}`)
 }
 
+// const updateaddress=async (req,res)=>{
+//     const ID=req.params.id;
+//     const userID=req.params.user
+//     // console.log(ID,userID)
+//     const address = await addressDB.findById(ID);
+//     const User = await UserDB.findById(userID)
+
+//     res.render('user/editAddress',{address,User})
+// }
+
+const updateaddress = async (req, res) => {
+    const ID = req.params.id;
+    const userID = req.params.user;
+
+    // Validate ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(ID) || !mongoose.Types.ObjectId.isValid(userID)) {
+        return res.status(400).send("Invalid ID format");
+    }
+
+    try {
+        const address = await addressDB.findById(ID);
+        const user = await UserDB.findById(userID);
+
+        if (!address || !user) {
+            return res.status(404).send("Address or User not found");
+        }
+
+        res.render('user/editAddress', { address, user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
+};
+
+const updatingAddress = async (req, res) => {
+    const ID = req.params.id
+    const userid = req.params.user
+    const { name, phone, address, city, state, pincode, country } = req.body
+    // console.log(name,phone,address,city,state,pincode,country)
+    // console.log(ID,userid)
+
+    try {
+        await addressDB.findByIdAndUpdate(ID, {
+
+            name: name,
+            phone: phone,
+            houseAddress: address,
+            city: city,
+            state: state,
+            pincode: pincode,
+            country: country
+        }).then((data)=> console.log('changed successfully')).catch(err=> console.log(err))
+        
+        res.redirect(`/user/address/${userid}`)
+    } catch (err) {
+        console.log('error occured when update address', err)
+    }
+
+
+
+}
+
 
 module.exports = {
     postregister,
@@ -486,5 +548,7 @@ module.exports = {
     updatepassword,
     address,
     createaddress,
-    deleteaddress
+    deleteaddress,
+    updateaddress,
+    updatingAddress
 };
