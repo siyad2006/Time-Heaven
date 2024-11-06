@@ -6,22 +6,92 @@ exports.getcart=async (req,res)=>{
     res.render('user/cart')
 }
 
-exports.addcart=async (req,res)=>{
-    const ID=req.params.id
-    const user=req.params.user
+// exports.addcart=async (req,res)=>{
+//     const ID=req.params.id
+//     const user=req.params.user
 
 //  console.log(ID,user)
 
-    const cart=new cartDB({
-        user:user,
-        productid:ID
-    })
+// const {regularprice,quantity}=req.body;
+// console.log(regularprice,quantity)
 
-    await cart.save()
+//     // const cart=new cartDB({
+//     //     user:user,
+//     //     productid:ID
+//     // })
 
-    res.redirect(`/user/cart/${user}`);
+//     // await cart.save()
 
-}
+//     res.redirect(`/user/cart/${user}`);
+
+// }
+
+exports.addcart = async (req, res) => {
+    try {
+        const productId = req.params.id; 
+        const userId = req.params.user; 
+        const { quantity, regularprice } = req.body; 
+        console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
+
+      
+        const existingCart = await cartDB.findOne({ user: userId });
+
+        if (existingCart) {
+            
+            const productInCart = existingCart.products.find(item => item.productId.toString() === productId);
+
+            if (productInCart) {
+                
+                let newQuantity = productInCart.qty + Number(quantity); 
+
+              
+                productInCart.qty = newQuantity;
+
+           
+                existingCart.totalAmount = existingCart.products.reduce((total, product) => {
+                    return total + (product.qty * regularprice);
+                }, 0);
+
+                await existingCart.save(); 
+                console.log('Updated cart:', existingCart);
+            } else {
+               
+                existingCart.products.push({
+                    productId: productId,
+                    qty: quantity 
+                    });
+
+        
+                existingCart.totalAmount += regularprice * quantity;
+
+                await existingCart.save(); 
+                console.log('Added new product to cart:', existingCart);
+            }
+        } else {
+          
+            const newCart = new cartDB({
+                user: userId,
+                products: [{
+                    productId: productId,
+                    qty: quantity 
+                }],
+                totalAmount: regularprice * quantity 
+            });
+
+            await newCart.save();
+            console.log('Created new cart:', newCart);
+        }
+
+        
+        res.redirect(`/user/cart/${userId}`);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Something went wrong');
+    }
+};
+
+
+
 
  // Ensure to require the product model
 

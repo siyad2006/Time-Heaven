@@ -146,17 +146,17 @@
             font-weight: 700;
             /* Bold */
             color: #1a0b0b;
-            
+
         }
 
         .price-tag2 {
             font-family: 'Montserrat', sans-serif;
             font-size: 24px;
-           
+
             font-weight: 700;
-          
+
             color: #333;
-          
+
         }
 
         .card {
@@ -413,7 +413,7 @@
 
     <!-- </div> -->
 
-    <div class="description-rating mt-4 text-center">
+    {{!-- <div class="description-rating mt-4 text-center">
         <!-- Description Section -->
         <div class="description mb-3">
             <h4>Product Description</h4>
@@ -458,24 +458,176 @@
             </div>
         </div>
 
+        <div class="d-flex justify-content-center">
+            <label for="quantity">Quantity:</label>
+            <div style="display: flex; align-items: center; margin-left: 10px;">
+                <button type="button" onclick="decreaseQuantity()"
+                    style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">-</button>
+
+                <input type="number" id="quantity" name="quantity" value="1" min="1" max="8"
+                    style="width: 50px; text-align: center; margin: 0 5px; font-size: 16px; border: 1px solid #ddd;">
+
+                <button type="button" onclick="increaseQuantity()"
+                    style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">+</button>
+            </div>
+        </div>
+
+        <script>
+            const quantityInput = document.getElementById('quantity');
+
+            function increaseQuantity() {
+                const currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity < 8) { // Ensure quantity does not exceed 8
+                    quantityInput.value = currentQuantity + 1;
+                }
+            }
+
+            function decreaseQuantity() {
+                const currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity > 1) { // Ensure quantity does not go below 1
+                    quantityInput.value = currentQuantity - 1;
+                }
+            }
+
+            // Add an input event listener to restrict manual input
+            quantityInput.addEventListener('input', () => {
+                // Limit the input value between 1 and 8
+                if (quantityInput.value > 8) {
+                    quantityInput.value = 8;
+                } else if (quantityInput.value < 1) {
+                    quantityInput.value = 1;
+                }
+            });
+        </script>
 
 
 
         <!-- Action Buttons -->
         <div class="action-buttons d-flex justify-content-around mt-4">
             <form action="/user/addcart/{{product.id}}/{{userid}}" method="post">
-             <button class="btn btn-primary d-flex align-items-center">
-                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-            </button>
+                <button class="btn btn-primary d-flex align-items-center">
+                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                </button>
             </form>
-           
+
             <button class="btn btn-outline-secondary d-flex align-items-center">
                 <i class="fas fa-heart me-2"></i> Add to Wishlist
             </button>
             <button class="btn btn-success d-flex align-items-center">
                 <i class="fas fa-shopping-bag me-2"></i> Buy Now
             </button>
+        </div> --}}
+
+
+    <div class="description-rating mt-4 text-center">
+        <!-- Description Section -->
+        <div class="description mb-3">
+            <h4>Product Description</h4>
+            <i>{{product.discription}}</i>
         </div>
+
+        <!-- Rating Section -->
+        <div class="rating mb-3">
+            <h5>Rating</h5>
+            <div class="stars">
+                <span>&#9733;</span>
+                <span>&#9733;</span>
+                <span>&#9733;</span>
+                <span>&#9733;</span>
+                <span>&#9734;</span> <!-- Example rating with 4 out of 5 stars -->
+            </div>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="product-options">
+            <!-- Total Price -->
+            <div class="total-price mb-3">
+                <h5>Total Price</h5>
+                <p><strong>{{product.regularprice}}</strong></p>
+            </div>
+
+            <!-- Select Color -->
+            <div class="color-selection mb-3">
+                <h5>Color</h5>
+                <p>{{product.color}}</p>
+
+                <h4>Category</h4>
+                <p>{{product.category.categoryname}}</p>
+
+                <h4>Brand</h4>
+                <p>{{product.brand}}</p>
+                <i>4 years trusted company from Time Haven</i>
+            </div>
+        </div>
+
+        <!-- Quantity Selection -->
+        <div class="d-flex justify-content-center">
+            <label for="quantity">Quantity:</label>
+            <div style="display: flex; align-items: center; margin-left: 10px;">
+                <button type="button" onclick="decreaseQuantity()" style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">-</button>
+
+                <input type="number" id="quantity" name="displayQuantity" value="1" min="1" max="8" 
+                    style="width: 50px; text-align: center; margin: 0 5px; font-size: 16px; border: 1px solid #ddd;" onchange="updateHiddenQuantity()">
+                
+                <button type="button" onclick="increaseQuantity()" style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">+</button>
+            </div>
+        </div>
+
+        <!-- Form to Add to Cart -->
+        <form action="/user/addcart/{{product.id}}/{{userid}}" method="post" onsubmit="updateHiddenQuantity()">
+            <!-- Hidden Input for Quantity -->
+            <input type="hidden" value="{{product.regularprice}}" name="regularprice">
+            <input type="hidden" id="hiddenQuantity" name="quantity" value="1">
+
+            <!-- Action Buttons -->
+            <div class="action-buttons d-flex justify-content-around mt-4">
+                <button type="submit" class="btn btn-primary d-flex align-items-center">
+                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                </button>
+
+                <button class="btn btn-outline-secondary d-flex align-items-center">
+                    <i class="fas fa-heart me-2"></i> Add to Wishlist
+                </button>
+                <button class="btn btn-success d-flex align-items-center">
+                    <i class="fas fa-shopping-bag me-2"></i> Buy Now
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const quantityInput = document.getElementById('quantity');
+        const hiddenQuantityInput = document.getElementById('hiddenQuantity');
+
+        // Function to increase quantity
+        function increaseQuantity() {
+            const currentQuantity = parseInt(quantityInput.value);
+            if (currentQuantity < 8) {
+                quantityInput.value = currentQuantity + 1;
+                updateHiddenQuantity(); // Update the hidden quantity field
+            }
+        }
+
+        // Function to decrease quantity
+        function decreaseQuantity() {
+            const currentQuantity = parseInt(quantityInput.value);
+            if (currentQuantity > 1) {
+                quantityInput.value = currentQuantity - 1;
+                updateHiddenQuantity(); // Update the hidden quantity field
+            }
+        }
+
+        // Update the hidden quantity field when the input is changed
+        function updateHiddenQuantity() {
+            hiddenQuantityInput.value = quantityInput.value;
+        }
+
+        // Ensure the hidden quantity is updated before the form is submitted
+        document.querySelector('form').addEventListener('submit', function() {
+            updateHiddenQuantity();
+        });
+    </script>
+
         <style>
             .action-buttons button {
                 min-width: 30%;
