@@ -35,6 +35,10 @@ const addressScema = new Schema({
     country: {
         type: String,
         require: true
+    },
+    title:{
+        type:String,
+        require:true
     }
 });
 

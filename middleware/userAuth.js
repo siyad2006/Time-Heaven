@@ -8,8 +8,10 @@ function isRegistered(req, res, next) {
 
 
 function loginuser(req,res,next){
+ 
   if(req.session.loginuser == true){
     // res.redirect()
+  
     next()
   }else{
     res.redirect('/user/login')

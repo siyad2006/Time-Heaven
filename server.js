@@ -20,6 +20,10 @@ require('dotenv').config()
 app.use(nocache())
 app.use('/uploads', express.static('uploads'));
 
+app.use(express.json())
+
+
+
 
 const mongoConnect = process.env.MONGO_URI
 // middlewares
@@ -67,6 +71,7 @@ try {
     console.log(err);
 
 }
+
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/register' }), (req, res) => {

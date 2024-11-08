@@ -159,6 +159,7 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="d-flex justify-content-end">
       <form action="/admin/addcategory" method="post">
@@ -187,18 +188,18 @@
               <td>{{this.isblocked}}</td>
               {{!-- <form action="/admin/block" method="post"></form> --}}
                <td>
-                <form action="/admin/blockcategory/{{this.id}}" method="POST">
+                <form action="/admin/blockcategory/{{this.id}}" onsubmit=" alerts(event)" method="POST">
                 <input type="submit" value="Unlist" style="background-color: red; color:white">
 
                 </form>
               </td>
               <td>
-                <form action="/admin/unblockcategory/{{this.id}}" method="POST">
+                <form action="/admin/unblockcategory/{{this.id}}" onsubmit=" alerts(event)"  method="POST">
                 <input type="submit" value="List" style="background: green; color:white">
                 </form>
               </td>
               <td>
-                <form action="/admin/editcategory/{{this.id}}" method="post">
+                <form action="/admin/editcategory/{{this.id}}" onsubmit=" alerts(event)"  method="post">
                 <input type="submit" value="Edit" style="background-color: #111; color:white">
                 </form>
               </td>
@@ -266,6 +267,29 @@
       content.classList.toggle('expanded');
     });
   </script>
+
+  <script>
+ 
+ async function alerts(event) {
+    if (event) event.preventDefault(); // Prevents form submission by default
+    
+    const result = await Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Are you sure to perform this action?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+    });
+
+    if (result.isConfirmed) {
+        // Allow form submission by using event.target.submit()
+        event.target.submit();
+    } else {
+        console.log('Action cancelled');
+    }
+}
+</script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

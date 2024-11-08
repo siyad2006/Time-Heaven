@@ -258,9 +258,9 @@ const postlogin = async (req, res) => {
 
 const lo = async (req, res) => {
     try {
-
+        const userid=req.session.userId 
         const products = await productDB.find({ isblocked: false }).limit(6);
-        res.render('user/home', { products });
+        res.render('user/home', { products , userid });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Server Error');
@@ -463,6 +463,10 @@ const updatepassword = async (req, res) => {
             return res.json({ success: false, message: "Current password must be 6 or more characters" });
         }
 
+        if(newPassword.length<6){
+            return res.json({success:false,message:"new password must be six or more charactor "})
+        }
+
         if (newPassword !== confirmPassword) {
             return res.json({ success: false, message: "New password and confirmation do not match" });
         }
@@ -504,7 +508,8 @@ const createaddress = async (req, res) => {
         city,
         state,
         pincode,
-        country
+        country,
+        title
     } = req.body
     try {
         // const user = await UserDB.findById(ID)
@@ -517,7 +522,8 @@ const createaddress = async (req, res) => {
             city: city,
             state: state,
             pincode: pincode,
-            country: country
+            country: country,
+            title:title
 
         })
         await addresssave.save()
@@ -578,7 +584,7 @@ const updateaddress = async (req, res) => {
 const updatingAddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
-    const { name, phone, address, city, state, pincode, country } = req.body
+    const { name, phone, address, city, state, pincode, country , title} = req.body
     // console.log(name,phone,address,city,state,pincode,country)
     // console.log(ID,userid)
 
@@ -591,7 +597,8 @@ const updatingAddress = async (req, res) => {
             city: city,
             state: state,
             pincode: pincode,
-            country: country
+            country: country,
+            title:title
         }).then((data) => console.log('changed successfully')).catch(err => console.log(err))
 
         res.redirect(`/user/address/${userid}`)

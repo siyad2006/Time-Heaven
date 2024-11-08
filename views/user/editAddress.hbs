@@ -32,21 +32,22 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Home</a>
+                        <a class="nav-link text-white" href="/user/home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Shopping</a>
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Contact Us</a>
                     </li>
                 </ul>
+
                 <div class="d-flex align-items-center">
                     <a href="#" class="text-white ms-3">
                         <i class="bi bi-search"></i>
@@ -54,12 +55,13 @@
                     <a href="#" class="text-white ms-3">
                         <i class="bi bi-heart"></i>
                     </a>
-                    <a href="#" class="text-white ms-3">
+                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
                         <i class="bi bi-cart"></i>
                     </a>
-                    <a href="#" class="text-white ms-3">
+                    <a href="/user/profile" class="text-white ms-3">
                         <i class="bi bi-person"></i>
                     </a>
+                    
                 </div>
             </div>
         </div>
@@ -75,6 +77,11 @@
          
             <form onsubmit="return validation()" action="/user/postchange/{{address.id}}/{{user._id}}" method="post">
                 <input type="hidden" id="userId" value="{{user._id}}">
+                 <div class="mb-3">
+                    <label for="street" class="form-label"><strong>title</strong></label>
+                    <input type="text" class="form-control" name="title" id="title" value="{{address.title}}"
+                        placeholder="title">
+             </div>
                 <div class="mb-3">
                     <label for="name" class="form-label"><strong>Name</strong></label>
                     <input type="text" class="form-control" name="name" id="name" value="{{address.name}}"
@@ -127,6 +134,7 @@
         const state = document.getElementById('state').value.trim();
         const pincode = document.getElementById('postalCode').value.trim();
         const country = document.getElementById('country').value.trim();
+        const title=document.getElementById('title').value.trim()
 
         // Check for empty fields
         if (!nam || !phone || !address || !city || !state || !pincode || !country) {

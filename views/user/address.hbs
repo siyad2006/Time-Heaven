@@ -122,7 +122,8 @@
             <div class="col-md-4">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{this.name}}</h5> <!-- Use the address title -->
+                        <h5 class="card-title">{{this.title}}</h5>
+                        <p class="card-title">{{this.name}}</p> <!-- Use the address title -->
                         <p class="card-text">{{this.houseAddress}}, {{this.city}}, {{this.state}} {{this.pincode}},
                             {{this.country}}</p> <!-- Display address details -->
                         <div class="d-flex justify-content-end gap-2">
@@ -152,6 +153,11 @@
             <form onsubmit="return validation(event)">
                 {{!-- <input type="hidden"> --}}
                 <input type="hidden" id="userId" value="{{user.id}}">
+                <div class="mb-3">
+                    <label for="street" class="form-label"><strong>Name</strong></label>
+                    <input type="text" class="form-control" name="title" id="title" 
+                        placeholder="title">
+                </div>
                 <div class="mb-3">
                     <label for="street" class="form-label"><strong>Name</strong></label>
                     <input type="text" class="form-control" name="name" id="name" value="{{user.username}}"
@@ -200,7 +206,7 @@
             const state = document.getElementById('state').value.trim();
             const pincode = document.getElementById('postalCode').value.trim();
             const country = document.getElementById('country').value.trim();
-
+            const title=document.getElementById('title').value.trim();
             // Check for empty fields
             if (!nam || !phone || !address || !city || !state || !pincode || !country) {
                 swal.fire({
@@ -253,7 +259,8 @@
                     city: city,
                     state: state,
                     pincode: pincode,
-                    country: country
+                    country: country,
+                    title:title
                 },
                 success: function (response) {
                     if (response.success) {

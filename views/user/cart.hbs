@@ -1,49 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"
+        rel="stylesheet">
     <style>
         .cart-container {
             margin: 30px auto;
             max-width: 1000px;
         }
+
         .cart-item {
             padding: 15px 0;
             border-bottom: 1px solid #ddd;
         }
+
         .cart-item img {
             width: 80px;
             height: auto;
         }
+
         .total-section {
             font-size: 1.1rem;
             font-weight: bold;
         }
+
         .btn-checkout {
             background-color: #ff4d4d;
             color: white;
             width: 100%;
         }
+
         @media (max-width: 768px) {
             .cart-item img {
                 width: 60px;
             }
-            .cart-item .col-md-4, .cart-item .col-md-2 {
+
+            .cart-item .col-md-4,
+            .cart-item .col-md-2 {
                 text-align: center;
             }
+
             .total-section span {
                 font-size: 1rem;
             }
+
             .cart-summary .total-section {
                 font-size: 1rem;
             }
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg fixed-top bg-dark text-white">
         <div class="container-fluid">
@@ -53,18 +65,36 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Shopping</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Contact Us</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact Us</a>
+                    </li>
                 </ul>
+
                 <div class="d-flex align-items-center">
-                    <a href="#" class="text-white ms-3"><i class="bi bi-search"></i></a>
-                    <a href="#" class="text-white ms-3"><i class="bi bi-heart"></i></a>
-                    <a href="#" class="text-white ms-3"><i class="bi bi-cart"></i></a>
-                    <a href="#" class="text-white ms-3"><i class="bi bi-person"></i></a>
+                    <a href="#" class="text-white ms-3">
+                        <i class="bi bi-search"></i>
+                    </a>
+                    <a href="#" class="text-white ms-3">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
+                        <i class="bi bi-cart"></i>
+                    </a>
+                    <a href="/user/profile" class="text-white ms-3">
+                        <i class="bi bi-person"></i>
+                    </a>
+                    
                 </div>
             </div>
         </div>
@@ -73,53 +103,142 @@
     <div class="container cart-container" style="margin-top: 80px;">
         <h1 class="text-center mb-4">Shopping Cart</h1>
 
-        <!-- Cart Items Section -->
+
+        {{!--
+        {{#each products}}
         <div class="row">
             <div class="col-12">
                 <div class="cart-item row align-items-center">
                     <div class="col-md-2 col-3 text-center">
-                        <img src="product1.jpg" alt="Product Image" class="img-fluid rounded">
+                        <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid rounded">
                     </div>
                     <div class="col-md-4 col-9">
-                        <h5>Product Name</h5>
-                        <p class="text-muted">Short description of the product.</p>
+                        <h5>{{this.name}}</h5>
+                        <p class="text-muted">{{this.name}}</p>
                     </div>
                     <div class="col-md-2 col-6 text-center">
-                        <span class="fw-bold">$49.99</span>
+                        <span class="fw-bold">{{this.regularprice}}</span>
                     </div>
                     <div class="col-md-2 col-6 text-center">
-                        <input type="number" class="form-control text-center" min="1" value="1">
+                        <!-- Display the quantity here -->
+                        <input type="number" class="form-control text-center" min="1" value="{{this.qty}}">
                     </div>
                     <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
                         <button class="btn btn-danger btn-sm">Remove</button>
                     </div>
                 </div>
-                <!-- Add more cart items as needed following the structure above -->
             </div>
         </div>
+        {{/each}}
 
-        <!-- Cart Summary Section -->
+
         <div class="row mt-4">
             <div class="col-md-6 offset-md-6 cart-summary">
-                <div class="total-section d-flex justify-content-between">
-                    <span>Subtotal:</span>
-                    <span>$149.97</span>
-                </div>
-                <div class="total-section d-flex justify-content-between">
-                    <span>Tax (10%):</span>
-                    <span>$14.99</span>
-                </div>
+
+
                 <div class="total-section d-flex justify-content-between">
                     <span>Total:</span>
-                    <span>$164.96</span>
+                    <span>{{cart.totalAmount}}</span>
                 </div>
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="/shop" class="btn btn-secondary w-100 me-2">Continue Shopping</a>
+                    <a href="/user/shop" class="btn btn-secondary w-100 me-2">Continue Shopping</a>
                     <button class="btn btn-checkout w-100">Proceed to Checkout</button>
                 </div>
             </div>
         </div>
+    </div> --}}
+
+
+    {{#each products}}
+    <div class="row">
+        <div class="col-12">
+            <div class="cart-item row align-items-center" data-product-id="{{this._id}}">
+                <div class="col-md-2 col-3 text-center">
+                    <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid rounded">
+                </div>
+                <div class="col-md-4 col-9">
+                    <h5>{{this.name}}</h5>
+                    <p class="text-muted">{{this.name}}</p>
+                </div>
+                <div class="col-md-2 col-6 text-center">
+                    <span class="fw-bold" id="product-{{this._id}}-price">{{this.regularprice}}</span>
+                </div>
+                <div class="col-md-2 col-6 text-center">
+                    <!-- Display the quantity here -->
+                    <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
+                        data-product-id="{{this._id}}">
+                </div>
+                {{!-- <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
+                    <button class="btn btn-danger btn-sm" data-product-id="{{this._id}}">Remove</button>
+                </div> --}}
+                <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
+                    <form action="/user/cart/remove" method="POST">
+                        <input type="hidden" name="productId" value="{{this._id}}">
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
     </div>
+    {{/each}}
+
+
+    <div class="row mt-4">
+        <div class="col-md-6 offset-md-6 cart-summary">
+            <div class="total-section d-flex justify-content-between">
+                <span>Total:</span>
+                <span id="total-amount">{{cart.totalAmount}}</span>
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/user/shop" class="btn btn-secondary w-100 me-2">Continue Shopping</a>
+                <form action="/user/checkout/{{cart.id}}" method="post">
+                 <button class="btn btn-checkout w-100" type="submit">Proceed to Checkout</button>
+                </form>
+               
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('input[type="number"]').on('input', function () {
+                let newQty = $(this).val(); // Get the new quantity
+                const productId = $(this).data('product-id'); // Get product ID
+
+                // Ensure quantity is between 1 and 8
+                if (newQty < 1) {
+                    newQty = 1;
+                    $(this).val(newQty);
+                } else if (newQty > 8) {
+                    newQty = 8;
+                    $(this).val(newQty);
+                }
+
+                $.ajax({
+                    url: '/user/cart/update',
+                    method: 'POST',
+                    data: {
+                        productId: productId,
+                        qty: newQty
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#product-' + productId + '-price').text(response.updatedPrice);
+                            $('#total-amount').text(response.newTotalAmount);
+                        }
+                    },
+                    error: function (error) {
+                        console.log("Error updating cart:", error);
+                    }
+                });
+            });
+        });
+    </script>
+
 
     <footer class="bg-dark text-white mt-5">
         <div class="container py-4">
@@ -156,4 +275,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
