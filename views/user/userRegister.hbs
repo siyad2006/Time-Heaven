@@ -164,6 +164,7 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
 
@@ -177,18 +178,33 @@
 
             // Validate name
             if (!nameRegex.test(name.trim())) {
-                alert('Name must contain only alphabets and spaces');
+        Swal.fire({
+                            icon: 'error',
+                            title: 'An Error Occured',
+                            text: 'name must be contain only alpabets and spaces'
+
+                        })
                 return false;
             }
 
             // Validate password
             if (password.length < 6) {
-                alert('Password must be 6 or more characters');
+                Swal.fire({
+                            icon: 'error',
+                            title: 'An Error Occured',
+                            text: 'password must be six or more charactors'
+
+                        })
                 return false;
             }
 
             if (password !== confirmPassword) {
-                alert('passwords does not match ')
+                  Swal.fire({
+                            icon: 'error',
+                            title: 'An Error Occured',
+                            text: 'password does not match '
+
+                        })
                 return false
             }
 

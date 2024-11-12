@@ -40,5 +40,7 @@ router.post('/checkout/:cart', cheackout.getcheackout);
 
 router.post('/placeorder/:user',cheackout.placeorder)
 router.get('/myorders/:user',cheackout.myorders)
+router.post('/cancelorder/:id',cheackout.cancelorder)
+router.get('/success',cheackout.success)
 
 module.exports = router

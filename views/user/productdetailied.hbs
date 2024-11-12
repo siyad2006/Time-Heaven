@@ -15,7 +15,7 @@
     <style>
         .na {
             background: black;
-            /* position: fixed; */
+
         }
 
         .main-body {
@@ -81,7 +81,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-             <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link text-white" href="/user/home">Home</a>
@@ -110,7 +110,7 @@
                     <a href="/user/profile" class="text-white ms-3">
                         <i class="bi bi-person"></i>
                     </a>
-                    
+
                 </div>
             </div>
         </div>
@@ -363,6 +363,8 @@
     <script type="text/javascript"
         src="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.6/src/jquery.ez-plus.js"></script>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
 
 
 
@@ -409,115 +411,8 @@
     </style>
 
 
-    <!-- <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded text-center"> -->
+
     <p class="h3 text-center">{{product.name}}</p>
-
-    <!-- </div> -->
-
-    {{!-- <div class="description-rating mt-4 text-center">
-        <!-- Description Section -->
-        <div class="description mb-3">
-            <h4>Product Description</h4>
-            <i>{{product.discription}}</i>
-        </div>
-
-        <!-- Rating Section -->
-        <div class="rating mb-3">
-            <h5>Rating</h5>
-            <div class="stars">
-                <span>&#9733;</span>
-                <span>&#9733;</span>
-                <span>&#9733;</span>
-                <span>&#9733;</span>
-                <span>&#9734;</span> <!-- Example rating with 4 out of 5 stars -->
-            </div>
-        </div>
-
-        <!-- Additional Options -->
-        <div class="product-options">
-            <!-- Total Price -->
-            <div class="total-price mb-3">
-                <h5>Total Price</h5>
-                <p><strong>{{product.regularprice}}</strong></p>
-            </div>
-
-            <!-- Select Color -->
-            <div class="color-selection mb-3">
-                <h5> Color</h5>
-
-
-
-                <p>{{product.color}}</p>
-
-
-                <h4>category</h4>
-                <p>{{product.category.categoryname}}</p>
-
-                <h4>Brand</h4>
-                <p>{{product.brand}}</p>
-                <i>4 years trusted company from Time Haven</i>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-center">
-            <label for="quantity">Quantity:</label>
-            <div style="display: flex; align-items: center; margin-left: 10px;">
-                <button type="button" onclick="decreaseQuantity()"
-                    style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">-</button>
-
-                <input type="number" id="quantity" name="quantity" value="1" min="1" max="8"
-                    style="width: 50px; text-align: center; margin: 0 5px; font-size: 16px; border: 1px solid #ddd;">
-
-                <button type="button" onclick="increaseQuantity()"
-                    style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">+</button>
-            </div>
-        </div>
-
-        <script>
-            const quantityInput = document.getElementById('quantity');
-
-            function increaseQuantity() {
-                const currentQuantity = parseInt(quantityInput.value);
-                if (currentQuantity < 8) { // Ensure quantity does not exceed 8
-                    quantityInput.value = currentQuantity + 1;
-                }
-            }
-
-            function decreaseQuantity() {
-                const currentQuantity = parseInt(quantityInput.value);
-                if (currentQuantity > 1) { // Ensure quantity does not go below 1
-                    quantityInput.value = currentQuantity - 1;
-                }
-            }
-
-            // Add an input event listener to restrict manual input
-            quantityInput.addEventListener('input', () => {
-                // Limit the input value between 1 and 8
-                if (quantityInput.value > 8) {
-                    quantityInput.value = 8;
-                } else if (quantityInput.value < 1) {
-                    quantityInput.value = 1;
-                }
-            });
-        </script>
-
-
-
-        <!-- Action Buttons -->
-        <div class="action-buttons d-flex justify-content-around mt-4">
-            <form action="/user/addcart/{{product.id}}/{{userid}}" method="post">
-                <button class="btn btn-primary d-flex align-items-center">
-                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                </button>
-            </form>
-
-            <button class="btn btn-outline-secondary d-flex align-items-center">
-                <i class="fas fa-heart me-2"></i> Add to Wishlist
-            </button>
-            <button class="btn btn-success d-flex align-items-center">
-                <i class="fas fa-shopping-bag me-2"></i> Buy Now
-            </button>
-        </div> --}}
 
 
     <div class="description-rating mt-4 text-center">
@@ -565,33 +460,31 @@
         <div class="d-flex justify-content-center">
             <label for="quantity">Quantity:</label>
             <div style="display: flex; align-items: center; margin-left: 10px;">
-                <button type="button" onclick="decreaseQuantity()" style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">-</button>
+                <button type="button" onclick="decreaseQuantity()"
+                    style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">-</button>
 
-                <input type="number" id="quantity" name="displayQuantity" value="1" min="1" max="8" 
-                    style="width: 50px; text-align: center; margin: 0 5px; font-size: 16px; border: 1px solid #ddd;" onchange="updateHiddenQuantity()">
-                
-                <button type="button" onclick="increaseQuantity()" style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">+</button>
+                <input type="number" id="quantity" name="displayQuantity" value="1" min="1" max="8"
+                    style="width: 50px; text-align: center; margin: 0 5px; font-size: 16px; border: 1px solid #ddd;"
+                    onchange="updateHiddenQuantity()">
+
+                <button type="button" onclick="increaseQuantity()"
+                    style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">+</button>
             </div>
         </div>
 
-        <!-- Form to Add to Cart -->
+
         <form action="/user/addcart/{{product.id}}/{{userid}}" method="post" onsubmit="updateHiddenQuantity()">
-            <!-- Hidden Input for Quantity -->
+            {{!-- <input type="hidden" value="{{product.quantity}}" id="stock"> --}}
             <input type="hidden" value="{{product.regularprice}}" name="regularprice">
             <input type="hidden" id="hiddenQuantity" name="quantity" value="1">
 
-            <!-- Action Buttons -->
+
             <div class="action-buttons d-flex justify-content-around mt-4">
                 <button type="submit" class="btn btn-primary d-flex align-items-center">
                     <i class="fas fa-shopping-cart me-2"></i> Add to Cart
                 </button>
 
-                <button class="btn btn-outline-secondary d-flex align-items-center">
-                    <i class="fas fa-heart me-2"></i> Add to Wishlist
-                </button>
-                <button class="btn btn-success d-flex align-items-center">
-                    <i class="fas fa-shopping-bag me-2"></i> Buy Now
-                </button>
+
             </div>
         </form>
     </div>
@@ -600,54 +493,72 @@
         const quantityInput = document.getElementById('quantity');
         const hiddenQuantityInput = document.getElementById('hiddenQuantity');
 
-        // Function to increase quantity
+
         function increaseQuantity() {
             const currentQuantity = parseInt(quantityInput.value);
             if (currentQuantity < 8) {
                 quantityInput.value = currentQuantity + 1;
-                updateHiddenQuantity(); // Update the hidden quantity field
+                updateHiddenQuantity();
+               
+               
+            }else{
+                 Swal.fire({
+                    title: 'limit',
+                    text: 'You cant select more that 8 items',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                })
             }
         }
 
-        // Function to decrease quantity
+
         function decreaseQuantity() {
             const currentQuantity = parseInt(quantityInput.value);
             if (currentQuantity > 1) {
                 quantityInput.value = currentQuantity - 1;
-                updateHiddenQuantity(); // Update the hidden quantity field
+
+                updateHiddenQuantity();
+            }else{
+                 Swal.fire({
+                    title: 'limit',
+                    text: 'select atleast one item.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                })
             }
         }
 
-        // Update the hidden quantity field when the input is changed
+
         function updateHiddenQuantity() {
             hiddenQuantityInput.value = quantityInput.value;
         }
 
-        // Ensure the hidden quantity is updated before the form is submitted
-        document.querySelector('form').addEventListener('submit', function() {
+
+        document.querySelector('form').addEventListener('submit', function () {
+
             updateHiddenQuantity();
         });
     </script>
 
-        <style>
-            .action-buttons button {
-                min-width: 30%;
-                font-weight: bold;
-                padding: 10px;
-                border-radius: 8px;
-                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                transition: transform 0.2s, box-shadow 0.2s;
-            }
+    <style>
+        .action-buttons button {
+            min-width: 30%;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
 
-            .action-buttons button i {
-                font-size: 1.2em;
-            }
+        .action-buttons button i {
+            font-size: 1.2em;
+        }
 
-            .action-buttons button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
-            }
-        </style>
+        .action-buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.15);
+        }
+    </style>
     </div>
 
 

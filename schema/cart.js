@@ -10,17 +10,17 @@ const cartSchema = new Schema({
         ref: 'User',
         required: true
     },
-    products: [ // Changed from productid to products for clarity
+    products: [ 
         {
-            productId: { // Changed to productId for better clarity
+            productId: { 
                 type: Schema.Types.ObjectId,
-                ref: 'Product', // Ensure this matches the correct product model name
+                ref: 'product', 
                 required: true
             },
             qty: {
                 type: Number,
-                required: false, // Changed to true as qty should be required
-                min: 1 // Ensures the quantity is at least 1
+                required: false, 
+                min: 1 
             }
         }
     ],

@@ -271,9 +271,7 @@ const lo = async (req, res) => {
 let productDetails = async (req, res) => {
     const ID = req.params.id;
     let userid = req.session.userId
-    //    const user=await UserDB.findById(userid)
-    //    console.log(user)
-
+   
     console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
     res.render('user/productdetailied', { product, userid });
@@ -302,41 +300,20 @@ let productDetails = async (req, res) => {
 // };
 
 const shoping = async (req, res) => {
-    const { page = 1, limit = 12, sort = 'default' } = req.query;
+    const { page = 1, limit = 12, sort = 'default',search } = req.query;
     const skip = (page - 1) * limit;
-
+    console.log(search)
     const categories = await category.find({ isblocked: "Listed" });
 
     let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
+    if (search) {
+        const regex = new RegExp(search, 'i'); 
+        productsQuery = productsQuery.find({
+            name: { $regex: regex }
+        });
+    }
 
-    // if (sort === 'lowToHigh') {
-    //     productsQuery = productsQuery.sort({ pregularprice: 1 });
-    // } else if (sort === 'highToLow') {
-    //     productsQuery = productsQuery.sort({ regularprice: -1 });
-    // }
-
-    // switch (sort) {
-    //     case 'lowToHigh':
-    //         productsQuery = productsQuery.sort({ pregularprice: 1 });
-    //         break;
-
-    //     case 'highToLow':
-    //         productsQuery = productsQuery.sort({ regularprice: -1 });
-    //         break;
-
-    //     case 'aA-zZ':
-    //         productsQuery = productsQuery.sort({ name: 1 });
-    //         break;
-    //     case 'zZ-aA':
-    //         productsQuery = productsQuery.sort({ name: -1 });
-    //         break;
-    //     case 'New arrivals':
-    //         productsQuery = productsQuery.sort({ createdAt: -1 });
-    //         break;
-    //     default:
-
-    //         break;
-    // }
+  
 
     switch (sort) {
         case 'lowToHigh':
@@ -354,6 +331,8 @@ const shoping = async (req, res) => {
         case 'New arrivals':
             productsQuery = productsQuery.sort({ createdAt: -1 });
             break;
+        
+        
         default:
             break;
     }
@@ -379,7 +358,7 @@ const demo = async (req, res) => {
 
 const userprofile = async (req, res) => {
     try {
-        // Check if email is present in session
+      
         if (!req.session.email_profile) {
             console.log('Session email_profile is missing');
             return res.redirect('/login'); // Redirect to login if email is missing
@@ -542,7 +521,7 @@ const createaddress = async (req, res) => {
 const deleteaddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
-    // console.log(userid)
+   
     await addressDB.findByIdAndDelete(ID)
     res.redirect(`/user/address/${userid}`)
 }
@@ -585,8 +564,7 @@ const updatingAddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
     const { name, phone, address, city, state, pincode, country , title} = req.body
-    // console.log(name,phone,address,city,state,pincode,country)
-    // console.log(ID,userid)
+ 
 
     try {
         await addressDB.findByIdAndUpdate(ID, {

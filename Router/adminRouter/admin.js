@@ -3,7 +3,7 @@ const AdminController = require('../../controller/adminController/adminControlle
 const adminAuth = require('../../middleware/adminAuth')
 const productController = require('../../controller/adminController/productController')
 const router = express.Router()
-
+const order=require('../../controller/adminController/ordermanage')
 
 
 
@@ -37,6 +37,8 @@ router.post('/deleteproduct/:id', productController.deleteproduct)
 router.get('/editproduct/:id', upload, productController.editproduct)
 router.post('/Edit/:id', upload, productController.postEdit)
 router.get('/logout', AdminController.logout)
+router.get('/ordermanagement',adminAuth.isAdmin,order.getordermanage)
+router.post('/update-order-status',order.changestatus)
 
 
 module.exports = router

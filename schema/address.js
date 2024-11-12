@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema=mongoose.Schema
 
 const addressScema = new Schema({
-    user: {
+    user: {  // xhanges user to User 
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true

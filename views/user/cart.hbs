@@ -206,10 +206,10 @@
         $(document).ready(function () {
 
             $('input[type="number"]').on('input', function () {
-                let newQty = $(this).val(); // Get the new quantity
-                const productId = $(this).data('product-id'); // Get product ID
+                let newQty = $(this).val(); 
+                const productId = $(this).data('product-id');
 
-                // Ensure quantity is between 1 and 8
+                
                 if (newQty < 1) {
                     newQty = 1;
                     $(this).val(newQty);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,23 +13,26 @@
       background-color: #f4f6f9;
       overflow-x: hidden;
     }
+
     .sidebar {
       background: linear-gradient(180deg, #111, #222);
-      width: 260px; 
-      height: 100vh; 
+      width: 260px;
+      height: 100vh;
       position: fixed;
       top: 0;
       left: 0;
       padding-top: 20px;
-      overflow-y: auto; 
+      overflow-y: auto;
       transition: transform 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); 
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
     }
+
     .sidebar.hidden {
       transform: translateX(-100%);
     }
+
     .sidebar .nav-link {
       color: white;
       padding: 15px;
@@ -37,13 +41,16 @@
       display: flex;
       align-items: center;
     }
+
     .sidebar .nav-link:hover {
       background-color: #ff4444;
       color: white;
     }
+
     .sidebar .nav-link.active {
       background-color: #ff4444;
     }
+
     .sidebar-toggler {
       background-color: #ff4444;
       border: none;
@@ -56,46 +63,63 @@
       border-radius: 50%;
       width: 45px;
       height: 45px;
-      display: none; /* Hidden on larger screens */
+      display: none;
+      /* Hidden on larger screens */
     }
+
     .content {
-      margin-left: 260px; /* Match this to the sidebar width */
+      margin-left: 260px;
+      /* Match this to the sidebar width */
       padding: 20px;
       transition: margin-left 0.3s ease;
     }
+
     .content.expanded {
       margin-left: 0;
     }
+
     .card {
-      margin-bottom: 20px; /* Space between cards */
+      margin-bottom: 20px;
+      /* Space between cards */
     }
+
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
+
       .sidebar.hidden {
         transform: translateX(0);
       }
+
       .content {
-        margin-left: 0; /* Remove left margin on smaller screens */
+        margin-left: 0;
+        /* Remove left margin on smaller screens */
       }
+
       .sidebar-toggler {
-        display: block; /* Show toggle button on smaller screens */
+        display: block;
+        /* Show toggle button on smaller screens */
       }
     }
+
     @media (min-width: 769px) {
       .sidebar-toggler {
-        display: none; /* Hide toggle button on larger screens */
+        display: none;
+        /* Hide toggle button on larger screens */
       }
+
       .sidebar {
-        transform: translateX(0); 
+        transform: translateX(0);
       }
+
       .content {
-        margin-left: 260px; 
+        margin-left: 260px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -111,7 +135,7 @@
         <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fas fa-file-invoice"></i> Order Manage</a>
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order Manage</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="fas fa-chart-line"></i> Sales Report</a>
@@ -131,7 +155,7 @@
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="fas fa-cog"></i> Settings</a>
       </li>
-        <li class="nav-item">
+      <li class="nav-item">
         <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout </a>
       </li>
     </ul>
@@ -145,152 +169,153 @@
   <!-- Main content -->
   <div class="content" id="content">
     <h1>Category</h1>
-  {{#if category_err}}
-        <div style="color: green;">
-          <h1>
-             {{category_err}}
-          </h1>
-         
-          
-          </div> <!-- Display success message -->
-       
-        
+    {{#if category_err}}
+    <div style="color: green;">
+      <h1>
+        {{category_err}}
+      </h1>
+
+
+    </div> <!-- Display success message -->
+
+
     {{/if}}
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <div class="d-flex justify-content-end">
       <form action="/admin/addcategory" method="post">
         <button class="btn btn-primary">Add Category</button>
       </form>
-        
-      </div>
-      
-      <table class="table table-striped">
-        <thead>
-            <tr>
-              
-              <th scope="col">Category Name</th>
-              <th scope="col">discription</th>
-              <th scope="col">List/Unlist </th>
-              <!-- <th scope="col">Handle</th> -->
-            </tr>
-          </thead>
-          <tbody>
-            {{#each categories}}
-            <tr>
-              {{!-- <th scope="row">1</th> --}}
-              <td>{{this.categoryname}}</td>
-              
-              <td>{{this.discription}}</td>
-              <td>{{this.isblocked}}</td>
-              {{!-- <form action="/admin/block" method="post"></form> --}}
-               <td>
-                <form action="/admin/blockcategory/{{this.id}}" onsubmit=" alerts(event)" method="POST">
-                <input type="submit" value="Unlist" style="background-color: red; color:white">
 
-                </form>
-              </td>
-              <td>
-                <form action="/admin/unblockcategory/{{this.id}}" onsubmit=" alerts(event)"  method="POST">
-                <input type="submit" value="List" style="background: green; color:white">
-                </form>
-              </td>
-              <td>
-                <form action="/admin/editcategory/{{this.id}}" onsubmit=" alerts(event)"  method="post">
-                <input type="submit" value="Edit" style="background-color: #111; color:white">
-                </form>
-              </td>
-              
-            </tr>
-            {{/each}}
-           
-            </tbody>
-      </table>
+    </div>
 
-      <div class="pagination">
-  {{#if (gt totalPages 1)}}
-    <ul>
-      {{!-- Previous Button --}}
-      {{#if (gt currentPage 1)}}
+    <table class="table table-striped">
+      <thead>
+        <tr>
+
+          <th scope="col">Category Name</th>
+          <th scope="col">discription</th>
+          <th scope="col">List/Unlist </th>
+          <!-- <th scope="col">Handle</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        {{#each categories}}
+        <tr>
+          {{!-- <th scope="row">1</th> --}}
+          <td>{{this.categoryname}}</td>
+
+          <td>{{this.discription}}</td>
+          <td>{{this.isblocked}}</td>
+          {{!-- <form action="/admin/block" method="post"></form> --}}
+          <td>
+            <form action="/admin/blockcategory/{{this.id}}" onsubmit=" alerts(event)" method="POST">
+              <input type="submit" value="Unlist" style="background-color: red; color:white">
+
+            </form>
+          </td>
+          <td>
+            <form action="/admin/unblockcategory/{{this.id}}" onsubmit=" alerts(event)" method="POST">
+              <input type="submit" value="List" style="background: green; color:white">
+            </form>
+          </td>
+          <td>
+            <form action="/admin/editcategory/{{this.id}}" onsubmit=" alerts(event)" method="post">
+              <input type="submit" value="Edit" style="background-color: #111; color:white">
+            </form>
+          </td>
+
+        </tr>
+        {{/each}}
+
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      {{#if (gt totalPages 1)}}
+      <ul>
+        {{!-- Previous Button --}}
+        {{#if (gt currentPage 1)}}
         <li><a href="?page={{subtract currentPage 1}}">Previous</a></li>
-      {{/if}}
+        {{/if}}
 
-      {{!-- Page Numbers --}}
-      {{#each (range 1 totalPages)}}
+        {{!-- Page Numbers --}}
+        {{#each (range 1 totalPages)}}
         <li class="{{#eq this ../currentPage}}active{{/eq}}">
           <a href="?page={{this}}">{{this}}</a>
         </li>
-      {{/each}}
+        {{/each}}
 
-      {{!-- Next Button --}}
-      {{#if (lt currentPage totalPages)}}
+        {{!-- Next Button --}}
+        {{#if (lt currentPage totalPages)}}
         <li><a href="?page={{add currentPage 1}}">Next</a></li>
+        {{/if}}
+      </ul>
       {{/if}}
-    </ul>
-  {{/if}}
-</div>
+    </div>
 
-<style>
-  .pagination ul {
-    list-style-type: none;
-    display: flex;
-    gap: 10px;
-}
+    <style>
+      .pagination ul {
+        list-style-type: none;
+        display: flex;
+        gap: 10px;
+      }
 
-.pagination ul li a {
-    padding: 8px 12px;
-    text-decoration: none;
-    color: #333;
-}
+      .pagination ul li a {
+        padding: 8px 12px;
+        text-decoration: none;
+        color: #333;
+      }
 
-.pagination ul li.active a {
-    font-weight: bold;
-    color: red; /* Highlight the active page */
-}
+      .pagination ul li.active a {
+        font-weight: bold;
+        color: red;
+        /* Highlight the active page */
+      }
 
-.pagination ul li a:hover {
-    background-color: #ddd;
-}
+      .pagination ul li a:hover {
+        background-color: #ddd;
+      }
+    </style>
 
-</style>
+    <script>
+      const sidebar = document.getElementById('sidebar');
+      const sidebarToggler = document.getElementById('sidebar-toggler');
+      const content = document.getElementById('content');
 
-  <script>
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggler = document.getElementById('sidebar-toggler');
-    const content = document.getElementById('content');
+      sidebarToggler.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        content.classList.toggle('expanded');
+      });
+    </script>
 
-    sidebarToggler.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-      content.classList.toggle('expanded');
-    });
-  </script>
+    <script>
 
-  <script>
- 
- async function alerts(event) {
-    if (event) event.preventDefault(); // Prevents form submission by default
-    
-    const result = await Swal.fire({
-        icon: 'warning',
-        title: 'Warning',
-        text: 'Are you sure to perform this action?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-    });
+      async function alerts(event) {
+        if (event) event.preventDefault(); // Prevents form submission by default
 
-    if (result.isConfirmed) {
-        // Allow form submission by using event.target.submit()
-        event.target.submit();
-    } else {
-        console.log('Action cancelled');
-    }
-}
-</script>
+        const result = await Swal.fire({
+          icon: 'warning',
+          title: 'Warning',
+          text: 'Are you sure to perform this action?',
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No'
+        });
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+        if (result.isConfirmed) {
+          // Allow form submission by using event.target.submit()
+          event.target.submit();
+        } else {
+          console.log('Action cancelled');
+        }
+      }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -34,7 +34,7 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 3600000 } // 1 hour
+    cookie: { maxAge: 3600000 } 
 }));
 
 app.use(flash())

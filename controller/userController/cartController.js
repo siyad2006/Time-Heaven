@@ -54,7 +54,6 @@ exports.addcart = async (req, res) => {
         const { quantity, regularprice } = req.body;
         console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
 
-
         const existingCart = await cartDB.findOne({ user: userId });
 
         if (existingCart) {
@@ -71,7 +70,6 @@ exports.addcart = async (req, res) => {
                 }
 
                 productInCart.qty = newQuantity;
-
 
                 existingCart.totalAmount = existingCart.products.reduce((total, product) => {
                     return total + (product.qty * regularprice);
@@ -118,44 +116,6 @@ exports.addcart = async (req, res) => {
     }
 };
 
-
-//  exports.updateCart = async (req, res, next) => {
-//     const { productId, qty } = req.body;  // Get the product ID and new quantity from the request body
-//     const userid = req.session.userId;  // Get the user ID from session
-
-//     // Find the cart for the user
-//     const cart = await cartDB.findOne({ user: userid });
-
-//     // Find the specific product in the cart and update the quantity
-//     const cartProduct = cart.products.find(product => product.productId.toString() === productId);
-
-//     if (cartProduct) {
-//         // Update the quantity in the cart
-//         cartProduct.qty = qty;
-//     }
-
-//     // Save the updated cart
-//     await cart.save();
-
-//     // Fetch the updated product details to calculate the new price
-//     const product = await productDB.findById(productId);
-//     const updatedPrice = product.regularprice * qty;
-
-//     // Recalculate the total amount for the cart
-//     const newTotalAmount = cart.products.reduce((total, product) => {
-//         const productDetails = productDB.findById(product.productId);
-//         return total + productDetails.regularprice * product.qty;
-//     }, 0);
-
-//     // Send the response with updated price and total amount
-//     res.json({
-//         success: true,
-//         updatedPrice: updatedPrice,
-//         newTotalAmount: newTotalAmount
-//     });
-// };
-
-
 exports.updateCart = async (req, res, next) => {
     const { productId, qty } = req.body;
     const userid = req.session.userId;
@@ -189,32 +149,44 @@ exports.updateCart = async (req, res, next) => {
 
 exports.removecart = async (req, res) => {
 
-    const userid=req.session.userId
+    const userid = req.session.userId
     const { productId } = req.body
     console.log(productId)
-    
-const cartItem=await cartDB.findOne({user:userid})
-const item = Array.isArray(cartItem.products) ? cartItem.products.map(x =>({ 
-   id: x.productId,
-   qty:x.qty
-})) : [];
 
-console.log('the item is ',item)
-const singleproduct=item.map((i)=>{
-    const ismatch=i.id.toString()===productId.toString()
-    if(ismatch){
-       productId
-      
-    }
-   
-})  
+    const cartItem = await cartDB.findOne({ user: userid })
+    // console.log(cartItem)
+    const cartProducts = cartItem.products.map(product => ({
+        productId: product.productId,
+        qty: product.qty
+    }));
 
+    const products = await productDB.find({ _id: { $in: cartProducts.map(item => item.productId) } });
+    const cartProductDetails = products.map(product => {
+        const cartProduct = cartProducts.find(item => item.productId.toString() === product._id.toString());
+        return {
+            ...product.toObject(),
+            qty: cartProduct.qty
+        };
+    });
+// console.log(cartProductDetails)
 
-    console.log('the output is',singleproduct)
+const deletedproduct = await productDB.findOne(
+    { _id: productId }, 
+    { regularprice: 1 } 
+  );
+
+// console.log(deletedproduct)
+
     await cartDB.updateOne(
-        {user:userid},{$pull:{products:{productId:productId}}}
-    ).then((success)=> console.log('successfully updated')).catch((err)=>console.log(err))
+        { user: userid }, { $pull: { products: { productId: productId } } }
+    ).then((success) => console.log('successfully updated')).catch((err) => console.log(err))
 
+ const right=cartItem.totalAmount
+
+ const amount=right-deletedproduct.regularprice
+
+ await cartDB.updateOne({user: userid},{totalAmount:amount})
+ console.log(right)
     res.redirect(`/user/cart/${userid}`)
 
 }

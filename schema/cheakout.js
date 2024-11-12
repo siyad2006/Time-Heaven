@@ -20,8 +20,12 @@ const cheakoutSchema = new Schema({
         {
             productId: {
                 type: Schema.Types.ObjectId,
-                ref: 'Product',
+                ref: 'product',
                 required: true
+            },
+            qty:{
+                type:Number,
+                required:true
             }
          
         }
@@ -62,7 +66,12 @@ const cheakoutSchema = new Schema({
             type: String,
             require: true
         }
+        
     }
+    // orderId:{
+    //     type:String,
+    //     require:true
+    // }
 
 }, { timestamps: true })
 

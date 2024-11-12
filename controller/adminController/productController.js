@@ -110,14 +110,6 @@ const add = async (req, res) => {
     };
 
 
-
-
-
-
-
-
-
-
     const getproduct = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;

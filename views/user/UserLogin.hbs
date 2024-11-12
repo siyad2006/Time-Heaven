@@ -113,9 +113,7 @@
     <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
 
         <div class="col-10 col-sm-8 col-md-6 p-4 custom-form text-white">
-            {{!-- action="/user/userlogin" --}}
-            {{!-- ithan sheriikum ulla action --}}
-            {{!-- method="post" --}}
+          
             <form onsubmit="return userlogin(event)">
                 <p class="text-center text">User Login</p>
                 <p id="message">{{message}}</p>
@@ -139,7 +137,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary" onclick="return validation()">Submit</button>
-                {{!-- <span>login with google</span> --}}
+             
                 <span class="google ms-5"><a href="/auth/google" class="text-white ms-5">
                         <i class="bi bi-google   "></i>
                         Login with google
@@ -216,26 +214,41 @@
            
             let nameRegex = /^[A-Za-z\s]+$/;
 
-            // Validate name
+          
             if (!nameRegex.test(name.trim())) {
-                alert('Name must contain only alphabets and spaces');
+                {{!-- alert('Name must contain only alphabets and spaces'); --}}
+                Swal.fire({
+                            icon: 'error',
+                            title: 'An Error Occured',
+                            text: 'name must be contain only alpabets and spaces'
+
+                        })
                 return false;
             }
 
-            // Validate password
+          
             if (password.length < 6) {
-                alert('Password must be 6 or more characters');
+               Swal.fire({
+                            icon: 'error',
+                            title: 'An Error Occured',
+                            text: 'pasword must me six or more chharactors'
+
+                        })
                 return false;
             }
 
             if (password !== confirmPassword) {
-                alert('passwords does not match ')
+               Swal.fire({
+                            icon: 'error',
+                            title: 'An Error Occured',
+                            text: 'password does not match'
+
+                        })
                 return false
             }
 
 
 
-            // If all validations pass
             return true;
         }
 
