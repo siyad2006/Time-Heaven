@@ -182,6 +182,7 @@ const resentotp = async (req, res) => {
 
 
         res.json({ success: true, message: 'OTP resent successfully.', redirectUrl: '/user/otp' });
+        
     } catch (error) {
         console.log('Error resending OTP:', error);
         res.json({ success: false, message: 'Failed to resend OTP.', error: error.message });

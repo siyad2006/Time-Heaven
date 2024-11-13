@@ -8,6 +8,9 @@ const order=require('../../controller/adminController/ordermanage')
 
 
 const upload = require('../../multer/upload')
+
+
+
 const product = require('../../schema/productschema')
 router.get('/login', adminAuth.adminLogin, AdminController.login)
 router.post('/login', AdminController.postLogin)

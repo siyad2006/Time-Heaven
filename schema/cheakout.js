@@ -9,7 +9,7 @@ const cheakoutSchema = new Schema({
     },
     paymentMethods: {
         type: String,
-        enum: ['cod', 'paypal'],
+        enum: ['cod', 'razorpay'],
         required: true
     },
     totalprice: {

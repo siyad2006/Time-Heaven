@@ -267,7 +267,7 @@
             if (div.textContent == 'pending') {
                 div.style.color = '#c4ba43';
             }
-            if (div.textContent == 'shipped' || 'deleverd') {
+            if (div.textContent == 'shipped' || div.textContent=='delevered') {
                 div.style.color = 'green'
             }
             if (div.textContent == 'canceled') {
@@ -278,7 +278,8 @@
     <script>
         document.querySelectorAll('.order-status').forEach(dropdown => {
 
-            dropdown.addEventListener('change', function () {
+            dropdown.addEventListener('change', function (event) {
+                event.preventDefault()
                 let selectedValue = this.value
                 const orderid = this.getAttribute('data-id')
                 console.log(orderid)
@@ -306,7 +307,6 @@
             })
 
         })
-
 
     </script>
     <script>
