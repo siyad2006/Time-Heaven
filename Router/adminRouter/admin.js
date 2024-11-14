@@ -3,15 +3,13 @@ const AdminController = require('../../controller/adminController/adminControlle
 const adminAuth = require('../../middleware/adminAuth')
 const productController = require('../../controller/adminController/productController')
 const router = express.Router()
-const order=require('../../controller/adminController/ordermanage')
-
-
-
+const order = require('../../controller/adminController/ordermanage')
+const coupuncontroller = require('../../controller/adminController/coupun')
 const upload = require('../../multer/upload')
-
-
-
 const product = require('../../schema/productschema')
+
+
+
 router.get('/login', adminAuth.adminLogin, AdminController.login)
 router.post('/login', AdminController.postLogin)
 router.get('/usermanage', adminAuth.isAdmin, AdminController.usermanage)
@@ -40,8 +38,14 @@ router.post('/deleteproduct/:id', productController.deleteproduct)
 router.get('/editproduct/:id', upload, productController.editproduct)
 router.post('/Edit/:id', upload, productController.postEdit)
 router.get('/logout', AdminController.logout)
-router.get('/ordermanagement',adminAuth.isAdmin,order.getordermanage)
-router.post('/update-order-status',order.changestatus)
-
+router.get('/ordermanagement', adminAuth.isAdmin, order.getordermanage)
+router.post('/update-order-status', order.changestatus)
+router.get('/coupun', coupuncontroller.getpage)
+router.post('/createcoupun', coupuncontroller.addcoupun);
+router.post('/deletecoupun',(req,res)=>{
+    // console.log(req.body )
+    const id=req.body.id
+    console.log(id)
+})
 
 module.exports = router

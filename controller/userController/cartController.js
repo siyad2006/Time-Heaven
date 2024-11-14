@@ -22,10 +22,10 @@ const productDB = require('../../schema/productschema')
 exports.getcart = async (req, res, next) => {
     const userid = req.session.userId;
     console.log(userid);
-
+    
     const cart = await cartDB.findOne({ user: userid });
     if (!cart || cart.products.length === 0) {
-        return res.status(400).send("Cart is empty");
+        return res.render('user/emptycart')
     }
 
     const cartItems = cart.products.map(product => ({
