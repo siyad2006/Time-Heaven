@@ -39,3 +39,19 @@ exports.addcoupun = async (req, res) => {
 
 
 }
+
+
+exports.deletecoupun=async (req,res)=>{
+    const id=req.params.id
+    await coupunDB.findByIdAndDelete(id)
+    res.redirect('/admin/coupun')
+}
+
+
+exports.viewcoupun= async (req,res)=>{
+    console.log(req.params.user)
+    const user= req.params.user
+    const coupun=await coupunDB.find({user:{$ne:user}})
+    // console.log(coupun)
+    res.render('user/coupunview',{coupun})
+}

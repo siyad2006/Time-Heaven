@@ -32,7 +32,7 @@ const cheakoutSchema = new Schema({
     ],
     status: {
         type: String,
-        enum:['pending','shipping','delivered','canceled'],
+        enum:['pending','shipping','delivered','canceled','return'],
         required: true
     },
     address: {

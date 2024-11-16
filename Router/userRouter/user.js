@@ -5,7 +5,7 @@ const router = express.Router()
 const cartController = require('../../controller/userController/cartController')
 const cheackout = require('../../controller/userController/cheakoutController')
 const wishlist = require('../../controller/userController/wishlist')
-
+const coupun=require('../../controller/adminController/coupun')
 
 
 router.get('/register', userController.userRegister)
@@ -34,13 +34,7 @@ router.get('/cart/:user', userAuth.loginuser, cartController.getcart);
 router.post('/addcart/:id/:user', cartController.addcart);
 router.post('/cart/update', cartController.updateCart);
 router.post('/cart/remove', cartController.removecart);
-// router.get('/cheakout',(req,res)=>{
-//     res.render('user/cheakout')
-// })
-
-// router.post('/cheackout/:cart',cheackout.getcheackout)
 router.post('/checkout/:cart', cheackout.getcheackout);
-
 router.post('/placeorder/:user', cheackout.placeorder)
 router.get('/myorders/:user', cheackout.myorders)
 router.post('/cancelorder/:id', cheackout.cancelorder)
@@ -48,4 +42,10 @@ router.get('/success', cheackout.success)
 router.get('/wishlist', wishlist.getpage)
 router.post('/addtowishlist', wishlist.additem)
 router.post('/wishlist/delete/:id',wishlist.delete)
+router.post('/applycoupun',cartController.addcoupun)
+router.get('/orderdetails/:id',cheackout.details)
+router.post('/return/:id',cheackout.return)
+router.get('/viewcoupun/:user',coupun.viewcoupun)
+router.get('/wallet/:id',cheackout.wallet)
+
 module.exports = router

@@ -228,7 +228,8 @@ const postlogin = async (req, res) => {
                 } else {
                     req.session.email_profile = Email
                     req.session.loginuser = true;
-                    req.session.userId = name._id;
+                   
+                   req.session.userId = name._id;
                     // console.log(req.session)
                     res.json({ success: true, message: 'the message is sucess', redirectUrl: '/user/home' })
 
@@ -258,7 +259,42 @@ const postlogin = async (req, res) => {
 
 
 const lo = async (req, res) => {
+    // console.log(req.session.passport.user)
     try {
+        // if(req.session.passport.user){
+        //     console.log('entered to passport ')
+        //     req.session.loginuser = true
+        //     req.session.userId=req.session.passport.user
+        //     const email=await UserDB.findOne({_id:req.session.userId})
+        //     console.log(email.Email)
+        //     req.session.email_profile=email.Email
+
+        // }else{
+        //     console.log('no passport')
+             
+        // }
+        if(req.session.passport && req.session.passport.user) {
+            console.log('entered to passport');
+            req.session.loginuser = true;
+            req.session.userId = req.session.passport.user;
+            
+            try {
+                const email = await UserDB.findOne({_id: req.session.userId});
+                
+                if (!email) {
+                    console.log('User not found');
+                    return; 
+                }
+        
+                console.log(email.Email);
+                req.session.email_profile = email.Email;
+            } catch (err) {
+                console.error('Error fetching user:', err);
+            }
+        } else {
+            console.log('no passport');
+        }
+        
         const userid=req.session.userId 
         const products = await productDB.find({ isblocked: false }).limit(6);
         res.render('user/home', { products , userid });
@@ -362,7 +398,7 @@ const userprofile = async (req, res) => {
       
         if (!req.session.email_profile) {
             console.log('Session email_profile is missing');
-            return res.redirect('/login'); // Redirect to login if email is missing
+            return res.redirect('/user/login'); // Redirect to login if email is missing
         }
 
         // Aggregate to find the user ID based on the session email
@@ -376,8 +412,8 @@ const userprofile = async (req, res) => {
             const userdata = userid[0]._id;
             const user = await UserDB.findById(userdata);
 
-            // Render the profile page with the user data and flash message
-            res.render('user/profile', { user, success: req.flash('success_update') });
+          
+            res.render('user/profile', { user, success: req.flash('sucess_update') });
         } else {
             console.log('No user found with the specified email');
             res.status(404).send('User not found');
@@ -404,22 +440,26 @@ const editprofile = async (req, res) => {
 const updateprofile = async (req, res) => {
     const ID = req.params.id
     const username = req.body.username
-    const email = req.body.email
-    const phone = Number(req.body.phone)
-    console.log(username, email, phone)
-    const isactive = await UserDB.findOne({ username: username.trim() })
-    const emailactive = await UserDB.findOne({ Email: email.trim() })
-    if (!isactive || !emailactive) {
-        req.session.email_profile = email.trim();
-        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), Email: email.trim(), phonenumber: phone })
+    // const email = req.body.email
+    const phone =req.body.phone
+    console.log(username,  phone)
+    console.log(phone)
+    // const isactive = await UserDB.findOne({ username: username.trim() })
+    // const emailactive = await UserDB.findOne({ Email: email.trim() })
+    // console.log(isactive,emailactive)
+    // if()
+    // if (!isactive || !emailactive) {
+        // req.session.email_profile = email.trim();
+        console.log('entered to it')
+        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone }).then(()=> console.log('success')).catch((err)=> console.log(err))
         req.flash('sucess_update', 'sucessfully updated profile')
         res.redirect('/user/profile')
 
-    } else {
-        req.flash('sucess_update', 'this username or Email already in use')
-        res.redirect('/user/profile')
+    // } else {
+        // req.flash('sucess_update', 'this username or Email already in use')
+        // res.redirect('/user/profile')
 
-    }
+    // }
 
 }
 

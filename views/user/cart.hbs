@@ -10,8 +10,8 @@
         rel="stylesheet">
     <style>
         .cart-container {
-            margin: 30px auto;
-            max-width: 1000px;
+            margin: auto;
+            max-width: auto;
         }
 
         .cart-item {
@@ -65,7 +65,7 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-             <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link text-white" href="/user/home">Home</a>
@@ -94,38 +94,129 @@
                     <a href="/user/profile" class="text-white ms-3">
                         <i class="bi bi-person"></i>
                     </a>
-                    
+
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="container cart-container" style="margin-top: 80px;">
+    <div class="container-fluid " style="margin-top: 80px;">
         <h1 class="text-center mb-4">Shopping Cart</h1>
+        <div class="text-end ">
+            <form id="couponForm">
+                <input type="hidden" value="{{userid}}" id="ID">
+                {{!-- <label for="couponInput">Apply Coupon:</label> --}}
+                <input type="text" id="couponInput" class="me-2" name="coupon" placeholder="Enter coupon code">
+                <button type="submit" class="me-3">Apply</button>
+            </form>
+        </div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
 
 
-        {{!--
+        <script>
+            document.getElementById('couponForm').addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevents the form from submitting normally
+                console.log('Form submitted');
+                const coupun = document.getElementById('couponInput').value;
+                const id=document.getElementById('ID').value
+                const data = {
+                    coupunId: coupun
+                }
+
+                const result = await fetch('/user/applycoupun', {
+                    method: 'post',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+
+                const response = await result.json();
+
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'successfully added coupun',
+                        text: 'successfully added coupun',
+                        showConfirmButton:false,
+                        timer:1500
+                    }).then(()=> window.location.href=`/user/cart/${cart.id}`)
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title:'an error occured',
+                        text: response.message
+
+                    })
+                }
+
+
+            });
+        </script>
+
+
+        <style>
+            #couponInput {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 16px;
+
+                outline: none;
+                transition: border 0.3s;
+            }
+
+            #couponInput:focus {
+                border: 1px solid #007bff;
+            }
+
+            #couponForm button {
+                padding: 10px 15px;
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: background-color 0.3s;
+            }
+
+            #couponForm button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+
         {{#each products}}
         <div class="row">
             <div class="col-12">
-                <div class="cart-item row align-items-center">
+                <div class="cart-item row align-items-center" data-product-id="{{this._id}}">
                     <div class="col-md-2 col-3 text-center">
                         <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid rounded">
                     </div>
                     <div class="col-md-4 col-9">
-                        <h5>{{this.name}}</h5>
-                        <p class="text-muted">{{this.name}}</p>
+                        <h5 style="font-weight: bold;">{{this.name}}</h5>
+                        {{!-- <p class="text-muted">{{this.name}}</p> --}}
                     </div>
                     <div class="col-md-2 col-6 text-center">
-                        <span class="fw-bold">{{this.regularprice}}</span>
+                        <span class="fw-bold" id="product-{{this._id}}-price" style="color: red;">Rs :
+                            {{this.regularprice}}</span>
                     </div>
                     <div class="col-md-2 col-6 text-center">
                         <!-- Display the quantity here -->
-                        <input type="number" class="form-control text-center" min="1" value="{{this.qty}}">
+                        <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
+                            data-product-id="{{this._id}}">
                     </div>
+                    {{!-- <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
+                        <button class="btn btn-danger btn-sm" data-product-id="{{this._id}}">Remove</button>
+                    </div> --}}
                     <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
-                        <button class="btn btn-danger btn-sm">Remove</button>
+                        <form action="/user/cart/remove" method="POST">
+                            <input type="hidden" name="productId" value="{{this._id}}">
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -134,146 +225,95 @@
 
         <div class="row mt-4">
             <div class="col-md-6 offset-md-6 cart-summary">
-
-
                 <div class="total-section d-flex justify-content-between">
                     <span>Total:</span>
-                    <span>{{cart.totalAmount}}</span>
+                    <span id="total-amount">{{cart.totalAmount}}</span>
                 </div>
                 <div class="d-flex justify-content-between mt-4">
                     <a href="/user/shop" class="btn btn-secondary w-100 me-2">Continue Shopping</a>
-                    <button class="btn btn-checkout w-100">Proceed to Checkout</button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
-
-    {{#each products}}
-    <div class="row">
-        <div class="col-12">
-            <div class="cart-item row align-items-center" data-product-id="{{this._id}}">
-                <div class="col-md-2 col-3 text-center">
-                    <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid rounded">
-                </div>
-                <div class="col-md-4 col-9">
-                    <h5>{{this.name}}</h5>
-                    <p class="text-muted">{{this.name}}</p>
-                </div>
-                <div class="col-md-2 col-6 text-center">
-                    <span class="fw-bold" id="product-{{this._id}}-price">{{this.regularprice}}</span>
-                </div>
-                <div class="col-md-2 col-6 text-center">
-                    <!-- Display the quantity here -->
-                    <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
-                        data-product-id="{{this._id}}">
-                </div>
-                {{!-- <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
-                    <button class="btn btn-danger btn-sm" data-product-id="{{this._id}}">Remove</button>
-                </div> --}}
-                <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
-                    <form action="/user/cart/remove" method="POST">
-                        <input type="hidden" name="productId" value="{{this._id}}">
-                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    <form action="/user/checkout/{{cart.id}}" method="post">
+                        <button class="btn btn-checkout w-100" type="submit">Proceed to Checkout</button>
                     </form>
+
                 </div>
-
             </div>
         </div>
-    </div>
-    {{/each}}
 
 
-    <div class="row mt-4">
-        <div class="col-md-6 offset-md-6 cart-summary">
-            <div class="total-section d-flex justify-content-between">
-                <span>Total:</span>
-                <span id="total-amount">{{cart.totalAmount}}</span>
-            </div>
-            <div class="d-flex justify-content-between mt-4">
-                <a href="/user/shop" class="btn btn-secondary w-100 me-2">Continue Shopping</a>
-                <form action="/user/checkout/{{cart.id}}" method="post">
-                 <button class="btn btn-checkout w-100" type="submit">Proceed to Checkout</button>
-                </form>
-               
-            </div>
-        </div>
-    </div>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function () {
+
+                $('input[type="number"]').on('input', function () {
+                    let newQty = $(this).val();
+                    const productId = $(this).data('product-id');
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-
-            $('input[type="number"]').on('input', function () {
-                let newQty = $(this).val(); 
-                const productId = $(this).data('product-id');
-
-                
-                if (newQty < 1) {
-                    newQty = 1;
-                    $(this).val(newQty);
-                } else if (newQty > 8) {
-                    newQty = 8;
-                    $(this).val(newQty);
-                }
-
-                $.ajax({
-                    url: '/user/cart/update',
-                    method: 'POST',
-                    data: {
-                        productId: productId,
-                        qty: newQty
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            $('#product-' + productId + '-price').text(response.updatedPrice);
-                            $('#total-amount').text(response.newTotalAmount);
-                        }
-                    },
-                    error: function (error) {
-                        console.log("Error updating cart:", error);
+                    if (newQty < 1) {
+                        newQty = 1;
+                        $(this).val(newQty);
+                    } else if (newQty > 8) {
+                        newQty = 8;
+                        $(this).val(newQty);
                     }
+
+                    $.ajax({
+                        url: '/user/cart/update',
+                        method: 'POST',
+                        data: {
+                            productId: productId,
+                            qty: newQty
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                $('#product-' + productId + '-price').text(response.updatedPrice);
+                                $('#total-amount').text(response.newTotalAmount);
+                            }
+                        },
+                        error: function (error) {
+                            console.log("Error updating cart:", error);
+                        }
+                    });
                 });
             });
-        });
-    </script>
+        </script>
 
 
-    <footer class="bg-dark text-white mt-5">
-        <div class="container py-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>TimeHaven is your go-to destination for stylish and affordable watches.</p>
+        <footer class="bg-dark text-white mt-5">
+            <div class="container-fluid py-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>About Us</h5>
+                        <p>TimeHaven is your go-to destination for stylish and affordable watches.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Customer Service</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-white">Contact Us</a></li>
+                            <li><a href="#" class="text-white">Returns</a></li>
+                            <li><a href="#" class="text-white">Shipping Information</a></li>
+                            <li><a href="#" class="text-white">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Follow Us</h5>
+                        <ul class="list-unstyled d-flex">
+                            <li class="me-3"><a href="#" class="text-white"><i class="bi bi-facebook"></i></a></li>
+                            <li class="me-3"><a href="#" class="text-white"><i class="bi bi-twitter"></i></a></li>
+                            <li class="me-3"><a href="#" class="text-white"><i class="bi bi-instagram"></i></a></li>
+                            <li><a href="#" class="text-white"><i class="bi bi-linkedin"></i></a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5>Customer Service</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Contact Us</a></li>
-                        <li><a href="#" class="text-white">Returns</a></li>
-                        <li><a href="#" class="text-white">Shipping Information</a></li>
-                        <li><a href="#" class="text-white">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Follow Us</h5>
-                    <ul class="list-unstyled d-flex">
-                        <li class="me-3"><a href="#" class="text-white"><i class="bi bi-facebook"></i></a></li>
-                        <li class="me-3"><a href="#" class="text-white"><i class="bi bi-twitter"></i></a></li>
-                        <li class="me-3"><a href="#" class="text-white"><i class="bi bi-instagram"></i></a></li>
-                        <li><a href="#" class="text-white"><i class="bi bi-linkedin"></i></a></li>
-                    </ul>
+                <hr class="my-4 bg-white">
+                <div class="text-center">
+                    <p>&copy; 2024 TimeHaven. All rights reserved.</p>
                 </div>
             </div>
-            <hr class="my-4 bg-white">
-            <div class="text-center">
-                <p>&copy; 2024 TimeHaven. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+        </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

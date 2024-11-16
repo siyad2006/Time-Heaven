@@ -120,10 +120,10 @@
                     <label for="username" class="form-label"><strong>Username</strong></label>
                     <input type="text" class="form-control" id="username" name="username" value="{{user.username}}">
                 </div>
-                <div class="mb-3">
+                {{!-- <div class="mb-3">
                     <label for="email" class="form-label"><strong>Email</strong></label>
                     <input type="email" class="form-control" id="email" name="email" value="{{user.Email}}">
-                </div>
+                </div> --}}
                 <div class="mb-3">
                     <label for="phone" class="form-label"><strong>Phone Number</strong></label>
                     <input type="tel" class="form-control" id="phone" name="phone" value="{{user.phonenumber}}">
@@ -139,7 +139,7 @@
 
         function validation() {
             const name = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
+            
             const phone = document.getElementById('phone').value;
             const regex = /^[A-Za-z\s]+$/
 

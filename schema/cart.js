@@ -28,6 +28,11 @@ const cartSchema = new Schema({
         type: Number,
         required: false,
         default: 0 // Optional: You might want to set a default value
+    },
+    coupun:{
+        type:Schema.Types.ObjectId,
+        required:false,
+        ref:'Coupon'
     }
 }, { timestamps: true });
 

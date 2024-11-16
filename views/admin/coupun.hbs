@@ -189,11 +189,14 @@
                             {{!-- <p></p> --}}
                         </div>
                         <div class="actions">
-                            <button class="btn-edit">Edit</button>
+                            {{!-- <button class="btn-edit">Edit</button> --}}
                             {{!-- <input type="hidden" value="{{this.id}}" id="coupunid"> --}}
 
                             {{!-- <button class="btn-delete">Delete</button> --}}
+                            <form action="/admin/deletecoupun/{{this.id}}" method="post">
                             <button class="btn-delete" data-id="{{this.id}}">Delete</button>
+                            </form>
+                            
                         </div>
                     </div>
                 </div>
@@ -202,47 +205,7 @@
         </div>
     </div>
 
-    {{!-- <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Attach event listener to all delete buttons
-            const deleteButtons = document.querySelectorAll('.btn-delete');
-
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const couponId = button.getAttribute('data-id');
-
-                    // Confirm before sending the request
-                    if (!confirm('Are you sure you want to delete this coupon?')) {
-                        return;
-                    }
-
-                    // Perform an AJAX request using POST method
-                    fetch('/admin/deletecoupun', {
-                        method: 'POST', // Use POST method
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ id: couponId }) // Pass the ID in the request body
-                    })
-                        .then(response => response.json()) // Assuming server responds with JSON
-                        .then(data => {
-                            if (data.success) {
-                                alert('Coupon deleted successfully');
-                                // Optionally, remove the element from the DOM
-                                button.closest('.coupon-item').remove();
-                            } else {
-                                alert('Failed to delete coupon');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred while deleting the coupon');
-                        });
-                });
-            });
-        });
-    </script> --}}
-
+   
     <script>
         const x = document.querySelectorAll('.isactive')
         x.forEach((item) => {
@@ -404,9 +367,9 @@
                             <input type="text" id="coupontitle" class="form-control" placeholder="Enter coupon title"
                                 required>
 
-                            <label for="discountType">Discount type</label>
+                            {{!-- <label for="discountType">Discount type</label>
                             <input type="text" id="discountType" class="form-control" placeholder="Enter discount type"
-                                required>
+                                required> --}}
 
                             <label for="expire">Expire date</label>
                             <input type="date" id="expire" class="form-control" required>
@@ -478,6 +441,22 @@
                     icon: 'warning',
                     title: 'warning',
                     text: 'the title must be filled '
+                })
+                return false
+            }
+            if(minimum<0){
+                 Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'minimum amount must be a positive number '
+                })
+                return false
+            }
+            if(maximum <= 0){
+                 Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'maximum amount must be a positive number '
                 })
                 return false
             }

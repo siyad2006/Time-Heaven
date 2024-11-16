@@ -280,7 +280,7 @@
                     <a href="/user/profile" class="text-white ms-3">
                         <i class="bi bi-person"></i>
                     </a>
-                    
+
                 </div>
             </div>
         </div>
@@ -290,6 +290,8 @@
     <div class="container checkout-section">
         <h2 class="text-center mb-4">Checkout</h2>
         <div class="row">
+
+
             <!-- Left Side: Cart Products -->
             <div class="col-md-6">
                 <h4>Cart Products</h4>
@@ -307,12 +309,17 @@
                         </div>
                     </div>
                     {{/each}} --}}
+                    <input type="hidden" value="{{cartItem}}" id="cartitem">
 
-                    {{#each cartProducts}}
+
+                    {{!-- {{#each cartProducts}}
                     <div class="list-group-item d-flex justify-content-between">
-                        <!-- Store product IDs as data attributes for retrieval -->
+                       
+                        <input type="hidden" class="product-id" value="{{this._id}}">
+                        <input type="hidden" class="product-qty" value="{{this.qty}}">
                         <div class="product-item" data-product-id="{{this._id}}" data-qty="{{this.qty}}">
                             <div>
+                               
                                 <h5>{{this.name}}</h5>
                                 <p>{{this.description}}</p>
                             </div>
@@ -322,12 +329,33 @@
                             </div>
                         </div>
                     </div>
-                    {{/each}}
+                    {{/each}} --}}
+
+                    {{#each cartProducts}}
+    <div class="list-group-item d-flex justify-content-between">
+        <!-- Store product IDs as data attributes for retrieval -->
+        <input type="hidden" class="product-id" value="{{this._id}}">
+        <input type="hidden" class="product-qty" value="{{this.qty}}">
+        <div class="product-item" data-product-id="{{this._id}}" data-qty="{{this.qty}}">
+            <div>
+                <h5>{{this.name}}</h5>
+                <p>{{this.description}}</p>
+            </div>
+            <div>
+                <p>Qty: {{this.qty}}</p>
+                <p>Price: ${{this.regularprice}}</p>
+            </div>
+        </div>
+    </div>
+{{/each}}
+
+
+
                 </div>
                 <h5 class="text-end" style="color: rgb(196, 58, 58);">Total : {{cartItem.totalAmount}}</h5>
             </div>
 
-           
+
             <div class="col-md-6">
                 <h4>Billing Information</h4>
                 <form id="checkoutForm">
@@ -446,7 +474,7 @@
         </div>
     </footer>
 
-    
+
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Bootstrap JS -->
@@ -468,234 +496,148 @@
         });
     </script>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-{{!-- <script>
-document.getElementById('checkoutForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const postalCode = document.getElementById('postalCode').value;
-
-   
-    const namePattern = /^[A-Za-z\s]+$/;
-    if (!namePattern.test(name)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Name can only contain alphabets and spaces.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;  
-    }
-
- 
-    const phonePattern = /^\d{10}$/;
-    if (!phonePattern.test(phone)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Phone number must be exactly 10 digits.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return; 
-    }
-
-    const postalCodePattern = /^\d{6}$/;
-    if (!postalCodePattern.test(postalCode)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Postal code must be exactly 6 digits.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;  
-    }
-
-   
-    const productElements = document.querySelectorAll('.product-item');
-    const products = Array.from(productElements).map(product => {
-        return {
-            productId: product.dataset.productId,
-            qty: parseInt(product.dataset.qty)  
-        };
-    });
-
-    console.log(products);  
-
-    let user = document.getElementById('userid').value;
-    const formData = {
-        name: name,
-        phone: phone,
-        street: document.getElementById('street').value,
-        city: document.getElementById('city').value,
-        state: document.getElementById('state').value,
-        postalCode: postalCode,
-        country: document.getElementById('country').value,
-        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
-        products: products,
-        country:document.getElementById('country').value  
-    };
-
-    try {
-        const response = await fetch(`/user/placeorder/${user}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
-
-        if (response.ok) {
-            Swal.fire({
-                title: 'Success!',
-                text: 'Your checkout details have been saved.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => window.location.href = '/user/success');
-        } else {
-            throw new Error('Failed to save data.');
-        }
-    } catch (error) {
-        Swal.fire({
-            title: 'Error',
-            text: 'There was an issue saving your checkout details. Please try again.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    } 
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     
-});
-</script> --}}
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<script>
-document.getElementById('checkoutForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
+      <script>
+        document.getElementById('checkoutForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-    const name = document.getElementById('name').value;
-    const phone = document.getElementById('phone').value;
-    const postalCode = document.getElementById('postalCode').value;
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const postalCode = document.getElementById('postalCode').value;
 
-    // Validation checks
-    const namePattern = /^[A-Za-z\s]+$/;
-    if (!namePattern.test(name)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Name can only contain alphabets and spaces.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
+           
+            const namePattern = /^[A-Za-z\s]+$/;
+            if (!namePattern.test(name)) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Name can only contain alphabets and spaces.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const phonePattern = /^\d{10}$/;
+            if (!phonePattern.test(phone)) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Phone number must be exactly 10 digits.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const postalCodePattern = /^\d{6}$/;
+            if (!postalCodePattern.test(postalCode)) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Postal code must be exactly 6 digits.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+           
+
+            const productElements = document.querySelectorAll('.product-item');
+          const products = Array.from(productElements).map(product => {
+    const productIdElem = product.querySelector('.product-id');
+    const qtyElem = product.querySelector('.product-qty');
+
+    // Check if productIdElem or qtyElem is null
+    if (!productIdElem || !qtyElem) {
+        console.error('Missing product element details', product);
+        return null; // Skip this product if it's invalid
     }
 
-    const phonePattern = /^\d{10}$/;
-    if (!phonePattern.test(phone)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Phone number must be exactly 10 digits.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-
-    const postalCodePattern = /^\d{6}$/;
-    if (!postalCodePattern.test(postalCode)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Postal code must be exactly 6 digits.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-
-    const productElements = document.querySelectorAll('.product-item');
-    const products = Array.from(productElements).map(product => {
-        return {
-            productId: product.dataset.productId,
-            qty: parseInt(product.dataset.qty)
-        };
-    });
-
-    let user = document.getElementById('userid').value;
-    const formData = {
-        name: name,
-        phone: phone,
-        street: document.getElementById('street').value,
-        city: document.getElementById('city').value,
-        state: document.getElementById('state').value,
-        postalCode: postalCode,
-        country: document.getElementById('country').value,
-        paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
-        products: products
+    return {
+        productId: productIdElem.value,
+        qty: parseInt(qtyElem.value)
     };
+}).filter(item => item !== null); // Filter out invalid products
 
-    try {
-        const response = await fetch(`/user/placeorder/${user}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        });
+            let user = document.getElementById('userid').value;
+            console.log(user)
+            const formData = {
+                name: name,
+                phone: phone,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                postalCode: postalCode,
+                country: document.getElementById('country').value,
+                paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
+                products: products
+            };
 
-        if (response.ok) {
-            const data = await response.json();
-            if (formData.paymentMethod === 'razorpay') {
-                const options = {
-                    key: "rzp_test_9BMcPF20vveDHZ", // Replace with your Razorpay key
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: 'Time Heaven',
-                    description: 'Order Payment',
-                    image: 'https://yourlogo.com/logo.png',
-                    order_id: data.order_id,
-                    handler: function(response) {
+            try {
+                const response = await fetch(`/user/placeorder/${user}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (formData.paymentMethod === 'razorpay') {
+                        const options = {
+                            key: "rzp_test_9BMcPF20vveDHZ", 
+                            amount: data.amount,
+                            currency: data.currency,
+                            name: 'Time Heaven',
+                            description: 'Order Payment',
+                            image: 'https://yourlogo.com/logo.png',
+                            order_id: data.order_id,
+                            handler: function (response) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Your payment was successful!',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => window.location.href = '/user/success');
+                            },
+                            prefill: {
+                                name: name,
+                                email: 'siyadz4x@gmail.com', 
+                                phone_number: phone
+                            },
+                            notes: {
+                                address: formData.street
+                            }
+                        };
+
+                        const rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    } else {
                         Swal.fire({
                             title: 'Success!',
-                            text: 'Your payment was successful!',
+                            text: 'Your checkout details have been saved.',
                             icon: 'success',
                             confirmButtonText: 'OK'
                         }).then(() => window.location.href = '/user/success');
-                    },
-                    prefill: {
-                        name: name,
-                        email: 'siyadz4x@gmail.com', // User email (optional)
-                        phone_number: phone
-                    },
-                    notes: {
-                        address: formData.street
                     }
-                };
-
-                const rzp1 = new Razorpay(options);
-                rzp1.open();
-            } else {
+                } else {
+                    throw new Error('Failed to save data.');
+                }
+            } catch (error) {
                 Swal.fire({
-                    title: 'Success!',
-                    text: 'Your checkout details have been saved.',
-                    icon: 'success',
+                    title: 'Error',
+                    text: 'There was an issue saving your checkout details. Please try again.',
+                    icon: 'error',
                     confirmButtonText: 'OK'
-                }).then(() => window.location.href = '/user/success');
+                });
             }
-        } else {
-            throw new Error('Failed to save data.');
-        }
-    } catch (error) {
-        Swal.fire({
-            title: 'Error',
-            text: 'There was an issue saving your checkout details. Please try again.',
-            icon: 'error',
-            confirmButtonText: 'OK'
         });
-    }
-});
-</script>
+    </script>
+
 
 </body>
 

@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const couponSchema = new Schema({
-    user: {
+    user:[ {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: false
-    },
+    }],
     maximumDiscount: {
         type: Number,
         required: true
@@ -29,8 +29,8 @@ const couponSchema = new Schema({
     },
     discountType: {
         type: String,
-        enum: ['price', 'percent'], 
-
+        // enum: ['price', 'percent'], 
+        default:'price',
         required: false
     },
     expiryDate: {

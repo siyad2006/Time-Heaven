@@ -42,10 +42,6 @@ router.get('/ordermanagement', adminAuth.isAdmin, order.getordermanage)
 router.post('/update-order-status', order.changestatus)
 router.get('/coupun', coupuncontroller.getpage)
 router.post('/createcoupun', coupuncontroller.addcoupun);
-router.post('/deletecoupun',(req,res)=>{
-    // console.log(req.body )
-    const id=req.body.id
-    console.log(id)
-})
+router.post('/deletecoupun/:id',coupuncontroller.deletecoupun)
 
 module.exports = router

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order View</title>
+    <link rel="stylesheet" href="/css/homestyle.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Font Awesome for icons -->
+    <style>
+        .order-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .order-card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .order-card-header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+        }
+
+        .table thead {
+            background-color: #f1f1f1;
+        }
+
+        .btn-custom {
+            margin-right: 5px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar na navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white ms-2 head-logo" href="#">
+                <img src="/img/download copy.png" alt="Logo" width="40" height="34"
+                    class="d-inline-block align-text-top"> TimeHaven
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Contact Us</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    <a href="#" class="text-white ms-3">
+                        <i class="bi bi-search"></i>
+                    </a>
+                    <a href="#" class="text-white ms-3">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
+                        <i class="bi bi-cart"></i>
+                    </a>
+                    <a href="/user/profile" class="text-white ms-3">
+                        <i class="bi bi-person"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <!-- Page Header -->
+        <div class="order-header d-flex align-items-center justify-content-between">
+            <h4 class="mb-0">Order : {{order.id}}</h4>
+            <button class="btn btn-outline-primary"><i class="fa-solid fa-file-download me-2"></i>Download
+                Summary</button>
+        </div>
+
+        <!-- User Information Section -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">User Information</h4>
+            </div>
+            <div class="card-body">
+                <p><i class="fa-solid fa-user me-2"></i><strong>Name:</strong> {{order.address.name}}</p>
+                <p><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> john@example.com</p>
+                <p><i class="fa-solid fa-phone me-2"></i><strong>Phone:</strong> {{order.address.phone}}</p>
+                <p><i class="fa-solid fa-location-dot me-2"></i><strong>Shipping Address:</strong>
+                    {{order.address.houseAddress}}</p>
+            </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">Order Summary</h4>
+            </div>
+            <div class="card-body">
+                <p><i class="fa-solid fa-calendar-alt me-2"></i><strong>Order Date:</strong> {{date}}</p>
+                {{!-- <p><i class="fa-solid fa-circle-check me-2"></i><strong>Status:</strong> <span
+                        class="badge  bg-success">{{order.status}}</span></p> --}}
+                <p>
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    <strong>Status:</strong>
+                    <span id="status" class="badge 
+        {{#if (eq order.status 'delivered')}}
+            bg-success
+        {{else if (eq order.status 'canceled')}}
+            bg-danger
+        {{else if (eq order.status 'pending')}}
+            bg-warning
+        {{else if (eq order.status 'shipped')}}
+            bg-primary
+        {{else}}
+            bg-secondary
+        {{/if}}">
+                        {{order.status}}
+                    </span>
+                </p>
+                <p style="font-weight: 700;"><i class="fa-solid fa-credit-card me-2"></i><strong>Payment
+                        Method:</strong> {{order.paymentMethods}}</p>
+                <p style="display: inline;"><i class="fa-solid fa-dollar-sign me-2"></i><strong>Total Amount:</strong>
+                <p style="color: green;display:inline">{{order.totalprice}}</p>
+                </p>
+                {{!-- <p><i class="fa-solid fa-tags me-2"></i><strong>Coupon Discount:</strong> -$20.00 (Code: SAVE20)
+                </p> --}}
+                <p style="display: inline;"><i class="fa-solid fa-money-check-alt me-2"></i><strong>Grand Total :
+                    </strong>
+                <p style="font-weight: 800; color:red;display:inline">{{order.totalprice}}</p>
+                </p>
+            </div>
+        </div>
+
+        <!-- Product Details Table -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">Products</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="text-center">
+                            <tr>
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                {{!-- <th>Product ID</th> --}}
+                                <th>Quantity</th>
+                                <th>Price per Unit</th>
+                                {{!-- <th>Total Price</th> --}}
+                            </tr>
+                        </thead>
+                        <tbody class="text-center">
+                            {{#each products}}
+                            <tr>
+                                <td><img src="/{{this.image.[0]}}" alt="Product Image" height="50px" width="100px"
+                                        class="img-thumbnail">
+                                </td>
+                                <td>{{this.name}}</td>
+
+                                <td>{{this.qty}}</td>
+                                <td class="price">{{this.regularprice}}</td>
+
+
+                            </tr>
+                            {{/each}}
+                            <td class="totalprice" style="text-align: right;" colspan="4">
+                                <p style="margin-right: 70px; color:red; font-weight:bold">total: {{order.totalprice}}
+                                </p>
+                            </td>
+                            <!-- Repeat for other products -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Actions Section -->
+        <div class="card order-card mb-4">
+            <div class="order-card-header">
+                <h4 class="mb-0">Actions</h4>
+            </div>
+            <div class="card-body" style="display:flex;">
+                <form id="but" action="/user/cancelorder/{{order.id}}" onsubmit="return alerts(event)" method="post">
+                    <button type="submit"
+                        class="btn btn-danger btn-custom  {{#if (or (eq order.status 'canceled') (eq order.status 'shipped') (eq order.status 'return') (eq order.status 'delevered'))}}disabled{{/if}}"
+                        style="display: inline;"><i class="fa-solid fa-times-circle me-2"></i>Cancel
+                        Order</button>
+                </form>
+
+                {{!-- <button class="btn btn-warning btn-custom {{#if (eq order.status 'delevered')}}disabled{{/if}}"
+                    style="display: inline;"><i class="fa-solid fa-exchange-alt me-2  "></i>Return/Replace</button> --}}
+                <form action="/user/return/{{order.id}}" method="post" onsubmit="return alerts(event)">
+                    <button id="b"
+                        class="btn btn-warning btn-custom   {{#if (or (eq order.status 'canceled') (eq order.status 'pending') (eq order.status 'shipped') (eq order.status 'return'))}}disabled{{/if}}"
+                        style="display: inline;">
+                        <i class="fa-solid fa-exchange-alt me-2"></i>Return/Replace
+                    </button>
+                </form>
+
+
+                <button class="btn btn-primary btn-custom"><i class="fa-solid fa-download me-2"></i>Download
+                    Invoice</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+window.onload = function() {
+    const x = document.getElementById('status').textContent.trim();
+    const b = document.getElementById('b');
+    const but=document.getElementById('but')
+    if (x === 'return') {
+        console.log('entered to the main code ')
+        b.style.display = 'none';
+        but.style.display='none'
+    }
+
+    console.log(x);
+    console.log(b);
+};
+</script>
+
+
+    <script>
+        async function alerts(event) {
+            if (event) event.preventDefault();
+
+            const result = await Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'Are you sure to perform this action?',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            });
+
+            if (result.isConfirmed) {
+                // Allow form submission by using event.target.submit()
+                event.target.submit();
+            } else {
+                console.log('Action cancelled');
+            }
+        }
+    </script>
+
+
+    <footer class="bg-dark text-white ">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p>TimeHaven is your go-to destination for stylish and affordable watches. We believe in offering
+                        quality products with exceptional service.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Customer Service</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Contact Us</a></li>
+                        <li><a href="#" class="text-white">Returns</a></li>
+                        <li><a href="#" class="text-white">Shipping Information</a></li>
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <ul class="list-unstyled d-flex">
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-white">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 bg-white">
+            <div class="text-center">
+                <p>&copy; 2024 TimeHaven. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <!-- Font Awesome JS -->
+</body>
+
+</html>

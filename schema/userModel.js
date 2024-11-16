@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
         required: false
     },
     phonenumber: {
-        type: Number,
+        type: String,
         required: false
         // default: 9999999999
     }

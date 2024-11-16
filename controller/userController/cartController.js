@@ -1,7 +1,8 @@
 const userDB = require('../../schema/userModel')
 const cartDB = require('../../schema/cart')
 const productDB = require('../../schema/productschema')
-
+const coupunDB = require('../../schema/coupunSchama');
+const { success } = require('./cheakoutController');
 // exports.getcart=async (req,res,next)=>{
 
 
@@ -22,7 +23,7 @@ const productDB = require('../../schema/productschema')
 exports.getcart = async (req, res, next) => {
     const userid = req.session.userId;
     console.log(userid);
-    
+
     const cart = await cartDB.findOne({ user: userid });
     if (!cart || cart.products.length === 0) {
         return res.render('user/emptycart')
@@ -116,77 +117,329 @@ exports.addcart = async (req, res) => {
     }
 };
 
+// exports.updateCart = async (req, res, next) => {
+//     const { productId, qty } = req.body;
+//     const userid = req.session.userId;
+
+//     const iscoupun=await cartDB.findOne({user:userid},{coupun:1}).populate('coupun')
+//     console.log('is active coupun',iscoupun)
+//        const cart = await cartDB.findOne({ user: userid });
+    
+//     const cartProduct = cart.products.find(product => product.productId.toString() === productId);
+
+//     if (cartProduct) {
+//         cartProduct.qty = qty;
+//     }
+
+//     const product = await productDB.findById(productId);
+//     const updatedPrice = product.regularprice * qty;
+
+//     let newTotalAmount = 0;
+//     for (const cartItem of cart.products) {
+//         const productDetails = await productDB.findById(cartItem.productId);
+//         newTotalAmount += productDetails.regularprice * cartItem.qty;
+//     }
+
+//     if(iscoupun){
+//         const discount=iscoupun.coupun.maximumDiscount
+//     }
+    
+//     if (discount) {
+//         console.log('Entered this code');
+//         cart.totalAmount = newTotalAmount-discount        
+//     } else {
+//         cart.totalAmount = newTotalAmount;
+//     }
+//     await cart.save();
+   
+
+//     res.json({
+//         success: true,
+//         updatedPrice: updatedPrice,
+//         newTotalAmount: newTotalAmount
+//     });
+// };
+
+
 exports.updateCart = async (req, res, next) => {
-    const { productId, qty } = req.body;
-    const userid = req.session.userId;
+    try {
+        const { productId, qty } = req.body;
+        const userid = req.session.userId;
 
-    const cart = await cartDB.findOne({ user: userid });
-    const cartProduct = cart.products.find(product => product.productId.toString() === productId);
+        // Find the active coupon if any
+        const iscoupun = await cartDB.findOne({ user: userid }, { coupun: 1 }).populate('coupun');
+        console.log('Is active coupon:', iscoupun);
 
-    if (cartProduct) {
-        cartProduct.qty = qty;
+        // Find the user's cart
+        const cart = await cartDB.findOne({ user: userid });
+        if (!cart) {
+            return res.json({ success: false, message: 'Cart not found' });
+        }
+
+       
+        const cartProduct = cart.products.find(product => product.productId.toString() === productId);
+        if (cartProduct) {
+            cartProduct.qty = qty;
+        }
+
+        const product = await productDB.findById(productId);
+        if (!product) {
+            return res.json({ success: false, message: 'Product not found' });
+        }
+        const updatedPrice = product.regularprice * qty;
+
+      
+        let newTotalAmount = 0;
+        for (const cartItem of cart.products) {
+            const productDetails = await productDB.findById(cartItem.productId);
+            if (productDetails) {
+                newTotalAmount += productDetails.regularprice * cartItem.qty;
+            }
+        }
+
+        // Apply discount if a valid coupon is present
+        let discount = 0;
+        if (iscoupun && iscoupun.coupun) {
+            discount = iscoupun.coupun.maximumDiscount || 0;
+            console.log('Applying discount:', discount);
+        }
+
+        // Update the total amount in the cart
+        cart.totalAmount = newTotalAmount - discount;
+        await cart.save();
+
+        // Respond with success
+        res.json({
+            success: true,
+            updatedPrice: updatedPrice,
+            newTotalAmount: newTotalAmount - discount
+        });
+    } catch (error) {
+        console.error('Error updating cart:', error);
+        res.json({ success: false, message: 'An error occurred while updating the cart' });
     }
-
-    const product = await productDB.findById(productId);
-    const updatedPrice = product.regularprice * qty;
-
-    let newTotalAmount = 0;
-    for (const cartItem of cart.products) {
-        const productDetails = await productDB.findById(cartItem.productId);
-        newTotalAmount += productDetails.regularprice * cartItem.qty;
-    }
-
-    cart.totalAmount = newTotalAmount;
-    await cart.save();
-
-    res.json({
-        success: true,
-        updatedPrice: updatedPrice,
-        newTotalAmount: newTotalAmount
-    });
 };
 
 
+
+// exports.removecart = async (req, res) => {
+// console.log('startted the remove function')
+//     const userid = req.session.userId
+//     const { productId } = req.body
+//     console.log(productId)
+
+//     const cartItem = await cartDB.findOne({ user: userid })
+//     console.log('cart ITEM',cartItem)
+//     const cartProducts = cartItem.products.map(product => ({
+//         productId: product.productId,
+//         qty: product.qty
+//     }));
+
+//     const products = await productDB.find({ _id: { $in: cartProducts.map(item => item.productId) } });
+//     const cartProductDetails = products.map(product => {
+//         const cartProduct = cartProducts.find(item => item.productId.toString() === product._id.toString());
+//         return {
+//             ...product.toObject(),
+//             qty: cartProduct.qty
+//         };
+//     });
+//     console.log('cart produccccct details', cartProductDetails)
+
+//     const deletedproduct = await productDB.findOne(
+//         { _id: productId },
+//         { regularprice: 1 }
+//     );
+
+//     console.log('product for delete ', deletedproduct)
+
+//     await cartDB.updateOne(
+//         { user: userid }, { $pull: { products: { productId: productId } } }
+//     ).then((success) => console.log('successfully updated')).catch((err) => console.log(err))
+
+//     const right = cartItem.totalAmount
+
+//     const amount = right - deletedproduct.regularprice
+//         console.log('amount ',amount)
+//     await cartDB.updateOne({ user: userid }, { totalAmount: amount })
+//     console.log(right)
+//     res.redirect(`/user/cart/${userid}`)
+
+// }
+
+
 exports.removecart = async (req, res) => {
+    console.log('started the remove function');
+    const userid = req.session.userId;
+    const { productId } = req.body;
+    console.log(productId);
 
-    const userid = req.session.userId
-    const { productId } = req.body
-    console.log(productId)
+    try {
+        const cartItem = await cartDB.findOne({ user: userid });
+        if (!cartItem) {
+            console.log('No cart found for user');
+            return res.redirect(`/user/cart/${userid}`);
+        }
+        console.log('cart ITEM', cartItem);
 
-    const cartItem = await cartDB.findOne({ user: userid })
-    // console.log(cartItem)
-    const cartProducts = cartItem.products.map(product => ({
-        productId: product.productId,
-        qty: product.qty
-    }));
+      
+        const productToRemove = cartItem.products.find(product => product.productId.toString() === productId);
+        if (!productToRemove) {
+            console.log('Product not found in cart');
+            return res.redirect(`/user/cart/${userid}`);
+        }
 
-    const products = await productDB.find({ _id: { $in: cartProducts.map(item => item.productId) } });
-    const cartProductDetails = products.map(product => {
-        const cartProduct = cartProducts.find(item => item.productId.toString() === product._id.toString());
-        return {
-            ...product.toObject(),
-            qty: cartProduct.qty
-        };
-    });
-// console.log(cartProductDetails)
+        const productQty = productToRemove.qty;
 
-const deletedproduct = await productDB.findOne(
-    { _id: productId }, 
-    { regularprice: 1 } 
-  );
+ 
+        const deletedProduct = await productDB.findOne(
+            { _id: productId },
+            { regularprice: 1 }
+        );
+        if (!deletedProduct) {
+            console.log('Product not found in database');
+            return res.redirect(`/user/cart/${userid}`);
+        }
+        console.log('product for delete', deletedProduct);
 
-// console.log(deletedproduct)
+      
+        const amountToDeduct = deletedProduct.regularprice * productQty;
+        console.log('Amount to deduct:', amountToDeduct);
 
-    await cartDB.updateOne(
-        { user: userid }, { $pull: { products: { productId: productId } } }
-    ).then((success) => console.log('successfully updated')).catch((err) => console.log(err))
+        await cartDB.updateOne(
+            { user: userid },
+            { $pull: { products: { productId: productId } } }
+        ).then(() => console.log('Successfully updated cart'))
+         .catch(err => console.log(err));
 
- const right=cartItem.totalAmount
+      
+        const newTotalAmount = cartItem.totalAmount - amountToDeduct;
+        await cartDB.updateOne(
+            { user: userid },
+            { totalAmount: newTotalAmount }
+        );
+        console.log('Updated total amount:', newTotalAmount);
 
- const amount=right-deletedproduct.regularprice
+        res.redirect(`/user/cart/${userid}`);
+    } catch (err) {
+        console.log('Error:', err);
+        res.redirect(`/user/cart/${userid}`);
+    }
+};
 
- await cartDB.updateOne({user: userid},{totalAmount:amount})
- console.log(right)
-    res.redirect(`/user/cart/${userid}`)
 
-}
+// exports.addcoupun = async (req, res) => {
+//     console.log(req.body)
+//     const coupunid = req.body.coupunId
+//     const userid = req.session.userId
+//     const coupun = await coupunDB.findOne({ code: coupunid })
+  
+//     if (coupun) {
+//         console.log('the coupun is active ')
+       
+//         if(coupun.user==userid){
+                    
+//             console.log('entered to the cheack used code ')
+//             return res.json({ success: false, message: 'this coupun is used ' })
+//         } else {
+
+            
+//             const currentDate = new Date();
+//             currentDate.setHours(0, 0, 0, 0);
+
+//             const couponExpiryDate = new Date(coupun.expiryDate);
+//             couponExpiryDate.setHours(0, 0, 0, 0);
+
+//             if (couponExpiryDate > currentDate) {
+//                 console.log('success')
+
+//                 const cart = await cartDB.find({ user: userid }, { totalAmount: 1, _id: 0 })
+//                 console.log(cart)
+
+//                 if(cart[0].totalAmount<=coupun.minimumPurchase){
+//                  return    res.json({success:false, message:`you must need to buy items minimum of RS : ${coupun.minimumPurchase}`})
+//                 }
+
+//                 const offeramount = cart[0].totalAmount - coupun.maximumDiscount
+
+//                 console.log(offeramount)
+
+                
+
+//                 await cartDB.updateOne({ user: userid }, {
+//                     totalAmount: offeramount,
+//                     coupun:coupunid
+//                 }).then(() => console.log('successfully applayed the coupun to the cart '))
+//                 await coupunDB.updateOne({ code: coupunid},{user:userid})
+//                 return res.json({ success: true });
+//             } else {
+//                 console.log('false')
+//                 return res.json({ success: false, message: 'This coupon is expired' });
+//             }
+
+
+//         }
+
+
+//     } else {
+//         return res.json({ success: false, message: 'there is no coupun bu this code ' })
+//     }
+    
+// }
+
+
+exports.addcoupun = async (req, res) => {
+    try {
+        console.log(req.body);
+        const coupunid = req.body.coupunId;
+        const userid = req.session.userId;
+        const coupun = await coupunDB.findOne({ code: coupunid });
+            const coupunId=coupun._id
+        if (!coupun) {
+            return res.json({ success: false, message: 'There is no coupon with this code' });
+        }
+
+        console.log('The coupon is active');
+
+        if (String(coupun.user) === String(userid)) {
+            console.log('Entered to the check used code');
+            return res.json({ success: false, message: 'This coupon is already used' });
+        }
+
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+        const couponExpiryDate = new Date(coupun.expiryDate);
+        couponExpiryDate.setHours(0, 0, 0, 0);
+
+        if (couponExpiryDate > currentDate) {
+            console.log('Success');
+
+            const cart = await cartDB.find({ user: userid }, { totalAmount: 1, _id: 0 });
+            if (cart.length === 0) {
+                return res.json({ success: false, message: 'Cart is empty' });
+            }
+
+            if (cart[0].totalAmount <= coupun.minimumPurchase) {
+                return res.json({ success: false, message: `You must buy items with a minimum value of RS: ${coupun.minimumPurchase}` });
+            }
+
+            const offeramount = cart[0].totalAmount - coupun.maximumDiscount;
+            console.log(offeramount);
+
+            await cartDB.updateOne(
+                { user: userid },
+                { totalAmount: offeramount, coupun: coupunId }
+            );
+            console.log('Successfully applied the coupon to the cart');
+
+            await coupunDB.updateOne({ code: coupunid }, { user: userid });
+            return res.json({ success: true });
+        } else {
+            console.log('Coupon is expired');
+            return res.json({ success: false, message: 'This coupon is expired' });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ success: false, message: 'An error occurred while processing the coupon' });
+    }
+};

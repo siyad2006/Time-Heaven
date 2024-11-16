@@ -34,7 +34,7 @@ app.use(session({
     secret: 'your_secret_key',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 3600000 } 
+    cookie: { maxAge: 3600000 }
 }));
 
 app.use(flash())
@@ -56,6 +56,15 @@ hbs.registerHelper('lt', (a, b) => a < b);
 hbs.registerHelper('add', (a, b) => a + b);
 hbs.registerHelper('subtract', (a, b) => a - b);
 hbs.registerHelper('range', (start, end) => Array.from({ length: end - start + 1 }, (_, i) => start + i));
+hbs.registerHelper('or', function (a, b) {
+    return a || b;
+});
+hbs.registerHelper('formatDate', function (date) {
+    return new Date(date).toLocaleDateString('en-US'); // This formats it to 'MM/DD/YYYY'
+});
+
+
+
 // Set up 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -89,8 +98,8 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error(err.stack); 
-    res.status(500); 
+    console.error(err.stack);
+    res.status(500);
     res.render('error', { message: "Internal Server Error" });
 });
 
