@@ -17,6 +17,10 @@ app.use(bodyParser.json());
 const session = require('express-session');
 const mongoose = require('mongoose')
 require('dotenv').config()
+const cron=require('node-cron')
+const{restorePricesAfterOfferExpiration}= require('./controller/adminController/offerController')
+
+
 app.use(nocache())
 app.use('/uploads', express.static('uploads'));
 
@@ -63,7 +67,10 @@ hbs.registerHelper('formatDate', function (date) {
     return new Date(date).toLocaleDateString('en-US'); // This formats it to 'MM/DD/YYYY'
 });
 
-
+cron.schedule('0 0 * * *', () => {
+    console.log('Checking for expired offers and restoring prices...');
+    restorePricesAfterOfferExpiration();  // Call your function
+});
 
 // Set up 
 app.set('views', path.join(__dirname, 'views'));

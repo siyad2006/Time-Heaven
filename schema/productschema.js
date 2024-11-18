@@ -47,6 +47,23 @@ const productSchema = new Schema({
         enum: ["available", "out of stock"],
         required: true,
         default: "available"
+    },
+    offerprice:{
+        type:Number,
+        required:false
+    },
+    realprice:{
+        type:Number,
+        required:false
+    },
+    offerPersent:{
+        type:Number,
+        required:false
+    },
+    existOffer:{
+        type:Schema.Types.ObjectId,
+        required:false,
+        ref:'offer'
     }
 }, { timestamps: true }
 

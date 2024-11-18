@@ -296,7 +296,7 @@ const lo = async (req, res) => {
         }
         
         const userid=req.session.userId 
-        const products = await productDB.find({ isblocked: false }).limit(6);
+        const products = await productDB.find({ isblocked: false }).limit(12);
         res.render('user/home', { products , userid });
     } catch (error) {
         console.error('Error fetching products:', error);
@@ -337,7 +337,7 @@ let productDetails = async (req, res) => {
 // };
 
 const shoping = async (req, res) => {
-    const { page = 1, limit = 12, sort = 'default',search } = req.query;
+    const { page = 1, limit = 16, sort = 'default',search } = req.query;
     const skip = (page - 1) * limit;
     console.log(search)
     const categories = await category.find({ isblocked: "Listed" });

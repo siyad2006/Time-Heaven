@@ -6,7 +6,7 @@ const cartController = require('../../controller/userController/cartController')
 const cheackout = require('../../controller/userController/cheakoutController')
 const wishlist = require('../../controller/userController/wishlist')
 const coupun=require('../../controller/adminController/coupun')
-
+const offer=require('../../controller/adminController/offerController')
 
 router.get('/register', userController.userRegister)
 router.post('/postregister', userController.postregister)
@@ -47,5 +47,8 @@ router.get('/orderdetails/:id',cheackout.details)
 router.post('/return/:id',cheackout.return)
 router.get('/viewcoupun/:user',coupun.viewcoupun)
 router.get('/wallet/:id',cheackout.wallet)
+router.get('/addoffer',offer.addoffer)
+
+
 
 module.exports = router

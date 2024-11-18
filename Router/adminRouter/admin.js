@@ -7,7 +7,7 @@ const order = require('../../controller/adminController/ordermanage')
 const coupuncontroller = require('../../controller/adminController/coupun')
 const upload = require('../../multer/upload')
 const product = require('../../schema/productschema')
-
+const offer=require('../../controller/adminController/offerController')
 
 
 router.get('/login', adminAuth.adminLogin, AdminController.login)
@@ -43,5 +43,12 @@ router.post('/update-order-status', order.changestatus)
 router.get('/coupun', coupuncontroller.getpage)
 router.post('/createcoupun', coupuncontroller.addcoupun);
 router.post('/deletecoupun/:id',coupuncontroller.deletecoupun)
+router.get('/addoffer',offer.addoffer)
+router.post('/createoffer',offer.createoffer)
+router.get('/offer',offer.getoffer)
+router.post('/deleteoffer/:id',offer.deleteoffer)
+router.get('/editoffer/:id',offer.editoffer)
+router.post('/posteditoffer/:id',offer.posteditoffer)
+
 
 module.exports = router
