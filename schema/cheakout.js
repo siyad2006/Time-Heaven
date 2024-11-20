@@ -67,6 +67,11 @@ const cheakoutSchema = new Schema({
             require: true
         }
         
+    },
+    discount:{
+        type:Number,
+        required:false,
+        default:0
     }
     // orderId:{
     //     type:String,

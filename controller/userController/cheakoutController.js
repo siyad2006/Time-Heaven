@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const cheakout = require('../../schema/cheakout');
 // const cheakout = require('../../schema/cheakout');
 const ObjectId = mongoose.Types.ObjectId;
-const walletDB=require('../../schema/wallet')
+const walletDB = require('../../schema/wallet')
 
 exports.getcheackout = async (req, res) => {
     const cartId = req.params.cart;
@@ -38,6 +38,7 @@ exports.getcheackout = async (req, res) => {
 };
 
 
+ 
 exports.placeorder = async (req, res) => {
     const user = req.params.user;
     console.log('this is the user id from checkout', user);
@@ -45,16 +46,15 @@ exports.placeorder = async (req, res) => {
     const { name, phone, street, city, state, postalCode, paymentMethod, products, country } = req.body;
     console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
 
-    // if(paymentMethod=='cod'){
-
     const cart = await cartDB.findOne({ user: user })
-    const total = cart.totalAmount
+    const total = cart.totalAmount;
 
-    if (paymentMethod == 'cod') {
-        // console.log('this is from cod validation')
-
+   console.log(cart)
 
 
+
+
+    if (paymentMethod === 'cod') {
         try {
             function generateOrderId() {
                 return `ORDER-${uuidv4()}`;
@@ -62,20 +62,40 @@ exports.placeorder = async (req, res) => {
 
             console.log(generateOrderId());
 
-            // const cart = await cartDB.findOne({ user: user })
-            // const total = cart.totalAmount
-            console.log(cart)
             if (!cart || cart.products.length === 0) {
                 return res.status(400).send("Cart is empty");
             }
-            console.log(cart)
+
             const items = cart.products.map(x => ({
                 productId: x.productId,
                 qty: x.qty
+            }));
 
-            }))
 
-            console.log(items)
+            for (const item of items) {
+                const product = await productDB.findById(item.productId);
+                if (product) {
+
+                    if (product.quantity < item.qty) {
+                        return res.status(400).send(`Not enough stock for product: ${product.name}`);
+                    }
+                    console.log('Product sold:', product.sold);
+                    console.log('Item quantity:', item.qty);
+
+                    product.sold = Number(product.sold || 0) + Number(item.qty);
+
+                    product.quantity -= item.qty;
+                    await product.save();
+                }
+            }
+            let discounts=0
+            for(let i of items){
+                const product = await productDB.findById(i.productId);
+                if(product){
+                  const down = Number(product.realprice - product.regularprice) 
+                  discounts+=down
+                }
+            }
             const order = new checkoutDB({
                 userID: user,
                 paymentMethods: paymentMethod,
@@ -89,27 +109,29 @@ exports.placeorder = async (req, res) => {
                     city: city,
                     state: state,
                     pincode: postalCode,
-                    country: country,
-
+                    country: country
                 },
+                discount:discounts
+            });
 
+            await order.save();
+            await cartDB.findOneAndDelete({ user: user });
 
-            })
-            await order.save()
-            await cartDB.findOneAndDelete({ user: user })
             res.json({ success: true });
         } catch (error) {
-            console.log(error)
+            console.error(error);
+            res.status(500).send("Error processing order");
         }
     }
 
-    // starting of razor pay 
-    if (paymentMethod == 'razorpay') {
-        console.log('this is form razorpy')
+    if (paymentMethod === 'razorpay') {
+        console.log('this is from razorpay');
+
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_ID,
             key_secret: process.env.RAZORPAY_SECRET
         });
+
         const options = {
             amount: total * 100,
             currency: "INR",
@@ -118,23 +140,46 @@ exports.placeorder = async (req, res) => {
                 key: "value"
             }
         };
+
         try {
             const order = await razorpay.orders.create(options);
-            res.json({ order_id: order.id, currency: order.currency, amount: order.amount })
+            res.json({ order_id: order.id, currency: order.currency, amount: order.amount });
             console.log('this is from success of Razor');
-            // const cart = await cartDB.findOne({ user: user })
-            console.log(cart)
+
             if (!cart || cart.products.length === 0) {
                 return res.status(400).send("Cart is empty");
             }
-            console.log(cart)
+
             const items = cart.products.map(x => ({
                 productId: x.productId,
                 qty: x.qty
+            }));
 
-            }))
+            for (const item of items) {
+                const product = await productDB.findById(item.productId); // Find the product by ID
+                if (product) {
 
-            console.log(items)
+                    if (product.quantity < item.qty) {
+                        return res.status(400).send(`Not enough stock for product: ${product.name}`);
+                    }
+                    // product.sold += Number(item.qty)
+                    console.log('Product sold:', product.sold);
+                    console.log('Item quantity:', item.qty);
+
+                    product.sold = Number(product.sold || 0) + Number(item.qty);
+
+                    product.quantity -= item.qty;
+                    await product.save();
+                }
+            }
+            let discounts=0
+            for(let i of items){
+                const product = await productDB.findById(i.productId);
+                if(product){
+                  const down = Number(product.realprice - product.regularprice) 
+                  discounts+=down
+                }
+            }
             const orders = new checkoutDB({
                 userID: user,
                 paymentMethods: paymentMethod,
@@ -148,21 +193,19 @@ exports.placeorder = async (req, res) => {
                     city: city,
                     state: state,
                     pincode: postalCode,
-                    country: country,
-
+                    country: country
                 },
+                discount:discounts
+            });
 
-
-            })
-            await orders.save()
-
+            await orders.save();
+            await cartDB.findOneAndDelete({ user: user });
 
         } catch (error) {
             console.error("Error creating order:", error);
             res.status(500).send("Error creating Razorpay order");
         }
     }
-
 };
 
 
@@ -194,31 +237,31 @@ exports.cancelorder = async (req, res) => {
             status: 'canceled'
         })
         console.log(db.totalprice)
-        const isWallet=await walletDB.findOne({user:userid})
-        
+        const isWallet = await walletDB.findOne({ user: userid })
+
         // const newdate=new Date()
         // const nowdate=newdate.toLocaleDateString('en-GB')
         const nowdate = new Date(); // Creates a Date object representing the current date and time
 
         if (isWallet) {
             console.log('User already has a wallet');
-            
+
             const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
-            
+
             if (!existingWallet) {
-                throw new Error('Wallet not found for user'); 
+                throw new Error('Wallet not found for user');
             }
-            
-            const existingAmount = existingWallet.amount || 0; 
+
+            const existingAmount = existingWallet.amount || 0;
             console.log(existingAmount);
-            
+
             const newAmount = existingAmount + db.totalprice;
-        
+
             await walletDB.updateOne(
                 { user: userid },
                 {
                     amount: newAmount,
-                    $push: { 
+                    $push: {
                         transaction: {
                             typeoftransaction: 'debit',
                             amountOfTransaction: db.totalprice,
@@ -227,45 +270,132 @@ exports.cancelorder = async (req, res) => {
                     }
                 }
             ).then(() => console.log('Successfully updated the wallet'));
-        
+
+            const canceledproducts = await checkoutDB.findById(ID)
+            const items = canceledproducts.products
+            for (let pro of items) {
+                const id = pro.productId;
+                const singleItem = await productDB.findById(id);
+                const buyedqty = pro.qty;
+
+                if (!singleItem) {
+                    console.log(`Product with ID ${id} not found`);
+                    return res.status(404).send(`Product with ID ${id} not found`);
+                }
+
+                if (singleItem.quantity < buyedqty) {
+                    console.log(`Insufficient stock for product with ID ${id}`);
+                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                }
+
+             
+                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                singleItem.quantity += buyedqty;
+
+                // singleItem.quantity += buyedqty;
+
+
+                await singleItem.save();
+            }
+
+
+
             res.redirect(`/user/myorders/${userid}`)
         }
-        else{
+        else {
+
             console.log('user dont have wallet ')
-            const newwallet=new walletDB({
-                user:userid,
-                amount:db.totalprice,
-                transaction:[
+            const newwallet = new walletDB({
+                user: userid,
+                amount: db.totalprice,
+                transaction: [
                     {
-                        typeoftransaction:'debit',
-                        amountOfTransaction:db.totalprice,
+                        typeoftransaction: 'debit',
+                        amountOfTransaction: db.totalprice,
                         dateOfTransaction: nowdate
-                                                
+
                     }
                 ]
-               
+
 
 
             })
             newwallet.save()
+            const canceledproducts = await checkoutDB.findById(ID)
+            const items = canceledproducts.products
+            console.log(items)
+            for (let pro of items) {
+                const id = pro.productId;
+                const singleItem = await productDB.findById(id);
+                const buyedqty = pro.qty;
+
+                if (!singleItem) {
+                    console.log(`Product with ID ${id} not found`);
+                    return res.status(404).send(`Product with ID ${id} not found`);
+                }
+
+                if (singleItem.quantity < buyedqty) {
+                    console.log(`Insufficient stock for product with ID ${id}`);
+                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                }
+
+                // product.sold -= item.qty
+                // console.log('Product sold:', product.sold);
+                //     console.log('Item quantity:', item.qty);
+
+                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                singleItem.quantity += buyedqty;
+
+
+                await singleItem.save();
+            }
+
             res.redirect(`/user/myorders/${userid}`)
         }
-        
 
-    } else {
-        await checkoutDB.findByIdAndUpdate({ _id: ID}, {
-        status: 'canceled'
-    })
-        
+
+    }
+    if (db.paymentMethods == 'cod') {
+        console.log('entered to else cancel order ')
+        await checkoutDB.findByIdAndUpdate({ _id: ID }, {
+            status: 'canceled'
+        })
+
+        const canceledproducts = await checkoutDB.findById(ID)
+        const items = canceledproducts.products
+        for (let pro of items) {
+            const id = pro.productId;
+            const singleItem = await productDB.findById(id);
+            const buyedqty = pro.qty;
+
+            if (!singleItem) {
+                console.log(`Product with ID ${id} not found`);
+                return res.status(404).send(`Product with ID ${id} not found`);
+            }
+
+            if (singleItem.quantity < buyedqty) {
+                console.log(`Insufficient stock for product with ID ${id}`);
+                return res.status(400).send(`Not enough stock for product with ID ${id}`);
+            }
+
+            // product.sold -= item.qty
+            
+            singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+            singleItem.quantity += buyedqty;
+
+            // singleItem.quantity += buyedqty;
+
+
+            await singleItem.save();
+        }
+
         res.redirect(`/user/myorders/${userid}`)
     }
 
 
-    // await checkoutDB.findByIdAndUpdate({ _id: id }, {
-    //     status: 'canceled'
-    // })
-
-    // res.redirect(`/user/myorders/${user}`)
 
 
 }
@@ -312,7 +442,7 @@ exports.details = async (req, res) => {
 
     //   console.log(products);
     const productsWithQty = products.map(product => {
-        // Find the corresponding quantity from the items array
+    
         const productQty = items.find(item => item.id.toString() === product._id.toString()).qty;
         return {
             ...product.toObject(),
@@ -330,7 +460,7 @@ exports.return = async (req, res) => {
     console.log('retrun')
     const ID = req.params.id
     const db = await checkoutDB.findById(ID)
-    const userid=req.session.userId
+    const userid = req.session.userId
     // console.log(db)
     if (db.paymentMethods == 'razorpay') {
         console.log('entered to the razorpaay code ')
@@ -338,31 +468,31 @@ exports.return = async (req, res) => {
             status: 'return'
         })
         console.log(db.totalprice)
-        const isWallet=await walletDB.findOne({user:userid})
-        
+        const isWallet = await walletDB.findOne({ user: userid })
+
         // const newdate=new Date()
         // const nowdate=newdate.toLocaleDateString('en-GB')
         const nowdate = new Date(); // Creates a Date object representing the current date and time
 
         if (isWallet) {
             console.log('User already has a wallet');
-            
+
             const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
-            
+
             if (!existingWallet) {
-                throw new Error('Wallet not found for user'); 
+                throw new Error('Wallet not found for user');
             }
-            
-            const existingAmount = existingWallet.amount || 0; 
+
+            const existingAmount = existingWallet.amount || 0;
             console.log(existingAmount);
-            
+
             const newAmount = existingAmount + db.totalprice;
-        
+
             await walletDB.updateOne(
                 { user: userid },
                 {
                     amount: newAmount,
-                    $push: { 
+                    $push: {
                         transaction: {
                             typeoftransaction: 'debit',
                             amountOfTransaction: db.totalprice,
@@ -371,30 +501,30 @@ exports.return = async (req, res) => {
                     }
                 }
             ).then(() => console.log('Successfully updated the wallet'));
-        
+
             res.redirect(`/user/orderdetails/${ID}`);
         }
-        else{
+        else {
             console.log('user dont have wallet ')
-            const newwallet=new walletDB({
-                user:userid,
-                amount:db.totalprice,
-                transaction:[
+            const newwallet = new walletDB({
+                user: userid,
+                amount: db.totalprice,
+                transaction: [
                     {
-                        typeoftransaction:'debit',
-                        amountOfTransaction:db.totalprice,
+                        typeoftransaction: 'debit',
+                        amountOfTransaction: db.totalprice,
                         dateOfTransaction: nowdate
-                                                
+
                     }
                 ]
-               
+
 
 
             })
             newwallet.save()
             res.redirect(`/user/orderdetails/${ID}`)
         }
-        
+
 
     } else {
         await checkoutDB.findByIdAndUpdate(ID, {
@@ -408,9 +538,9 @@ exports.return = async (req, res) => {
 
 }
 
-exports.wallet= async (req,res)=>{
+exports.wallet = async (req, res) => {
     console.log(req.params.id)
-    const wallet=await walletDB.findOne({user:req.params.id})
+    const wallet = await walletDB.findOne({ user: req.params.id })
     console.log(wallet)
-    res.render('user/wallet',{wallet})
+    res.render('user/wallet', { wallet })
 }

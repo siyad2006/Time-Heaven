@@ -227,7 +227,7 @@
             <form>
                 <div class="mb-3">
                     <label for="categorySelect" class="form-label">Select Category</label>
-                    <select class="form-select" id="categorySelect">
+                    <select class="form-select" id="categorySelect" >
                         <option value="" disabled selected>Select a category</option>
                         {{#each categories}}
 
@@ -236,16 +236,7 @@
 
                     </select>
                 </div>
-                <div class="mb-3">
-                    <label for="colorSelect" class="form-label">Select Color</label>
-                    <select class="form-select" id="colorSelect">
-                        <option value="" disabled selected>Select a color</option>
-                        <option value="black">Black</option>
-                        <option value="white">White</option>
-                        <option value="red">Red</option>
-                    </select>
-                </div>
-
+               
             </form>
             <select id="sortOptions" onchange="sortProducts()">
                 <option value="default">Sort By</option>

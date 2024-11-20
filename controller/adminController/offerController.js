@@ -23,7 +23,9 @@ exports.createoffer = async (req, res) => {
     const date = new Date(Expire)
     const startdate = new Date(req.body.startdate)
 
-
+if(persent>75){
+    return res.status(404).send('cannot add more than 75% ');
+}
     const isnameactive = await offerDB.findOne({ name: name })
     console.log(isnameactive)
 
@@ -31,7 +33,18 @@ exports.createoffer = async (req, res) => {
         return res.status(404).send('this name is already existas')
     }
 
+    startdate.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+    console.log(startdate)
+    if(startdate<Date.now()){
+        return res.status(404).send('Add a valid date ');
+       }
+    
+    if (startdate > date) {
+      return res.status(404).send('Start date cannot be later than expire date');
+    }
 
+    
 
     const products = await productDB.find({ category: category })
 
@@ -75,7 +88,7 @@ exports.createoffer = async (req, res) => {
                     offerprice: offerPrice,
                     regularprice: offerPrice
 
-                })
+                }).then(()=>console.log('succeeeeess')).catch((err)=> console.log(err))
             }
             console.log('successfully updated the product to new offer ')
             // return  res.redirect('/admin/addoffer')
@@ -165,8 +178,7 @@ exports.deleteoffer= async (req,res)=>{
     res.redirect('/admin/offer')
 
 }
-
-// for get edit offer page 
+ 
 exports.editoffer= async (req,res)=>{
     // console.log('this is for edit offer ')
     const ID= req.params.id
@@ -233,36 +245,3 @@ exports.posteditoffer= async (req,res)=>{
     
 }
 
-
-
-// exports.restorePricesAfterOfferExpiration = async () => {
-//     // Get all expired offers
-//     const expiredOffers = await offerDB.find({
-//         expire: { $lt: new Date() } // Get offers where expire date is less than current date
-//     });
-
-//     for (let offer of expiredOffers) {
-//         // Find all products that were part of this offer's category
-//         const products = await productDB.find({ category: offer.category });
-
-//         // Loop through products and restore their prices
-//         for (let item of products) {
-//             const productId = item._id;
-//             const realprice = item.realprice;  // The original price saved before the offer was applied
-
-//             // Update the product to restore the original price
-//             await productDB.findByIdAndUpdate(productId, {
-//                 regularprice: realprice,  // Restore the original price
-//                 offerprice: null,         // Remove the offer price
-//                 offerPersent: null,
-//                 existOffer: false
-//             }, { new: true });
-
-//             console.log(`Restored price for product: ${item.name}`);
-//         }
-
-       
-//         await offerDB.findByIdAndDelete(offer._id);
-//         console.log(`Expired offer deleted: ${offer.name}`);
-//     }
-// };

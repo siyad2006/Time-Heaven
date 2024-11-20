@@ -64,6 +64,11 @@ const productSchema = new Schema({
         type:Schema.Types.ObjectId,
         required:false,
         ref:'offer'
+    },
+    sold:{
+        type:Number,
+        required:false
+     
     }
 }, { timestamps: true }
 

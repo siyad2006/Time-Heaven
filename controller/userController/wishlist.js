@@ -5,6 +5,7 @@ const wishlistDB=require('../../schema/wishlistSchema')
 
 exports.getpage=async (req,res)=>{
     const userid=req.session.userId
+    console.log(userid)
     if(!userid){
         return res.redirect('/user/login')
     }
@@ -24,7 +25,12 @@ exports.getpage=async (req,res)=>{
 exports.additem= async (req,res)=>{
     const ID=req.body.productId
     const userid=req.session.userId
-    
+    // const userid=req.session.userId
+    console.log(userid)
+    // if(userid==undefined){
+    //     console.log('entered to debug code ')
+    //     return res.send('Redirecting to login...')
+    // }
     console.log('entered to the add code ')
     const userhave=await wishlistDB.findOne({user:userid})
     if(userhave){

@@ -7,6 +7,13 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
+<style>
+    @media only screen and (max-width: 768px) {
+        .mar {
+            margin-top: 55px;
+        }
+    }
+</style>
 
 <body>
     <nav class="navbar na navbar-expand-lg fixed-top">
@@ -41,7 +48,7 @@
                     <a href="#" class="text-white ms-3">
                         <i class="bi bi-search"></i>
                     </a>
-                    <a href="#" class="text-white ms-3">
+                    <a href="/user/wishlist" class="text-white ms-3">
                         <i class="bi bi-heart"></i>
                     </a>
                     <a href="/user/cart/{{userid}}" class="text-white ms-3">
@@ -50,7 +57,7 @@
                     <a href="/user/profile" class="text-white ms-3">
                         <i class="bi bi-person"></i>
                     </a>
-                    
+
                 </div>
             </div>
         </div>
@@ -65,7 +72,7 @@
             <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2"
                 aria-label="Slide 3"></button>
         </div>
-        <div class="carousel-inner" style="margin-top: 55px;">
+        <div class="carousel-inner mar">
             <div class="carousel-item active" data-bs-interval="10000">
                 <img src="/img/banner1.jpg" class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block">
@@ -171,61 +178,65 @@
 
 
 
-            {{!-- <div class="col-12 col-sm-6 col-md-4 mb-4">
-                <div class="card">
+    {{!-- <div class="col-12 col-sm-6 col-md-4 mb-4">
+        <div class="card">
+            <img src="/{{this.image.[0]}}" class="card-img-top" alt="{{this.title}}">
+            <div class="card-body">
+                <h5 class="card-title text-center">{{this.name}}</h5> --}}
+                {{!-- <i class="card-text"> {{this.discription}} </i> --}}
+                {{!-- <p class="card-text price-tag" style="text-align: center;margin: 10px; "> RS :
+                    {{this.regularprice}}</p>
+
+                <div class="d-flex justify-content-center">
+                    <a href="/user/details/{{this.id}}" class="btn btn-shadow"
+                        style="background-color: #222C74; color:white">Show</a>
+                </div>
+
+
+            </div>
+        </div>
+    </div> --}}
+
+
+
+    <div class="container mt-5 mb-3">
+        <div class="row">
+            {{#each products}}
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3"> <!-- Changed col-12 to col-6 for mobile -->
+                <div class="card h-100">
                     <img src="/{{this.image.[0]}}" class="card-img-top" alt="{{this.title}}">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">{{this.name}}</h5> --}}
-                        {{!-- <i class="card-text"> {{this.discription}} </i> --}}
-                        {{!-- <p class="card-text price-tag" style="text-align: center;margin: 10px; "> RS :
-                            {{this.regularprice}}</p>
+                    <div class="card-body p-2">
+                        <h6 class="card-title text-center mb-1" style="font-size: 0.9em;">{{this.name}}</h6>
+                        <!-- Smaller font size for title -->
+
+                        <!-- Unified container for price display -->
+                        <p class="card-text price-tag text-center mb-2" style="min-height: 45px; font-size: 0.8em;">
+                            {{#if this.offerprice}}
+                            <!-- If offerprice exists, show regular price with a strikethrough and offer price -->
+                            <span style="text-decoration: line-through; color: grey; font-size: 0.75em;">RS:
+                                {{this.realprice}}</span><br>
+                            <span style="font-weight: bold; color: #d9534f; font-size: 0.85em;">Offer Price: RS:
+                                {{this.offerprice}}</span><br>
+                            {{#if this.offerPersent}}
+                            <span class="text-success" style="font-size: 0.7em;">Save {{this.offerPersent}}%</span>
+                            {{/if}}
+                            {{else}}
+                            <!-- Display regular price with consistent styling if no offer -->
+                            <span style="font-weight: bold; color: #000; font-size: 0.85em;">RS:
+                                {{this.regularprice}}</span>
+                            {{/if}}
+                        </p>
 
                         <div class="d-flex justify-content-center">
-                            <a href="/user/details/{{this.id}}" class="btn btn-shadow"
-                                style="background-color: #222C74; color:white">Show</a>
+                            <a href="/user/details/{{this.id}}" class="btn btn-shadow btn-sm px-2"
+                                style="background-color: #222C74; color: white; font-size: 0.8em;">Show</a>
                         </div>
-
-
-                    </div>
-                </div>
-            </div> --}}
-
-
-
-  <div class="container mt-5 mb-3">
-    <div class="row">
-        {{#each products}}
-        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3"> <!-- Changed col-12 to col-6 for mobile -->
-            <div class="card h-100">
-                <img src="/{{this.image.[0]}}" class="card-img-top" alt="{{this.title}}">
-                <div class="card-body p-2">
-                    <h6 class="card-title text-center mb-1" style="font-size: 0.9em;">{{this.name}}</h6> <!-- Smaller font size for title -->
-
-                    <!-- Unified container for price display -->
-                    <p class="card-text price-tag text-center mb-2" style="min-height: 45px; font-size: 0.8em;">
-                        {{#if this.offerprice}}
-                            <!-- If offerprice exists, show regular price with a strikethrough and offer price -->
-                            <span style="text-decoration: line-through; color: grey; font-size: 0.75em;">RS: {{this.realprice}}</span><br>
-                            <span style="font-weight: bold; color: #d9534f; font-size: 0.85em;">Offer Price: RS: {{this.offerprice}}</span><br>
-                            {{#if this.offerPersent}}
-                                <span class="text-success" style="font-size: 0.7em;">Save {{this.offerPersent}}%</span>
-                            {{/if}}
-                        {{else}}
-                            <!-- Display regular price with consistent styling if no offer -->
-                            <span style="font-weight: bold; color: #000; font-size: 0.85em;">RS: {{this.regularprice}}</span>
-                        {{/if}}
-                    </p>
-
-                    <div class="d-flex justify-content-center">
-                        <a href="/user/details/{{this.id}}" class="btn btn-shadow btn-sm px-2"
-                            style="background-color: #222C74; color: white; font-size: 0.8em;">Show</a>
                     </div>
                 </div>
             </div>
+            {{/each}}
         </div>
-        {{/each}}
     </div>
-</div>
 
 
 

@@ -182,7 +182,7 @@ const resentotp = async (req, res) => {
 
 
         res.json({ success: true, message: 'OTP resent successfully.', redirectUrl: '/user/otp' });
-        
+
     } catch (error) {
         console.log('Error resending OTP:', error);
         res.json({ success: false, message: 'Failed to resend OTP.', error: error.message });
@@ -228,8 +228,8 @@ const postlogin = async (req, res) => {
                 } else {
                     req.session.email_profile = Email
                     req.session.loginuser = true;
-                   
-                   req.session.userId = name._id;
+
+                    req.session.userId = name._id;
                     // console.log(req.session)
                     res.json({ success: true, message: 'the message is sucess', redirectUrl: '/user/home' })
 
@@ -261,31 +261,20 @@ const postlogin = async (req, res) => {
 const lo = async (req, res) => {
     // console.log(req.session.passport.user)
     try {
-        // if(req.session.passport.user){
-        //     console.log('entered to passport ')
-        //     req.session.loginuser = true
-        //     req.session.userId=req.session.passport.user
-        //     const email=await UserDB.findOne({_id:req.session.userId})
-        //     console.log(email.Email)
-        //     req.session.email_profile=email.Email
-
-        // }else{
-        //     console.log('no passport')
-             
-        // }
-        if(req.session.passport && req.session.passport.user) {
+        
+        if (req.session.passport && req.session.passport.user) {
             console.log('entered to passport');
             req.session.loginuser = true;
             req.session.userId = req.session.passport.user;
-            
+
             try {
-                const email = await UserDB.findOne({_id: req.session.userId});
-                
+                const email = await UserDB.findOne({ _id: req.session.userId });
+
                 if (!email) {
                     console.log('User not found');
-                    return; 
+                    return;
                 }
-        
+
                 console.log(email.Email);
                 req.session.email_profile = email.Email;
             } catch (err) {
@@ -294,10 +283,10 @@ const lo = async (req, res) => {
         } else {
             console.log('no passport');
         }
-        
-        const userid=req.session.userId 
-        const products = await productDB.find({ isblocked: false }).limit(12);
-        res.render('user/home', { products , userid });
+
+        const userid = req.session.userId
+        const products = await productDB.find({ isblocked: false }).limit(8);
+        res.render('user/home', { products, userid });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Server Error');
@@ -308,7 +297,7 @@ const lo = async (req, res) => {
 let productDetails = async (req, res) => {
     const ID = req.params.id;
     let userid = req.session.userId
-   
+
     console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
     res.render('user/productdetailied', { product, userid });
@@ -337,20 +326,21 @@ let productDetails = async (req, res) => {
 // };
 
 const shoping = async (req, res) => {
-    const { page = 1, limit = 16, sort = 'default',search } = req.query;
+    const { page = 1, limit = 16, sort = 'default', search } = req.query;
     const skip = (page - 1) * limit;
     console.log(search)
     const categories = await category.find({ isblocked: "Listed" });
 
+    
     let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
     if (search) {
-        const regex = new RegExp(search, 'i'); 
+        const regex = new RegExp(search, 'i');
         productsQuery = productsQuery.find({
             name: { $regex: regex }
         });
     }
 
-  
+
 
     switch (sort) {
         case 'lowToHigh':
@@ -368,8 +358,8 @@ const shoping = async (req, res) => {
         case 'New arrivals':
             productsQuery = productsQuery.sort({ createdAt: -1 });
             break;
-        
-        
+
+
         default:
             break;
     }
@@ -395,7 +385,7 @@ const demo = async (req, res) => {
 
 const userprofile = async (req, res) => {
     try {
-      
+
         if (!req.session.email_profile) {
             console.log('Session email_profile is missing');
             return res.redirect('/user/login'); // Redirect to login if email is missing
@@ -412,7 +402,7 @@ const userprofile = async (req, res) => {
             const userdata = userid[0]._id;
             const user = await UserDB.findById(userdata);
 
-          
+
             res.render('user/profile', { user, success: req.flash('sucess_update') });
         } else {
             console.log('No user found with the specified email');
@@ -441,23 +431,23 @@ const updateprofile = async (req, res) => {
     const ID = req.params.id
     const username = req.body.username
     // const email = req.body.email
-    const phone =req.body.phone
-    console.log(username,  phone)
+    const phone = req.body.phone
+    console.log(username, phone)
     console.log(phone)
     // const isactive = await UserDB.findOne({ username: username.trim() })
     // const emailactive = await UserDB.findOne({ Email: email.trim() })
     // console.log(isactive,emailactive)
     // if()
     // if (!isactive || !emailactive) {
-        // req.session.email_profile = email.trim();
-        console.log('entered to it')
-        await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone }).then(()=> console.log('success')).catch((err)=> console.log(err))
-        req.flash('sucess_update', 'sucessfully updated profile')
-        res.redirect('/user/profile')
+    // req.session.email_profile = email.trim();
+    console.log('entered to it')
+    await UserDB.findByIdAndUpdate(ID, { username: username.trim(), phonenumber: phone }).then(() => console.log('success')).catch((err) => console.log(err))
+    req.flash('sucess_update', 'sucessfully updated profile')
+    res.redirect('/user/profile')
 
     // } else {
-        // req.flash('sucess_update', 'this username or Email already in use')
-        // res.redirect('/user/profile')
+    // req.flash('sucess_update', 'this username or Email already in use')
+    // res.redirect('/user/profile')
 
     // }
 
@@ -483,8 +473,8 @@ const updatepassword = async (req, res) => {
             return res.json({ success: false, message: "Current password must be 6 or more characters" });
         }
 
-        if(newPassword.length<6){
-            return res.json({success:false,message:"new password must be six or more charactor "})
+        if (newPassword.length < 6) {
+            return res.json({ success: false, message: "new password must be six or more charactor " })
         }
 
         if (newPassword !== confirmPassword) {
@@ -543,7 +533,7 @@ const createaddress = async (req, res) => {
             state: state,
             pincode: pincode,
             country: country,
-            title:title
+            title: title
 
         })
         await addresssave.save()
@@ -562,7 +552,7 @@ const createaddress = async (req, res) => {
 const deleteaddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
-   
+
     await addressDB.findByIdAndDelete(ID)
     res.redirect(`/user/address/${userid}`)
 }
@@ -604,8 +594,8 @@ const updateaddress = async (req, res) => {
 const updatingAddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
-    const { name, phone, address, city, state, pincode, country , title} = req.body
- 
+    const { name, phone, address, city, state, pincode, country, title } = req.body
+
 
     try {
         await addressDB.findByIdAndUpdate(ID, {
@@ -617,7 +607,7 @@ const updatingAddress = async (req, res) => {
             state: state,
             pincode: pincode,
             country: country,
-            title:title
+            title: title
         }).then((data) => console.log('changed successfully')).catch(err => console.log(err))
 
         res.redirect(`/user/address/${userid}`)

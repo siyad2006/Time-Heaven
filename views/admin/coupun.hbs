@@ -128,41 +128,38 @@
 <body>
 
     <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <ul class="navbar-nav w-100">
-            <li class="nav-item">
-                <a class="nav-link" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-box"></i> Product Manage</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-file-invoice"></i> Order Manage</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-chart-line"></i> Sales Report</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-gift"></i> Offer</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="/admin/coupunu"><i class="fas fa-ticket-alt"></i> Coupon</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#"><i class="fas fa-tags"></i> Category</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-star"></i> Brand</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-cog"></i> Settings</a>
-            </li>
-        </ul>
-    </div>
-
+   <div class="sidebar" id="sidebar">
+    <ul class="navbar-nav w-100">
+      <li class="nav-item">
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line"></i> Sales Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/offer"><i class="fas fa-gift"></i> Offer</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/admin/coupun"><i class="fas fa-ticket-alt"></i> Coupon</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/category"><i class="fas fa-tags"></i> Category</a>
+      </li>
+     
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout</a>
+      </li>
+    </ul>
+  </div>
     <!-- Sidebar toggle button -->
     <button class="sidebar-toggler" id="sidebar-toggler">
         &#x22EE;
@@ -457,6 +454,24 @@
                     icon: 'warning',
                     title: 'warning',
                     text: 'maximum amount must be a positive number '
+                })
+                return false
+            }
+            if(minimum<maximum){
+
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'cann add discount more  than minimum purchase amount  '
+                })
+                return false
+            }
+
+            if(new Date(expire)<Date.now()){
+                   Swal.fire({
+                    icon: 'warning',
+                    title: 'warning',
+                    text: 'enter a valid date   '
                 })
                 return false
             }

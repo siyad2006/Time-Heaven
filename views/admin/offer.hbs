@@ -141,40 +141,37 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <ul class="navbar-nav w-100">
-            <li class="nav-item">
-                <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-box"></i> Product Manage</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-file-invoice"></i> Order Manage</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-chart-line"></i> Sales Report</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="#"><i class="fas fa-gift"></i> Offer</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-ticket-alt"></i> Coupon</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#"><i class="fas fa-tags"></i> Category</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-star"></i> Brand</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-cog"></i> Settings</a>
-            </li>
-        </ul>
-    </div>
-
+    <ul class="navbar-nav w-100">
+      <li class="nav-item">
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link  " href="/admin/salesreport"><i class="fas fa-chart-line"></i> Sales Report</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/admin/offer"><i class="fas fa-gift"></i> Offer</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt"></i> Coupon</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="/admin/category"><i class="fas fa-tags"></i> Category</a>
+      </li>
+     
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout</a>
+      </li>
+    </ul>
+  </div>
 
     <button class="sidebar-toggler" id="sidebar-toggler">
         &#x22EE;
@@ -184,7 +181,11 @@
     <div class="content" id="content">
         <div class="container">
             <h2 class="my-4">Offer Management</h2>
-
+<div style="align-items: end;">
+<form action="/admin/addoffer" method="get">
+<input type="submit" value="Add Offer" class="btn btn-danger">
+</form>
+</div>
 
             <h4 class="my-4">Existing Offers</h4>
             <table class="table table-bordered">

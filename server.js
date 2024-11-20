@@ -64,7 +64,7 @@ hbs.registerHelper('or', function (a, b) {
     return a || b;
 });
 hbs.registerHelper('formatDate', function (date) {
-    return new Date(date).toLocaleDateString('en-US'); // This formats it to 'MM/DD/YYYY'
+    return new Date(date).toLocaleDateString('en-US');  
 });
 
 cron.schedule('0 0 * * *', () => {
