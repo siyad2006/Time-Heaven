@@ -173,6 +173,7 @@
                         <th>Payment Method</th>
                         <th>status</th>
                         <th>action</th>
+                        <th></th>
 
 
                     </tr>
@@ -193,7 +194,7 @@
 
 
                         </td>
-                        <td><select class="order-status" data-id="{{this._id}}">
+                        {{!-- <td><select class="order-status" data-id="{{this._id}}">
                                 <option value="pending">pending</option>
                                 <option value="shipped">
                                     shipped
@@ -205,8 +206,15 @@
                                     canceled
                                 </option>
 
-                            </select></td>
+                            </select>
+                            </td> --}}
+                            <td>
+                                <form action="/admin/orderdetails/{{this._id}}"  method="get">
+                                <input type="submit" value="View" class="btn btn-outline-info">
+                                </form>
+                            </td>
                         {{/each }}
+
                     </tr>
 
 

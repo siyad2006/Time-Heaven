@@ -89,8 +89,6 @@
         <h2 class="text-center mb-4">Checkout</h2>
         <div class="row">
 
-
-            <!-- Left Side: Cart Products -->
             <div class="col-md-6">
                 <h4>Cart Products</h4>
                 <div class="list-group">
@@ -128,10 +126,109 @@
                         </div>
                     </div>
                     {{/each}} --}}
+<!-- Coupon Section -->
 
+
+{{!-- <div class="coupon-section mt-3">
+    <form id="coupunForm" class="d-flex align-items-center">
+        <input
+            type="text"
+            name="couponCode"
+            id="couponInput"
+            placeholder="Enter coupon code"
+            class="form-control me-2"
+            style="max-width: 200px;"
+        />
+        <button type="submit" class="btn btn-primary btn-sm">Apply Coupon</button>
+    </form>
+    <div class="mt-2">
+        <!-- Remove Coupon Button -->
+        <form action="/user/cart/remove-coupon" method="post">
+            <button type="submit" class="btn btn-danger btn-sm">Remove Coupon</button>
+        </form>
+    </div>
+</div> --}}
+
+<script>
+            document.getElementById('couponForm').addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevents the form from submitting normally
+                console.log('Form submitted');
+                const coupun = document.getElementById('couponInput').value;
+                const id = document.getElementById('ID').value
+                const x = document.getElementById('ID').value
+                const data = {
+                    coupunId: coupun
+                }
+
+                const result = await fetch('/user/applycoupun', {
+                    method: 'post',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+
+                const response = await result.json();
+
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'successfully added coupun',
+                        text: 'successfully added coupun',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => window.location.href = /user/cart/${x})
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'an error occured',
+                        text: response.message
+
+                    })
+                }
+
+
+            });
+        </script>
+
+<style>
+    /* Coupon Section Styling */
+.coupon-section {
+    font-size: 1rem;
+}
+
+/* Input Field */
+.coupon-section input {
+    padding: 5px;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.coupon-section button {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+
+/* Adjustments for Mobile */
+@media (max-width: 768px) {
+    .coupon-section {
+        text-align: center;
+    }
+    .coupon-section form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .coupon-section input {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    .coupon-section button {
+        width: 100%;
+    }
+}
+</style>
                     {{#each cartProducts}}
-                    <div class="list-group-item d-flex justify-content-between">
-                        <!-- Store product IDs as data attributes for retrieval -->
+                    <div class="list-group-item d-flex justify-content-between"> 
                         <input type="hidden" class="product-id" value="{{this._id}}">
                         <input type="hidden" class="product-qty" value="{{this.qty}}">
                         <div class="product-item" data-product-id="{{this._id}}" data-qty="{{this.qty}}">
@@ -145,8 +242,7 @@
                                 {{#if (gt this.offerprice 0)}}
                                 <p style="color: green; font-weight:700">offerprice : {{this.offerprice}}</p>
                                 {{/if}}
-
-                                {{!-- <p></p> --}}
+ 
                             </div>
                         </div>
                     </div>
@@ -175,8 +271,7 @@
                         <label for="phone" class="form-label">Phone Number</label>
                         <input type="text" class="form-control" id="phone" required>
                     </div>
-
-                    <!-- Address Dropdown -->
+ 
                     <div class="mb-3">
                         <label for="addressSelect" class="form-label"><strong>Select Address</strong></label>
                         <select id="addressSelect" class="form-select mb-4" required>
@@ -191,8 +286,7 @@
                             {{/each}}
                         </select>
                     </div>
-
-                    <!-- Additional Address Information -->
+ 
                     <div class="mb-3">
                         <label for="street" class="form-label">Street Address</label>
                         <input type="text" class="form-control" id="street" required>
@@ -279,13 +373,11 @@
 
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Bootstrap JS -->
+ 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-
-    <!-- JavaScript to Populate Form Fields -->
+ 
     <script>
         document.getElementById('addressSelect').addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];

@@ -27,6 +27,7 @@ exports.additem= async (req,res)=>{
     const userid=req.session.userId
     // const userid=req.session.userId
     console.log(userid)
+    
     // if(userid==undefined){
     //     console.log('entered to debug code ')
     //     return res.send('Redirecting to login...')

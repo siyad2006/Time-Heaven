@@ -117,7 +117,7 @@ const otpVerification = async (req, res) => {
             })
 
             await saveUser.save()
-            res.json({ success: true, message: 'ok success not', redirectUrl: '/user/home' });
+            res.json({ success: true, message: 'ok success not', redirectUrl: '/user/login' });
 
             req.session.forOTP = true
         } catch (err) {
@@ -304,26 +304,6 @@ let productDetails = async (req, res) => {
 };
 
 
-// const shoping = async (req, res) => {
-//     const { page = 1, limit = 12 } = req.query;
-//     const skip = (page - 1) * limit;
-
-//     const categories = await category.find({ isblocked: "Listed" });
-//     const products = await productDB.find({ isblocked: false })
-//         .skip(skip)
-//         .limit(limit)
-//         .populate('category')
-//         .exec();
-
-//     const totalProducts = await productDB.countDocuments({ isblocked: false });
-
-//     res.render('user/shoping', {
-//         products,
-//         currentPage: Number(page),
-//         totalPages: Math.ceil(totalProducts / limit),
-//         categories
-//     });
-// };
 
 const shoping = async (req, res) => {
     const { page = 1, limit = 16, sort = 'default', search } = req.query;
@@ -390,8 +370,7 @@ const userprofile = async (req, res) => {
             console.log('Session email_profile is missing');
             return res.redirect('/user/login'); // Redirect to login if email is missing
         }
-
-        // Aggregate to find the user ID based on the session email
+ 
         const userid = await UserDB.aggregate([
             { $match: { Email: req.session.email_profile } },
             { $project: { _id: 1 } }
@@ -423,12 +402,19 @@ const logout = async (req, res) => {
 
 const editprofile = async (req, res) => {
     const ID = req.params.id
+    if(ID!==req.session.userId){
+     return   res.redirect('/user/login')
+    }
     const user = await UserDB.findById(ID)
     res.render('user/editprofile', { user })
 }
 
 const updateprofile = async (req, res) => {
     const ID = req.params.id
+ 
+    if(ID!==req.session.userId){
+     return   res.redirect('/user/login')
+    }
     const username = req.body.username
     // const email = req.body.email
     const phone = req.body.phone
@@ -455,6 +441,11 @@ const updateprofile = async (req, res) => {
 
 const changepassword = async (req, res) => {
     const ID = req.params.id
+    
+    if(ID!==req.session.userId){
+        return   res.redirect('/user/login')
+    }
+
     const user = await UserDB.findById(ID)
     res.render('user/changepassword', { user })
 }
@@ -463,6 +454,9 @@ const changepassword = async (req, res) => {
 const updatepassword = async (req, res) => {
     try {
         const userId = req.params.id;
+        if(userId!==req.params.id){
+            return res.redirect('/user/login')
+        }
         const { password, newPassword, confirmPassword } = req.body;
 
         if (!password || !newPassword || !confirmPassword) {
@@ -503,6 +497,9 @@ const updatepassword = async (req, res) => {
 
 const address = async (req, res) => {
     const ID = req.params.id
+    if(ID!==req.session.userId){
+        return   res.redirect('/user/login')
+    }
     const address = await addressDB.find({ user: ID }).limit(3)
     const user = await UserDB.findById(ID)
 
@@ -552,6 +549,9 @@ const createaddress = async (req, res) => {
 const deleteaddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
+    if(userid!==req.session.userId){
+        return res.redirect('/user/login')
+    }
 
     await addressDB.findByIdAndDelete(ID)
     res.redirect(`/user/address/${userid}`)
@@ -570,7 +570,9 @@ const deleteaddress = async (req, res) => {
 const updateaddress = async (req, res) => {
     const ID = req.params.id;
     const userID = req.params.user;
-
+if(userID!==req.session.userId){
+    return res.redirect('/user/login')
+}
     // Validate ObjectIds
     if (!mongoose.Types.ObjectId.isValid(ID) || !mongoose.Types.ObjectId.isValid(userID)) {
         return res.status(400).send("Invalid ID format");

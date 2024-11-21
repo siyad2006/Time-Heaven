@@ -141,38 +141,38 @@
 <body>
 
     <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <ul class="navbar-nav w-100">
-      <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order Manage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line"></i> Sales Report</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link active" href="/admin/offer"><i class="fas fa-gift"></i> Offer</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt"></i> Coupon</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/category"><i class="fas fa-tags"></i> Category</a>
-      </li>
-     
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout</a>
-      </li>
-    </ul>
-  </div>
+    <div class="sidebar" id="sidebar">
+        <ul class="navbar-nav w-100">
+            <li class="nav-item">
+                <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order Manage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line"></i> Sales Report</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/offer"><i class="fas fa-gift"></i> Offer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt"></i> Coupon</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/category"><i class="fas fa-tags"></i> Category</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout</a>
+            </li>
+        </ul>
+    </div>
 
     <!-- Sidebar toggle button -->
     <button class="sidebar-toggler" id="sidebar-toggler">
@@ -183,7 +183,7 @@
     <div class="content" id="content">
         <div class="offer-form" style="margin-top: 70px;">
             <h4>Add Category Offer</h4>
-            <form id="offerForm"  onsubmit="return sending(event)" >
+            <form id="offerForm" onsubmit="return sending(event)">
                 <div class="form-group">
                     <label for="offerName">Offer Name</label>
                     <input name="name" type="text" class="form-control" id="offerName" placeholder="Enter offer name"
@@ -196,16 +196,15 @@
                 </div>
 
                 <div class="form-group">
-                    <!-- <label for="offerDescription">select a category</label> -->
-                    <!-- <textarea class="form-control" id="offerDescription" placeholder="Enter offer description" rows="3"></textarea> -->
-                    <select name="category" id="category" class="custom-select" name="category">
-                        <option value="default" disabled selected>Select a Category</option>
-                        {{#each category}}
-                        <option value="{{this.id}}">{{categoryname}}</option>
+                    <select name="category" id="product" class="custom-select" name="category" multiple>
+                        <option value="default" disabled>Select Products</option>
+                        {{#each products}}
+                        <option value="{{this.id}}" style="color: green;">Product Name: {{this.name}}, Rs:
+                            {{this.realprice}}</option>
                         {{/each}}
                     </select>
                 </div>
-                  
+
                 <div class="form-group">
                     <label for="discount">Discount Percentage</label>
                     <input type="number" name="persent" class="form-control" id="discount"
@@ -225,63 +224,61 @@
         </div>
     </div>
 
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  async function sending(event) {
-    event.preventDefault(); 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function sending(event) {
+            event.preventDefault();
 
-   const start=document.getElementById('start').value
+            // Collect selected products
+            const selectedOptions = document.getElementById('product').selectedOptions;
+            const selectedProducts = Array.from(selectedOptions).map(option => option.value);
 
- 
-    const formData = new FormData(document.getElementById('offerForm'));
+            const data = {
+                start: document.getElementById('start').value,
+                name: document.getElementById('offerName').value,
+                discription: document.getElementById('offerDescription').value,
+                products: selectedProducts, // Send the array of selected product IDs
+                discount: Number(document.getElementById('discount').value),
+                expire: document.getElementById('expire').value
+            };
 
-   
+            try {
+                const response = await fetch('/admin/product-offer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-    const data = {};
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Error: ${errorText}`,
+                    });
+                } else {
+                    const result = await response.json();
+                    swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Offer created successfully!',
+                    }).then(() => {
+                        window.location.href = '/admin/offer';
+                    });
+                }
+            } catch (error) {
+                console.error('Error submitting the form:', error);
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while submitting the form. Please try again.',
+                });
+            }
+        }
+    </script>
 
-    try {
-      
-      const response = await fetch('/admin/createoffer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: `Error: ${errorText}`,
-        });
-      } else {
-        const result = await response.json();
-        swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Offer created successfully!',
-        }).then(() => {
-          
-          {{!-- document.getElementById('offerForm').reset(); --}}
-          window.location.href='/admin/offer'
-         
-        });
-      }
-    } catch (error) {
-      console.error('Error submitting the form:', error);
-      swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'An error occurred while submitting the form. Please try again.',
-      });
-    }
-  }
-</script>
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

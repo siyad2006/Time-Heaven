@@ -241,11 +241,11 @@ exports.addcoupun = async (req, res) => {
         const coupunid = req.body.coupunId;
         const userid = req.session.userId;
         const coupun = await coupunDB.findOne({ code: coupunid });
-            const coupunId=coupun._id
+            
         if (!coupun) {
             return res.json({ success: false, message: 'There is no coupon with this code' });
         }
-
+        const coupunId=coupun._id
         console.log('The coupon is active');
 
         if (String(coupun.user) === String(userid)) {
@@ -292,3 +292,44 @@ exports.addcoupun = async (req, res) => {
     }
 };
 
+
+
+exports.removecoupun= async (req,res)=>{
+    console.log(req.body)
+    const userid=req.body.user
+    const cart = await cartDB.findOne({user:userid})
+    let total=cart.totalAmount
+ 
+   const coupun=  cart.coupun
+   const isactive=await coupunDB.findById(coupun)
+   if(!isactive ){
+    return res.json({success:false})
+   }
+   let down=isactive.maximumDiscount
+   const coupunuser=isactive.user
+   let count=0
+   for(let use of coupunuser){
+    if(userid==use){
+        console.log(use,userid)
+        count++
+    }
+   } 
+   if(count>0){
+    const updatedAmount=Number(total+down)
+   
+     await coupunDB.findByIdAndUpdate(isactive._id,{
+        $pull:{user:userid}
+     }).then(()=>console.log('pulled the user '))
+     await cartDB.updateOne({coupun:isactive._id},{
+         coupun:null,
+            totalAmount:updatedAmount
+        
+     })
+     console.log('every think is fine')
+     res.json({success:true,message:'coupun removed '})
+   }else{
+    res.json({success:true,message:'there is no coupun to remove'})
+   }
+   
+
+}

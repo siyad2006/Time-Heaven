@@ -12,6 +12,11 @@ const categorySchema = new mongoose.Schema({
     isblocked: {
         type: String,
         default: 'Unlisted'
+    },
+    existOffer:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'offer',
+        required:true
     }
 });
 

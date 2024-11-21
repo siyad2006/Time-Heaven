@@ -96,7 +96,7 @@ exports.getsalesreport = async (req, res) => {
       .populate('userID')
  
       
-//  return res.json(arr)
+    //  return res.json(arr)
     let totalOrders = salesData.length;
     let totalRevenue = 0;
     let totalItemsSold = 0;
@@ -186,6 +186,7 @@ exports.downloadpdf = async (req, res) => {
     
     doc.pipe(fs.createWriteStream(filePath));
 
+  
  
     doc.fontSize(20).text('Sales Report', { align: 'center' });
     doc.moveDown();
@@ -268,3 +269,15 @@ exports.downloadExcel = async (req, res) => {
     res.status(500).send('Error generating Excel');
   }
 };
+
+
+exports.orderview= async (req,res)=>{
+  console.log(req.params.id)
+  let ID=req.params.id
+  const order= await cheackoutDB.findById(ID).populate('products.productId')
+  const discount=order.discount
+  const realprice=Number(order.totalprice+discount+order.applayedcoupun)
+  // return res.json(order)
+  res.render('admin/orderview',{order,discount,realprice})
+  
+}

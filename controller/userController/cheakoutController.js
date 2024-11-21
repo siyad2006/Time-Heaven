@@ -10,6 +10,7 @@ const cheakout = require('../../schema/cheakout');
 // const cheakout = require('../../schema/cheakout');
 const ObjectId = mongoose.Types.ObjectId;
 const walletDB = require('../../schema/wallet')
+const coupunDB= require('../../schema/coupunSchama')
 
 exports.getcheackout = async (req, res) => {
     const cartId = req.params.cart;
@@ -46,11 +47,20 @@ exports.placeorder = async (req, res) => {
     const { name, phone, street, city, state, postalCode, paymentMethod, products, country } = req.body;
     console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
 
-    const cart = await cartDB.findOne({ user: user })
+    const cart = await cartDB.findOne({ user: user });
+
+    if (!cart) {
+        throw new Error("Cart not found for the user.");
+    }
+     
     const total = cart.totalAmount;
-
-   console.log(cart)
-
+     let coupunamount=0
+     if(cart&& cart.coupun){
+        const coupun=await coupunDB.findById(cart.coupun)
+        coupunamount+=Number(coupun.maximumDiscount)
+     }
+     console.log(coupunamount)
+ 
 
 
 
@@ -111,7 +121,9 @@ exports.placeorder = async (req, res) => {
                     pincode: postalCode,
                     country: country
                 },
-                discount:discounts
+                discount:discounts,
+                applayedcoupun:coupunamount
+                 
             });
 
             await order.save();
@@ -283,10 +295,10 @@ exports.cancelorder = async (req, res) => {
                     return res.status(404).send(`Product with ID ${id} not found`);
                 }
 
-                if (singleItem.quantity < buyedqty) {
-                    console.log(`Insufficient stock for product with ID ${id}`);
-                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                }
+                // if (singleItem.quantity < buyedqty) {
+                //     console.log(`Insufficient stock for product with ID ${id}`);
+                //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                // }
 
              
                 singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
@@ -335,10 +347,10 @@ exports.cancelorder = async (req, res) => {
                     return res.status(404).send(`Product with ID ${id} not found`);
                 }
 
-                if (singleItem.quantity < buyedqty) {
-                    console.log(`Insufficient stock for product with ID ${id}`);
-                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
-                }
+                // if (singleItem.quantity < buyedqty) {
+                //     console.log(`Insufficient stock for product with ID ${id}`);
+                //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                // }
 
                 // product.sold -= item.qty
                 // console.log('Product sold:', product.sold);
@@ -375,10 +387,10 @@ exports.cancelorder = async (req, res) => {
                 return res.status(404).send(`Product with ID ${id} not found`);
             }
 
-            if (singleItem.quantity < buyedqty) {
-                console.log(`Insufficient stock for product with ID ${id}`);
-                return res.status(400).send(`Not enough stock for product with ID ${id}`);
-            }
+            // if (singleItem.quantity < buyedqty) {
+            //     console.log(`Insufficient stock for product with ID ${id}`);
+            //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
+            // }
 
             // product.sold -= item.qty
             
@@ -502,6 +514,37 @@ exports.return = async (req, res) => {
                 }
             ).then(() => console.log('Successfully updated the wallet'));
 
+
+            const canceledproducts = await checkoutDB.findById(ID)
+        const items = canceledproducts.products
+        for (let pro of items) {
+            const id = pro.productId;
+            const singleItem = await productDB.findById(id);
+            const buyedqty = pro.qty;
+
+            if (!singleItem) {
+                console.log(`Product with ID ${id} not found`);
+                return res.status(404).send(`Product with ID ${id} not found`);
+            }
+
+            if (singleItem.quantity < buyedqty) {
+                console.log(`Insufficient stock for product with ID ${id}`);
+                return res.status(400).send(`Not enough stock for product with ID ${id}`);
+            }
+
+        
+            
+            singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+            singleItem.quantity += buyedqty;
+
+          
+
+
+            await singleItem.save();
+        }
+
+
             res.redirect(`/user/orderdetails/${ID}`);
         }
         else {
@@ -522,6 +565,38 @@ exports.return = async (req, res) => {
 
             })
             newwallet.save()
+
+  
+            const canceledproducts = await checkoutDB.findById(ID)
+        const items = canceledproducts.products
+        for (let pro of items) {
+            const id = pro.productId;
+            const singleItem = await productDB.findById(id);
+            const buyedqty = pro.qty;
+
+            if (!singleItem) {
+                console.log(`Product with ID ${id} not found`);
+                return res.status(404).send(`Product with ID ${id} not found`);
+            }
+            
+            if (singleItem.quantity < buyedqty) {
+                console.log(`Insufficient stock for product with ID ${id}`);
+                return res.status(400).send(`Not enough stock for product with ID ${id}`);
+            }
+
+        
+            
+            singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+            singleItem.quantity += buyedqty;
+
+          
+
+
+            await singleItem.save();
+        }
+
+
             res.redirect(`/user/orderdetails/${ID}`)
         }
 
@@ -537,6 +612,7 @@ exports.return = async (req, res) => {
 
 
 }
+
 
 exports.wallet = async (req, res) => {
     console.log(req.params.id)

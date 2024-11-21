@@ -52,5 +52,7 @@ router.post('/posteditoffer/:id',offer.posteditoffer)
 router.get('/salesreport',order.getsalesreport)
 router.get('/salesreport/pdf',order.downloadpdf)
 router.get('/salesreport/excel',order.downloadExcel)
-
+router.get('/orderdetails/:id',order.orderview)
+router.get('/productoffer',offer.getproductoffer)
+router.post('/product-offer',offer.postproductoffer)
 module.exports = router

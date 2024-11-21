@@ -33,6 +33,16 @@ const offerSchema= new Schema({
         type:Boolean,
         required:false,
         default:true
+    },
+    tyoffer:{
+        type:String,
+        enum:['category','product'],
+        required:false
+    },
+    products:{
+        type:Schema.Types.ObjectId,
+        ref:'product',
+        required:false
     }
 },{timestamps:true})
 

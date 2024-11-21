@@ -208,17 +208,27 @@
             </div>
             <div class="card-body" style="display:flex;">
                 <form id="but" action="/user/cancelorder/{{order.id}}" onsubmit="return alerts(event)" method="post">
-                    <button type="submit"
+                      <button type="submit"
                         class="btn btn-danger btn-custom  {{#if (or (eq order.status 'canceled') (eq order.status 'shipped') (eq order.status 'return') (eq order.status 'delevered'))}}disabled{{/if}}"
                         style="display: inline;"><i class="fa-solid fa-times-circle me-2"></i>Cancel
-                        Order</button>
+                        Order</button> 
+                         
+                         {{!-- <button type="submit"
+        class="btn btn-danger btn-custom"
+        {{#if (or (eq order.status 'canceled') (eq order.status 'shipped') (eq order.status 'return') (eq order.status 'delevered'))}}
+        disabled="disabled"
+        {{/if}}
+        style="display: inline;">
+  <i class="fa-solid fa-times-circle me-2"></i>Cancel Order
+</button> --}}
+
                 </form>
 
                 {{!-- <button class="btn btn-warning btn-custom {{#if (eq order.status 'delevered')}}disabled{{/if}}"
                     style="display: inline;"><i class="fa-solid fa-exchange-alt me-2  "></i>Return/Replace</button> --}}
                 <form action="/user/return/{{order.id}}" method="post" onsubmit="return alerts(event)">
                     <button id="b"
-                        class="btn btn-warning btn-custom   {{#if (or (eq order.status 'canceled') (eq order.status 'pending') (eq order.status 'shipped') (eq order.status 'return'))}}disabled{{/if}}"
+                        class="btn btn-warning btn-custom   {{#if (or (eq order.status 'canceled') (eq order.status 'pending') )}}disabled{{/if}}"
                         style="display: inline;">
                         <i class="fa-solid fa-exchange-alt me-2"></i>Return/Replace
                     </button>
@@ -239,6 +249,15 @@ window.onload = function() {
     if (x === 'return') {
         console.log('entered to the main code ')
         b.style.display = 'none';
+        but.style.display='none'
+    }
+    if(x==='canceled'){
+        but.style.display='none'
+    }
+    if(x==='shipped'){
+        b.style.display = 'none'; 
+    }
+    if(x==='delevered'){
         but.style.display='none'
     }
 

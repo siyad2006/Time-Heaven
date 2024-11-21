@@ -100,26 +100,26 @@
         </div>
     </nav>
 
+
     <div class="container-fluid " style="margin-top: 80px;">
         <h1 class="text-center mb-4">Shopping Cart</h1>
-        <div class="text-end ">
-            <form id="couponForm">
-                <input type="hidden" value="{{userid}}" id="ID">
-                {{!-- <label for="couponInput">Apply Coupon:</label> --}}
-                <input type="text" id="couponInput" class="me-2" name="coupon" placeholder="Enter coupon code">
-                <button type="submit" class="me-3">Apply</button>
+        <input type="hidden" value="{{userid}}" id="ID">
+        <div class="coupon-section mt-4 ms-5 mb-2">
+            <form id="couponForm" class="d-flex align-items-center gap-2">
+                <input type="text" id="couponInput" placeholder="Enter coupon code" class="form-control"
+                    style="max-width: 250px;" />
+                <button type="submit" class="btn btn-primary btn-sm">Apply Coupon</button>
             </form>
         </div>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
-
 
         <script>
             document.getElementById('couponForm').addEventListener('submit', async function (event) {
                 event.preventDefault(); // Prevents the form from submitting normally
                 console.log('Form submitted');
                 const coupun = document.getElementById('couponInput').value;
-                const id=document.getElementById('ID').value
+                const id = document.getElementById('ID').value
+                const x = document.getElementById('ID').value
+                console.log(x)
                 const data = {
                     coupunId: coupun
                 }
@@ -139,13 +139,15 @@
                         icon: 'success',
                         text: 'successfully added coupun',
                         text: 'successfully added coupun',
-                        showConfirmButton:false,
-                        timer:1500
-                    }).then(()=> window.location.href=`/user/cart/${cart.id}`)
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(()=>{
+                        window.location.href=`/user/cart/${x}`
+                    } )
                 } else {
                     Swal.fire({
                         icon: 'warning',
-                        title:'an error occured',
+                        title: 'an error occured',
                         text: response.message
 
                     })
@@ -154,6 +156,12 @@
 
             });
         </script>
+
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.js"></script>
+
+
 
 
         <style>
@@ -186,7 +194,7 @@
                 background-color: #0056b3;
             }
         </style>
-
+        {{!--
         {{#each products}}
         <div class="row">
             <div class="col-12">
@@ -196,20 +204,18 @@
                     </div>
                     <div class="col-md-4 col-9">
                         <h5 style="font-weight: bold;">{{this.name}}</h5>
-                        {{!-- <p class="text-muted">{{this.name}}</p> --}}
+
                     </div>
                     <div class="col-md-2 col-6 text-center">
                         <span class="fw-bold" id="product-{{this._id}}-price" style="color: red;">Rs :
                             {{this.regularprice}}</span>
                     </div>
                     <div class="col-md-2 col-6 text-center">
-                        <!-- Display the quantity here -->
+
                         <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
                             data-product-id="{{this._id}}">
                     </div>
-                    {{!-- <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
-                        <button class="btn btn-danger btn-sm" data-product-id="{{this._id}}">Remove</button>
-                    </div> --}}
+
                     <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
                         <form action="/user/cart/remove" method="POST">
                             <input type="hidden" name="productId" value="{{this._id}}">
@@ -238,7 +244,153 @@
                 </div>
             </div>
         </div>
+        --}}
+        <div class="container" style="max-width: 90%; margin: auto;">
+            {{#each products}}
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="cart-item d-flex flex-column flex-md-row align-items-center p-3 shadow-sm rounded bg-white"
+                        data-product-id="{{this._id}}">
+                        <!-- Product Image -->
+                        <div class="cart-img col-12 col-md-2 text-center mb-3 mb-md-0">
+                            <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid rounded shadow-sm">
+                        </div>
 
+                        <!-- Product Details -->
+                        <div class="cart-details col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
+                            <h5 class="fw-bold mb-1">{{this.name}}</h5>
+                            <p class="text-muted small mb-0">Product ID: {{this._id}}</p>
+                        </div>
+
+                        <!-- Price and Quantity -->
+                        <div
+                            class="cart-price-qty col-12 col-md-4 d-flex justify-content-between align-items-center mb-3 mb-md-0">
+                            <span class="fw-bold text-danger" id="product-{{this._id}}-price">Rs:
+                                {{this.regularprice}}</span>
+                            <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
+                                data-product-id="{{this._id}}" style="max-width: 80px;">
+                        </div>
+
+                        <!-- Remove Button -->
+                        <div class="cart-remove col-12 col-md-2 text-center">
+                            <form action="/user/cart/remove" method="POST" class="d-inline">
+                                <input type="hidden" name="productId" value="{{this._id}}">
+                                <button type="submit" class="btn btn-sm btn-danger shadow-sm">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+
+            <!-- Cart Summary -->
+            <div class="row mt-4">
+                <div class="col-md-6 offset-md-6 cart-summary">
+                    <div
+                        class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded">
+                        <span class="fw-bold">Total:</span>
+                        <span id="total-amount" class="fw-bold text-success">Rs: {{cart.totalAmount}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/user/shop" class="btn btn-outline-secondary w-100 me-2 btn-resize">Continue
+                            Shopping</a>
+                        <form action="/user/checkout/{{cart.id}}" method="post">
+                            <button class="btn btn-success w-100 btn-resize" type="submit">Proceed to Checkout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <style>
+            /* Default styles for desktop remain unchanged */
+            .btn-resize {
+                font-size: 1rem;
+                /* Normal size for larger screens */
+                padding: 10px;
+                /* Normal padding for larger screens */
+            }
+
+            /* Adjustments for mobile screens */
+            @media (max-width: 768px) {
+                .btn-resize {
+                    font-size: 0.8rem;
+                    padding: 5px;
+                }
+            }
+        </style>
+        <style>
+            /* Cart Item Styling */
+            .cart-item {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                transition: transform 0.2s ease-in-out;
+                padding: 15px;
+            }
+
+            .cart-item:hover {
+                transform: scale(1.02);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .cart-img img {
+                max-width: 100px;
+                max-height: 100px;
+            }
+
+            /* Cart Summary */
+            .cart-summary .total-section {
+                font-size: 1.2rem;
+            }
+
+            /* Buttons */
+            .btn-checkout {
+                background-color: #28a745;
+                color: white;
+                border: none;
+            }
+
+            .btn-checkout:hover {
+                background-color: #218838;
+                color: white;
+            }
+
+            /* Mobile View Adjustments */
+            @media (max-width: 768px) {
+                .cart-item {
+                    flex-direction: column;
+                    text-align: center;
+                }
+
+                .cart-img img {
+                    max-width: 120px;
+                    margin: 0 auto 10px;
+                }
+
+                .cart-details {
+                    margin-bottom: 10px;
+                }
+
+                .cart-price-qty {
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    gap: 10px;
+                }
+
+                .cart-price-qty span {
+                    margin-bottom: 5px;
+                }
+
+                .cart-remove {
+                    margin-top: 10px;
+                }
+
+                .cart-summary .total-section {
+                    font-size: 1rem;
+                }
+            }
+        </style>
 
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

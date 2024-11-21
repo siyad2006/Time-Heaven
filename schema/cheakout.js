@@ -72,6 +72,11 @@ const cheakoutSchema = new Schema({
         type:Number,
         required:false,
         default:0
+    },
+    applayedcoupun:{
+        type:Number,
+        required:false,
+        default:0
     }
     // orderId:{
     //     type:String,

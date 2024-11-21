@@ -54,6 +54,8 @@ router.get('/wallet/:id',cheackout.wallet)
 router.get('/addoffer',offer.addoffer)
 router.get('/cart/',cartController.debughome)
 router.post('/addcart/:id/',cartController.debughome);
+router.post('/removecoupun',cartController.removecoupun)
+
 
 
 module.exports = router

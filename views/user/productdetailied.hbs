@@ -471,31 +471,7 @@
                     style="width: 30px; height: 30px; border: none; background-color: #ddd; cursor: pointer; font-size: 18px;">+</button>
             </div>
         </div>
-
-        {{!-- <div class="action-buttons d-flex justify-content-around mt-4"> --}}
-
-            {{!-- <form action="/user/addtowishlist" method="post">
-                <button type="submit" class="btn btn-danger d-flex align-items-center">
-                    <i class="fas fa-heart me-2"></i> Add to Wishlist
-                </button>
-
-            </form>
-
-
-            <form action="/user/addcart/{{product.id}}/{{userid}}" method="post" onsubmit="updateHiddenQuantity()">
-
-                <input type="hidden" value="{{product.regularprice}}" name="regularprice">
-                <input type="hidden" id="hiddenQuantity" name="quantity" value="1">
-
-
-                <div class="action-buttons d-flex justify-content-around mt-4">
-                    <button type="submit" class="btn btn-primary d-flex align-items-center">
-                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                    </button>
-
-
-                </div>
-            </form> --}}
+            <input type="hidden" value="{{product.quantity}}" id="qty">
             <div class="d-flex gap-2 mt-4 align-items-center justify-content-center">
                 <!-- Wishlist Form -->
                 {{!-- <form action="/user/addtowishlist/{{product.id}}" method="post"> --}}
@@ -612,12 +588,34 @@
             }
 
 
-            function updateHiddenQuantity() {
-                hiddenQuantityInput.value = quantityInput.value;
-            }
+           function updateHiddenQuantity() {
+    const stock = parseInt(document.getElementById('qty').value); // Convert to number
+    const quantity = parseInt(quantityInput.value); // Convert to number
+
+    if (quantity > 8) {
+        alert('User cannot buy more than 8 items.');
+        window.location.reload();
+        return false;
+    }
+    if (quantity < 0) {
+        alert('Must enter a valid quantity.');
+        window.location.reload();
+        return false;
+    }
+    if (quantity > stock) {
+        alert('Out of stock.');
+        window.location.reload();
+        return false;
+    } else {
+        hiddenQuantityInput.value = quantity; // Assign the valid quantity
+    }
+}
+
 
 
             document.querySelector('form').addEventListener('submit', function () {
+
+
 
                 updateHiddenQuantity();
             });
@@ -768,11 +766,9 @@
             });
         });
 
-    </script>
-<!-- SweetAlert2 CSS -->
+    </script> 
 <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
-
-<!-- SweetAlert2 JS -->
+ 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.js"></script>
 
     <footer class="bg-dark text-white mt-3 ">
