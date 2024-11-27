@@ -8,8 +8,12 @@ const productDB = require('../../schema/productschema')
 const category = require('../../schema/category')
 const addressDB = require('../../schema/address')
 const mongoose = require('mongoose')
+const offerDB= require('../../schema/offerSchema')
 
 const userRegister = async (req, res) => {
+    if(req.session.regestered==true){
+        return res.redirect('/user/home')
+    }
     console.log('User registration page accessed successfully.');
     res.render('user/userRegister', { error: req.flash('error') });
 }
@@ -90,6 +94,9 @@ const postregister = async (req, res) => {
 
 const otp = async (req, res) => {
     console.log('otp page got sucessfully')
+    if(req.session.regestered){
+        return res.redirect('/user/login')
+    }
     res.render('user/otp')
 }
 
@@ -193,6 +200,14 @@ const resentotp = async (req, res) => {
 
 const userlogin = async (req, res) => {
     console.log(req.session)
+  if (req.session.isRegistered){
+    req.session.regestered=true
+   }
+
+   if(req.session.loginuser){
+    return res.redirect('/user/home')
+   }
+
     res.render('user/userLogin')
 }
 
@@ -228,6 +243,7 @@ const postlogin = async (req, res) => {
                 } else {
                     req.session.email_profile = Email
                     req.session.loginuser = true;
+                    req.session.regestered=true
 
                     req.session.userId = name._id;
                     // console.log(req.session)
@@ -260,12 +276,41 @@ const postlogin = async (req, res) => {
 
 const lo = async (req, res) => {
     // console.log(req.session.passport.user)
+    console.log(req.session) 
+
+    try{
+        const currentdate=Date.now()
+        const offers= await offerDB.find({expire:{$lt:currentdate}})
+        console.log('expire offers',offers)
+        for(let offer of offers){
+            const products= await productDB.find({existOffer:offer._id})
+            for(let item of products){
+                var id = item.id
+                const currentproduct = await productDB.findById({ _id: id }, { realprice: 1 })
+                let newid = currentproduct._id
+                const realprice = currentproduct.realprice
+                await productDB.findByIdAndUpdate(newid, {
+                    regularprice: realprice,
+                    existOffer: null,
+                    offerPersent: 0,
+                    offerprice: 0
+
+                })
+            }
+            await offerDB.findByIdAndDelete(offer._id)
+        }
+
+    }catch(err){
+        console.log('an error occured from the     side of delete offer',err)
+    }
+    
     try {
         
         if (req.session.passport && req.session.passport.user) {
             console.log('entered to passport');
             req.session.loginuser = true;
             req.session.userId = req.session.passport.user;
+        
 
             try {
                 const email = await UserDB.findOne({ _id: req.session.userId });
@@ -283,10 +328,11 @@ const lo = async (req, res) => {
         } else {
             console.log('no passport');
         }
+ 
 
         const userid = req.session.userId
-        const products = await productDB.find({ isblocked: false }).limit(8);
-        res.render('user/home', { products, userid });
+        const products = await productDB.find({ isblocked: false }).limit(8).populate('category')
+        res.render('user/index', { products, userid });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Server Error');
@@ -305,20 +351,37 @@ let productDetails = async (req, res) => {
 
 
 
+
 const shoping = async (req, res) => {
     const { page = 1, limit = 16, sort = 'default', search } = req.query;
     const skip = (page - 1) * limit;
     console.log(search)
     const categories = await category.find({ isblocked: "Listed" });
-
-    
+    const categorys=req.query.category
+    console.log('this is category',categories)
+    console.log(search)
     let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
-    if (search) {
-        const regex = new RegExp(search, 'i');
+    if (search!==undefined) {
+        // const regex = new RegExp(search, 'i');
+        console.log('entered to the earch')
+        const regex = new RegExp(`^${search}`, 'i');
+
         productsQuery = productsQuery.find({
             name: { $regex: regex }
         });
     }
+    
+    if(categorys){
+        console.log('entered to the categoryd')
+        productsQuery=productsQuery.find({category:categorys})
+    }
+
+    if(search&&categorys){
+        console.log('entered to the code of search and category')
+        const regex = new RegExp(`^${search}`, 'i');
+        productsQuery=productsQuery.find({category:categorys , name: { $regex: regex }})
+    }
+    
 
 
 
@@ -368,7 +431,7 @@ const userprofile = async (req, res) => {
 
         if (!req.session.email_profile) {
             console.log('Session email_profile is missing');
-            return res.redirect('/user/login'); // Redirect to login if email is missing
+            return res.redirect('/user/home'); // Redirect to login if email is missing
         }
  
         const userid = await UserDB.aggregate([
@@ -395,7 +458,8 @@ const userprofile = async (req, res) => {
 
 
 const logout = async (req, res) => {
-    delete req.session.loginuser
+    req.session.loginuser = false
+    delete req.session.userId
     console.log(req.session.userlogin)
     res.redirect('/user/login')
 }
@@ -403,7 +467,7 @@ const logout = async (req, res) => {
 const editprofile = async (req, res) => {
     const ID = req.params.id
     if(ID!==req.session.userId){
-     return   res.redirect('/user/login')
+     return   res.redirect('/user/home')
     }
     const user = await UserDB.findById(ID)
     res.render('user/editprofile', { user })
@@ -413,7 +477,7 @@ const updateprofile = async (req, res) => {
     const ID = req.params.id
  
     if(ID!==req.session.userId){
-     return   res.redirect('/user/login')
+     return   res.redirect('/user/home')
     }
     const username = req.body.username
     // const email = req.body.email
@@ -443,7 +507,7 @@ const changepassword = async (req, res) => {
     const ID = req.params.id
     
     if(ID!==req.session.userId){
-        return   res.redirect('/user/login')
+        return   res.redirect('/user/home')
     }
 
     const user = await UserDB.findById(ID)
@@ -455,7 +519,7 @@ const updatepassword = async (req, res) => {
     try {
         const userId = req.params.id;
         if(userId!==req.params.id){
-            return res.redirect('/user/login')
+            return res.redirect('/user/home')
         }
         const { password, newPassword, confirmPassword } = req.body;
 
@@ -498,7 +562,7 @@ const updatepassword = async (req, res) => {
 const address = async (req, res) => {
     const ID = req.params.id
     if(ID!==req.session.userId){
-        return   res.redirect('/user/login')
+        return   res.redirect('/user/home')
     }
     const address = await addressDB.find({ user: ID }).limit(3)
     const user = await UserDB.findById(ID)
@@ -550,7 +614,7 @@ const deleteaddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
     if(userid!==req.session.userId){
-        return res.redirect('/user/login')
+        return res.redirect('/user/home')
     }
 
     await addressDB.findByIdAndDelete(ID)
@@ -571,7 +635,7 @@ const updateaddress = async (req, res) => {
     const ID = req.params.id;
     const userID = req.params.user;
 if(userID!==req.session.userId){
-    return res.redirect('/user/login')
+    return res.redirect('/user/home')
 }
     // Validate ObjectIds
     if (!mongoose.Types.ObjectId.isValid(ID) || !mongoose.Types.ObjectId.isValid(userID)) {
@@ -622,6 +686,12 @@ const updatingAddress = async (req, res) => {
 }
 
 
+const test=async (req,res)=>{
+    console.log('entered to the page of test')
+    const products=await productDB.find()
+    res.render('user/index',{products})
+}
+
 module.exports = {
     postregister,
     userRegister,
@@ -644,5 +714,6 @@ module.exports = {
     createaddress,
     deleteaddress,
     updateaddress,
-    updatingAddress
+    updatingAddress,
+    test
 };

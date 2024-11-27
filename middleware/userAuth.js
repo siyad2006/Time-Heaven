@@ -1,6 +1,7 @@
 function isRegistered(req, res, next) {
+  console.log('this is from isregistereed',req.session)
   if (req.session.forOTP==true) {
-    next()
+   return next()
   } else {
     res.redirect('/user/register')
   }
@@ -8,17 +9,45 @@ function isRegistered(req, res, next) {
 
 
 function loginuser(req,res,next){
- 
-  if(req.session.loginuser == true){
-    // res.redirect()
+  console.log('this is from oginuser',req.session)
+  if(req.session.loginuser==true){
+     
   
-    next()
+  return  next()
   }else{
     res.redirect('/user/login')
   }
 }
+
+
+
+// function loginuser(req, res, next) {
+//   console.log('Login Middleware:', req.session);
+
+//   if (req.session.loginuser) {
+//       // Redirect to home if already logged in
+//       if (req.originalUrl === '/user/login') {
+//           return res.redirect('/user/home');
+//       }
+//       return next();
+//   } else {
+//       if (req.originalUrl === '/user/login') {
+//           return next(); // Allow access to login page
+//       }
+//       return res.redirect('/user/login');
+//   }
+// }
+
+
+
+ 
  
 
+// function islogin(req, res, next) { 
+//   if (req.session.userId && req.originalUrl === '/user/login') {
+//       res.redirect('/user/home'); 
+//   }
+//   next(); 
+// }
 
-
-module.exports = { isRegistered,loginuser}
+module.exports = { isRegistered,loginuser  }

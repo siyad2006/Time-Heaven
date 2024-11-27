@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,25 +11,29 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f6f9;
-      overflow-x: hidden; /* Prevent horizontal scrolling */
+      overflow-x: hidden;
+      /* Prevent horizontal scrolling */
     }
+
     .sidebar {
       background: linear-gradient(180deg, #111, #222);
-      width: 260px; 
-      height: 100vh; 
+      width: 260px;
+      height: 100vh;
       position: fixed;
       top: 0;
       left: 0;
       padding-top: 20px;
-      overflow-y: auto; 
+      overflow-y: auto;
       transition: transform 0.3s ease;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2); 
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
     }
+
     .sidebar.hidden {
       transform: translateX(-100%);
     }
+
     .sidebar .nav-link {
       color: white;
       padding: 15px;
@@ -37,13 +42,16 @@
       display: flex;
       align-items: center;
     }
+
     .sidebar .nav-link:hover {
       background-color: #ff4444;
       color: white;
     }
+
     .sidebar .nav-link.active {
       background-color: #ff4444;
     }
+
     .sidebar-toggler {
       background-color: #ff4444;
       border: none;
@@ -56,46 +64,63 @@
       border-radius: 50%;
       width: 45px;
       height: 45px;
-      display: none; /* Hidden on larger screens */
+      display: none;
+      /* Hidden on larger screens */
     }
+
     .content {
-      margin-left: 260px; /* Match this to the sidebar width */
+      margin-left: 260px;
+      /* Match this to the sidebar width */
       padding: 20px;
       transition: margin-left 0.3s ease;
     }
+
     .content.expanded {
       margin-left: 0;
     }
+
     .card {
-      margin-bottom: 20px; /* Space between cards */
+      margin-bottom: 20px;
+      /* Space between cards */
     }
+
     @media (max-width: 768px) {
       .sidebar {
         transform: translateX(-100%);
       }
+
       .sidebar.hidden {
         transform: translateX(0);
       }
+
       .content {
-        margin-left: 0; /* Remove left margin on smaller screens */
+        margin-left: 0;
+        /* Remove left margin on smaller screens */
       }
+
       .sidebar-toggler {
-        display: block; /* Show toggle button on smaller screens */
+        display: block;
+        /* Show toggle button on smaller screens */
       }
     }
+
     @media (min-width: 769px) {
       .sidebar-toggler {
-        display: none; /* Hide toggle button on larger screens */
+        display: none;
+        /* Hide toggle button on larger screens */
       }
+
       .sidebar {
-        transform: translateX(0); 
+        transform: translateX(0);
       }
+
       .content {
-        margin-left: 260px; 
+        margin-left: 260px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -111,7 +136,7 @@
         <a class="nav-link" href="#"><i class="fas fa-box"></i> Product Manage</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fas fa-file-invoice"></i> Order Manage</a>
+        <a class="nav-link active" href="#"><i class="fas fa-file-invoice"></i> Order Manage</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="fas fa-chart-line"></i> Sales Report</a>
@@ -123,7 +148,7 @@
         <a class="nav-link" href="#"><i class="fas fa-ticket-alt"></i> Coupon</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="#"><i class="fas fa-tags"></i> Category</a>
+        <a class="nav-link " href="#"><i class="fas fa-tags"></i> Category</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#"><i class="fas fa-star"></i> Brand</a>
@@ -136,178 +161,198 @@
 
   <!-- Sidebar toggle button -->
   <button class="sidebar-toggler" id="sidebar-toggler">
-    &#x22EE; 
+    &#x22EE;
   </button>
 
   <!-- Main content -->
   <div class="content" id="content">
     <h1>Dashboard</h1>
     <div class="container mt-5">
-        <!-- Page Header -->
-        <div class="container my-5">
-            <!-- Order Header -->
-            <div class="order-header d-flex align-items-center justify-content-between mb-4">
-                <h4 class="mb-0 fw-bold">Order: {{order.id}}</h4>
-                <input type="hidden" id="ID" value="{{order.id}}">
-                <button class="btn btn-outline-primary btn-sm">
-                    <i class="fa-solid fa-file-download me-2"></i>Download Summary
-                </button>
-            </div>
-        
-            <!-- User Information Section -->
-            <div class="card order-card mb-4 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">User Information</h5>
-                </div>
-                <div class="card-body">
-                    <p><i class="fa-solid fa-user me-2"></i><strong>Name:</strong> {{order.address.name}}</p>
-                    {{!-- <p><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> {{john@example.com}}</p> --}}
-                    <p><i class="fa-solid fa-phone me-2"></i><strong>Phone:</strong> {{order.address.phone}}</p>
-                    <p>
-                        <i class="fa-solid fa-location-dot me-2"></i><strong>Shipping Address:</strong>
-                        {{order.address.houseAddress}}
-                    </p>
-                </div>
-            </div>
-        
-            <!-- Order Summary Section -->
-            <div class="card order-card mb-4 shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Order Summary</h5>
-                </div>
-                <div class="card-body">
-                    <p><i class="fa-solid fa-calendar-alt me-2"></i><strong>Order Date:</strong> {{date}}</p>
-                      <td><select id="forms" class="order-status" data-id="{{this._id}}">
-                                <option value="pending">pending</option>
-                                <option value="shipped">
-                                    shipped
-                                </option>
-                                <option value="delevered">
-                                    deleverd
-                                </option>
-                                <option value="canceled">
-                                    canceled
-                                </option>
+      <!-- Page Header -->
+      <div class="container my-5">
+        <!-- Order Header -->
+        <div class="order-header d-flex align-items-center justify-content-between mb-4">
+          <h4 class="mb-0 fw-bold">Order: {{order.id}}</h4>
+          <input type="hidden" id="ID" value="{{order.id}}">
+          <button class="btn btn-outline-primary btn-sm">
+            <i class="fa-solid fa-file-download me-2"></i>Download Summary
+          </button>
+        </div>
 
-                            </select>
-                            </td> 
-                    <p>
-                        <i class="fa-solid fa-circle-check me-2"></i>
-                        <strong id="stat">Status:</strong>
-                        <span id="status" class="badge 
+        <!-- User Information Section -->
+        <div class="card order-card mb-4 shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">User Information</h5>
+          </div>
+          <div class="card-body">
+            <p><i class="fa-solid fa-user me-2"></i><strong>Name:</strong> {{order.address.name}}</p>
+            {{!-- <p><i class="fa-solid fa-envelope me-2"></i><strong>Email:</strong> {{john@example.com}}</p> --}}
+            <p><i class="fa-solid fa-phone me-2"></i><strong>Phone:</strong> {{order.address.phone}}</p>
+            <p>
+              <i class="fa-solid fa-location-dot me-2"></i><strong>Shipping Address:</strong>
+              {{order.address.houseAddress}}
+            </p>
+          </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="card order-card mb-4 shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Order Summary</h5>
+          </div>
+          <div class="card-body">
+            <p><i class="fa-solid fa-calendar-alt me-2"></i><strong>Order Date:</strong> {{date}}</p>
+            <td><select id="forms" class="order-status" data-id="{{this._id}}">
+                <option value="pending">pending</option>
+                <option value="shipped">
+                  shipped
+                </option>
+                <option value="delevered">
+                  deleverd
+                </option>
+                <option value="canceled">
+                  canceled
+                </option>
+
+              </select>
+            </td>
+            <p>
+              <i class="fa-solid fa-circle-check me-2"></i>
+              <strong id="stat">Status:</strong>
+              <span id="status" class="badge 
                             {{#if (eq order.status 'delivered')}} bg-success
                             {{else if (eq order.status 'canceled')}} bg-danger
                             {{else if (eq order.status 'pending')}} bg-warning
                             {{else if (eq order.status 'shipped')}} bg-primary
                             {{else}} bg-secondary
                         {{/if}}">
-                            {{order.status}}
-                        </span>
-                    </p>
-                    <p><i class="fa-solid fa-credit-card me-2"></i><strong>Payment Method:</strong> {{order.paymentMethods}}</p>
-                    <p>
-                        <i class="fa-solid fa-dollar-sign me-2"></i>
-                        <strong>Real Amount:</strong> <span class="text-success fw-bold">Rs: {{realprice}}</span>
-                    </p>
-                    <p>
-                        <i class="fa-solid fa-dollar-sign me-2"></i>
-                        <strong>Offer Amount:</strong> <span class="text-success fw-bold">Rs:-{{discount}}</span>
-                    </p>
-                    <p>
-                        <i class="fa-solid fa-dollar-sign me-2"></i>
-                        <strong>coupun Amount:</strong> <span class="text-success fw-bold">Rs:-{{order.applayedcoupun}}</span>
-                    </p>
-                    
-                    <p>
-                        <i class="fa-solid fa-money-check-alt me-2"></i>
-                        <strong>Grand Total:</strong> <span class="text-danger fw-bold">Rs: {{order.totalprice}}</span>
-                    </p>
-                </div>
-            </div>
-        
-            <!-- Product Details Section -->
-            <div class="card order-card mb-4 shadow-sm">
-                <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Products</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
-                            <thead class="table-light text-center">
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                    <th>Price per Unit</th>
-                                    <th>Final Price</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-center">
-                                {{#each order.products}}
-                                <tr>
-                                    <td>
-                                        <img src="/{{this.productId.image.[0]}}" alt="Product Image" class="img-thumbnail" style="height: 50px; width: 100px;">
-                                    </td>
-                                    <td>{{this.productId.name}}</td>
-                                    <td>{{this.qty}}</td>
-                                    <td>{{this.productId.realprice}}</td>
-                                    <td class="text-end">Rs: {{this.productId.regularprice}}</td>
-                                </tr>
-                                {{/each}}
-                                <tr>
-                                    <td colspan="4" class="text-end fw-bold text-danger">Total: Rs: {{order.totalprice}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                {{order.status}}
+              </span>
+            </p>
+            <p><i class="fa-solid fa-credit-card me-2"></i><strong>Payment Method:</strong> {{order.paymentMethods}}</p>
+            <p>
+              <i class="fa-solid fa-dollar-sign me-2"></i>
+              <strong>Real Amount:</strong> <span class="text-success fw-bold">Rs: {{realprice}}</span>
+            </p>
+            <p>
+              <i class="fa-solid fa-dollar-sign me-2"></i>
+              <strong>Offer Amount:</strong> <span class="text-success fw-bold">Rs:-{{discount}}</span>
+            </p>
+            <p>
+              <i class="fa-solid fa-dollar-sign me-2"></i>
+              <strong>coupun Amount:</strong> <span class="text-success fw-bold">Rs:-{{order.applayedcoupun}}</span>
+            </p>
+
+            <p>
+              <i class="fa-solid fa-money-check-alt me-2"></i>
+              <strong>Grand Total:</strong> <span class="text-danger fw-bold">Rs: {{order.totalprice}}</span>
+            </p>
+          </div>
         </div>
-        <script>
-         
 
-          document.getElementById('forms').addEventListener('change', function (event) {
-              
-           const selectedValue= this.value
-                const orderid = document.getElementById('ID').value;
-                console.log(orderid)
-                fetch('/admin/update-order-status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ orderid, status: selectedValue })
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            return response.text();
-                        }
-                    })
-                    .then(data => {
-                        console.log('Response from server:', data);
-                        if (data.success) {
-                            window.location.reload()
-                        }
-                    })
-                    .catch((err) => console.error('Error:', err));
+        <!-- Product Details Section -->
+        <div class="card order-card mb-4 shadow-sm">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Products</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light text-center">
+                  <tr>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price per Unit</th>
+                    <th>Final Price</th>
+                  </tr>
+                </thead>
+                <tbody class="text-center">
+                  {{#each order.products}}
+                  <tr>
+                    <td>
+                      <img src="/{{this.productId.image.[0]}}" alt="Product Image" class="img-thumbnail"
+                        style="height: 50px; width: 100px;">
+                    </td>
+                    <td>{{this.productId.name}}</td>
+                    <td id="qty">{{this.qty}}</td>
+
+                    <td id="sold">{{this.soldprice}}</td>
+                    <script>
+                      window.onload=function (){
+                         const sold =Number( document.getElementById('sold').textContent)
+                      const qty =Number( document.getElementById('qty').textContent)
+                      console.log(sold)
+                      console.log(qty)
+                      const Netfinal=sold*qty
+
+
+                        document.getElementById('final').textContent=Netfinal
+                      
+
+                      }
+                     
+                    </script>
+                    <td class="text-end" id="final">
+                      
+                    </td>
+                  </tr>
+                  {{/each}}
+                  <tr>
+                    <td colspan="4" class="text-end fw-bold text-danger">Total: Rs: {{order.totalprice}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+
+
+        document.getElementById('forms').addEventListener('change', function (event) {
+
+          const selectedValue = this.value
+          const orderid = document.getElementById('ID').value;
+          console.log(orderid)
+          fetch('/admin/update-order-status', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderid, status: selectedValue })
+          })
+            .then(response => {
+              if (response.ok) {
+                return response.json();
+              } else {
+                return response.text();
+              }
             })
- 
+            .then(data => {
+              console.log('Response from server:', data);
+              if (data.success) {
+                window.location.reload()
+              }
+            })
+            .catch((err) => console.error('Error:', err));
+        })
 
-    </script>
-     
-  <script>
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggler = document.getElementById('sidebar-toggler');
-    const content = document.getElementById('content');
 
-    sidebarToggler.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden');
-      content.classList.toggle('expanded');
-    });
-  </script>
+      </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggler = document.getElementById('sidebar-toggler');
+        const content = document.getElementById('content');
+
+        sidebarToggler.addEventListener('click', () => {
+          sidebar.classList.toggle('hidden');
+          content.classList.toggle('expanded');
+        });
+      </script>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

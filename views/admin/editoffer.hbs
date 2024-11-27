@@ -179,6 +179,19 @@
         &#x22EE; <!-- Unicode for 3 vertical dots -->
     </button>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+ 
+{{#if va}}
+<script>
+Swal.fire({
+    icon: 'warning',
+    title: 'warning',
+    text: '{{va}}' // Wrap va in quotes to ensure it is treated as a string
+})
+</script>
+{{/if}}
+
     <!-- Main content -->
     <div class="content" id="content">
         <div class="offer-form" style="margin-top: 70px;">

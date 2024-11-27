@@ -27,7 +27,7 @@ const cartSchema = new Schema({
     totalAmount: {
         type: Number,
         required: false,
-        default: 0 // Optional: You might want to set a default value
+        default: 0  
     },
     coupun:{
         type:Schema.Types.ObjectId,

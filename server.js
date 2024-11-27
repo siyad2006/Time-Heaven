@@ -19,7 +19,7 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 const cron=require('node-cron')
 const{restorePricesAfterOfferExpiration}= require('./controller/adminController/offerController')
-
+const Handlebars = require('handlebars')
 
 app.use(nocache())
 app.use('/uploads', express.static('uploads'));
@@ -34,12 +34,25 @@ const mongoConnect = process.env.MONGO_URI
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 app.use(cors());
+// app.use(session({
+//     secret: 'your_secret_key',
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { maxAge: 3600000 }
+// }));
+
 app.use(session({
-    secret: 'your_secret_key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 3600000 }
+    secret: 'your_secret_key',  
+    resave: false,            
+    saveUninitialized: false, 
+    cookie: {
+        maxAge: 3600000,   
+        httpOnly: true,      
+        sameSite: 'lax',     
+        secure: false        
+    }
 }));
+
 
 app.use(flash())
 
@@ -54,6 +67,8 @@ app.use((req, res, next) => {
 app.use(passport.initialize())
 app.use(passport.session())
 
+
+hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 hbs.registerHelper('eq', (a, b) => a === b);
 hbs.registerHelper('gt', (a, b) => a > b);
 hbs.registerHelper('lt', (a, b) => a < b);
@@ -66,6 +81,19 @@ hbs.registerHelper('or', function (a, b) {
 hbs.registerHelper('formatDate', function (date) {
     return new Date(date).toLocaleDateString('en-US');  
 });
+
+
+
+// Register the times helper
+hbs.registerHelper('times', function(n, block) {
+    let result = '';
+    for (let i = 0; i < n; i++) {
+        result += block.fn(i);
+    }
+    return result;
+});
+
+// Register the subtract helper
 
 cron.schedule('0 0 * * *', () => {
     console.log('Checking for expired offers and restoring prices...');

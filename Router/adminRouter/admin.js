@@ -25,15 +25,13 @@ router.post('/editcategory/:id', AdminController.editcategory)
 router.post('/:id/categoryedit', AdminController.editing)
 router.get('/brand', adminAuth.isAdmin, AdminController.addbrand)
 router.post('/postbrand', AdminController.postbrand)
-// router.post('/getbrand', (req, res) => {
-//     res.render('admin/addbrand')
-// })
+ 
 router.get('/addproduct', adminAuth.isAdmin, productController.addproduct)
 router.post('/add', upload, productController.add)
 router.get('/products', adminAuth.isAdmin, productController.getproduct)
 router.post('/block/:id', productController.blockproduct)
 router.post('/unblock/:id', productController.unblockproduct)
-// router.delete('/deleteproduct/:id',productController.deleteproduct)
+ 
 router.post('/deleteproduct/:id', productController.deleteproduct)
 router.get('/editproduct/:id', upload, productController.editproduct)
 router.post('/Edit/:id', upload, productController.postEdit)
@@ -49,10 +47,15 @@ router.get('/offer',adminAuth.isAdmin,offer.getoffer)
 router.post('/deleteoffer/:id',offer.deleteoffer)
 router.get('/editoffer/:id',adminAuth.isAdmin,offer.editoffer)
 router.post('/posteditoffer/:id',offer.posteditoffer)
-router.get('/salesreport',order.getsalesreport)
+router.get('/salesreport',adminAuth.isAdmin,order.getsalesreport)
 router.get('/salesreport/pdf',order.downloadpdf)
 router.get('/salesreport/excel',order.downloadExcel)
 router.get('/orderdetails/:id',order.orderview)
 router.get('/productoffer',offer.getproductoffer)
 router.post('/product-offer',offer.postproductoffer)
+
+
+
+
+
 module.exports = router

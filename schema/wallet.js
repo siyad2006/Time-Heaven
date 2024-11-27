@@ -33,6 +33,7 @@ const WalletSchema = new Schema({
         type: Date,
 
     },
+    
     // trannsactionAmount: {
     //     type: Number,
     //     required: true

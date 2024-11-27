@@ -108,75 +108,22 @@
 </head>
 
 <body>
-    <nav class="navbar na navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white ms-2 head-logo" href="#">
-                <img src="/img/download copy.png" alt="Logo" width="40" height="34"
-                    class="d-inline-block align-text-top"> TimeHaven
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact Us</a>
-                    </li>
-                </ul>
-
-
-                <form action="/user/shop" method="get">
-                    <div class="d-flex align-items-center position-relative">
-                        <input type="text" id="search-bar" class="form-control rounded-pill ps-5"
-                            placeholder="Search..." aria-label="Search" name="search">
-
-                        <a type="submit" class="position-absolute text-white ms-3 top-50 start-0 translate-middle-y">
-                            <i class="bi bi-search"></i>
-                        </a>
-
-                        <button class="btn btn-sm btn-primary position-absolute end-0 top-50 translate-middle-y me-2">
-                            <i class="bi bi-search"></i>
-                        </button>
+   {{> header}}
+     <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        <h4>Shop</h4>
+                        <div class="breadcrumb__links">
+                            <a href="/user/home">Home</a>
+                            <span>Shop</span>
+                        </div>
                     </div>
-
-                </form>
-
-
-                <a href="#" class="text-white ms-3">
-                    <i class="bi bi-heart"></i>
-                </a>
-                <a href="/user/cart/{{userid}}" class="text-white ms-3">
-                    <i class="bi bi-cart"></i>
-                </a>
-                <a href="/user/profile" class="text-white ms-3">
-                    <i class="bi bi-person"></i>
-                </a>
-
+                </div>
             </div>
         </div>
-        </div>
-    </nav>
-
-
-    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);margin-top: 70px; margin-left: 20px;"
-        aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Shopping</li>
-        </ol>
-    </nav>
+    </section>
 
     <style>
         #search-bar {
@@ -213,7 +160,7 @@
 
 
     <button class="btn filter-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling"
-        aria-controls="offcanvasScrolling" style="margin-top: 70px; margin-left: 20px;">
+        aria-controls="offcanvasScrolling" style="margin-top: 10px; margin-left: 70px;margin-bottom:10px">
         Filter
     </button>
 
@@ -224,7 +171,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <form>
+            <form id="categoryfilter" onchange="sortProducts()">
                 <div class="mb-3">
                     <label for="categorySelect" class="form-label">Select Category</label>
                     <select class="form-select" id="categorySelect">
@@ -251,27 +198,73 @@
         </div>
     </div>
 
+<script>
+    document.getElementById('search-form').addEventListener('submit', function (event) {
+        event.preventDefault(); 
 
+        const search = document.getElementById('search-bar').value;  
+        const url = window.location.href;  
+ 
+        const parsedUrl = new URL(url);
+ 
+        if (search) {
+            parsedUrl.searchParams.set('search', search);
+        } 
+        window.location.href = parsedUrl.toString();  
+    });
+</script>
+ 
+  
+<script>
+    let currentPage = 1;
 
-    <script>
-        let currentPage = 1;
+    function sortProducts() {
+        // Get values for category, sort option, and search input
+        const category = document.getElementById('categorySelect').value;
+        const sortOption = document.getElementById('sortOptions').value;
+       const searchInput=''
 
-        function sortProducts() {
-            const sortOption = document.getElementById('sortOptions').value;
-            console.log('Current Page:', currentPage);
-            console.log('Sort Option:', sortOption);
+        console.log('Current Page:', currentPage);
+        console.log('Sort Option:', sortOption);
+        console.log('Search Input:', searchInput);
+        console.log('Category:', category);
+ 
+        const currentUrl = new URL(window.location.href);
+        const params = currentUrl.searchParams;
+ 
+        params.set("page", currentPage);
 
-            window.location.href = `/user/shop?page=${currentPage}&sort=${sortOption}`;
+        if (sortOption !== "default") {
+            params.set("sort", sortOption);
+        } else {
+            params.delete("sort");
         }
 
+        if (category) {
+            params.set("category", category);
+        } else {
+            params.delete("category");
+        }
 
-        window.onload = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            currentPage = urlParams.get('page') || 1;
-        };
-    </script>
+        if (searchInput.trim() !== "") {
+            params.set("search", searchInput.trim());
+        } else {
+            params.delete("search");
+        }
+ 
+        window.location.href = `/user/shop?${params.toString()}`;
+    }
 
+    window.onload = function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPage = urlParams.get('page') || 1;
 
+        
+        document.getElementById('categorySelect').value = urlParams.get('category') || "";
+        document.getElementById('sortOptions').value = urlParams.get('sort') || "default";
+        document.getElementById('search-bar').value = urlParams.get('search') || "";
+    };
+</script>
 
     <style>
         #sortOptions {
@@ -476,7 +469,7 @@
             /* Fixed height for image */
             object-fit: cover;
             /* Cover to maintain aspect ratio */
-            border-radius: 10px 10px 0 0;
+          
             /* Rounded top corners */
         }
 
@@ -522,69 +515,52 @@
     </head>
 
 
-    <div class="container mt-5">
-        <div class="row">
-            {{#each products}}
-            <div class="col-6 col-sm-4 col-md-3 mb-3"> <!-- Decreased margin for mobile -->
-                <div class="card product-card h-100 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+<section>
+        <div class="container mb-2">
+    <div class="row g-4">
+        <!-- Product 1 -->
+        {{#each products}}
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="card product-card shadow-sm border-0">
+                <div style="position: relative; display: inline-block;">
+                    {{#if (gt this.offerPersent 0)}}
+                    <span
+                        style="position: absolute; top: 10px; right: 10px; background: #1ad633; color: #fff; font-size: 14px; font-weight: bold; padding: 3px 8px; border-radius: 5px;">
+                        {{this.offerPersent}}% OFF
+                    </span>
+                    {{/if}}
+                    <img src="/{{this.image.[0]}}" height="170px" alt="Product 1" class="card-img-top product-image">
+                </div>
 
-                    <!-- Image section with uniform height -->
-                    <img src="/{{this.image.[0]}}" class="card-img-top product-image" alt="{{this.name}}"
-                        style="object-fit: cover; height: 160px;"> <!-- Reduced image height -->
+                <div class="card-body text-center">
+                    <h6 class="card-title mb-2" style="font-weight: 600; color: #333;">{{this.name}}</h6>
+                    {{#if (gt this.offerprice 0)}}
+                    <p>
+                        <span class="price" style="text-decoration: line-through; color: #d9534f;">₹{{this.realprice}}</span>
+                        <span class="offer-price" style="color: #5cb85c; font-weight: bold;">₹{{this.offerprice}}</span>
+                    </p>
+                    {{else}}
+                    <p>
+                        <span class="price" style="color: #5cb85c; font-weight: bold;">₹{{this.realprice}}</span>
+                    </p>
+                    {{/if}}
 
-                    <div class="card-body d-flex flex-column p-2"> <!-- Reduced padding for compact look -->
-                        <!-- Product title with consistent styling -->
-                        <h6 class="card-title product-title text-center mb-2"
-                            style="font-size: 0.95rem; font-weight: 600;">{{this.name}}</h6>
-
-                        <!-- Price section with offer if available -->
-                        <div class="product-price text-center mb-1" style="font-size: 0.85rem; color: #222;">
-                            {{#if this.offerprice}}
-                            <!-- Regular price displayed smaller and above the offer price -->
-                            <span
-                                style="text-decoration: line-through; color: grey; font-size: 0.75rem; display: block; margin-bottom: 5px;">RS:
-                                {{this.realprice}}</span>
-
-                            <!-- Offer price displayed larger and bold -->
-                            <span style="font-weight: bold; color: #d9534f; font-size: 0.85em; display: block;">Offer
-                                Price: RS: {{this.offerprice}}</span>
-
-                            <!-- Discount percentage displayed on the top-right corner -->
-                            {{#if this.offerPersent}}
-                            <span class="text-success"
-                                style="position: absolute; top: 10px; right: 10px; font-size: 0.75rem; background-color: #d9534f; color: white; padding: 3px 7px; border-radius: 5px;">
-                                Save {{this.offerPersent}}%
-                            </span>
-                            {{/if}}
-                            {{else}}
-                            <!-- Regular price if no offer -->
-                            <span style="font-weight: bold; color: #000; font-size: 0.9rem;">RS:
-                                {{this.regularprice}}</span>
-                            {{/if}}
-                        </div>
-
-                        <!-- Stock information -->
-                        <p class="text-center mb-2" style="font-size: 0.8rem; color: green;">
-                            {{this.quantity}} stocks left
-                        </p>
-
-                        <!-- Button section -->
-                        <div class="mt-auto d-flex justify-content-center">
-                            <a href="/user/details/{{this.id}}" class="btn btn-danger btn-sm"
-                                style="padding: 0.4rem 1rem; font-size: 0.8rem;">
-                                Show
-                            </a>
-                        </div>
-                    </div>
+                    <form action="/user/details/{{this.id}}" method="get">
+                        <button class="btn btn-primary btn-sm" type="submit" style="width: 100%; font-weight: 500;">
+                            View Details
+                        </button>
+                    </form>
                 </div>
             </div>
-            {{/each}}
         </div>
+        {{/each}}
     </div>
+</div>
 
 
+    </section>
 
-    <nav aria-label="Page navigation">
+    <nav aria-label="Page navigation" style="margin-bottom: 10px;">
         <ul class="pagination justify-content-center">
             {{#if (gt currentPage 1)}}
             <li class="page-item">

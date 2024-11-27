@@ -11,9 +11,6 @@ exports.addoffer = async (req, res) => {
 
 
 
-
-
-
 exports.createoffer = async (req, res) => {
     console.log(req.body)
 
@@ -38,7 +35,9 @@ exports.createoffer = async (req, res) => {
     startdate.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
     console.log(startdate)
-    if (startdate < Date.now()) {
+    const d = Date.now(); // Get the current timestamp
+    const st = new Date(d).toLocaleString('en-US');
+    if (startdate < st) {
         return res.status(404).send('Add a valid date ');
     }
 
@@ -101,7 +100,7 @@ exports.createoffer = async (req, res) => {
             category: category,
             expire: date,
             start: startdate,
-            tyoffer:'category'
+            tyoffer: 'category'
 
 
         })
@@ -147,7 +146,7 @@ exports.createoffer = async (req, res) => {
             category: category,
             expire: date,
             start: startdate,
-            tyoffer:'category'
+            tyoffer: 'category'
 
 
         })
@@ -197,13 +196,13 @@ exports.deleteoffer = async (req, res) => {
 
     console.log(ID)
 
-    const productOffer= await offerDB.findById(ID)
-    if(productOffer.tyoffer=='product'){
-        try{
+    const productOffer = await offerDB.findById(ID)
+    if (productOffer.tyoffer == 'product') {
+        try {
             // const applayedProducts= await productDB.find({existOffer:ID})
             const productsWithoffer = await productDB.find({ existOffer: ID })
             // res.json(productsWithoffer)
-        
+
             for (let item of productsWithoffer) {
                 var id = item.id
                 const currentproduct = await productDB.findById({ _id: id }, { realprice: 1 })
@@ -214,15 +213,15 @@ exports.deleteoffer = async (req, res) => {
                     existOffer: null,
                     offerPersent: 0,
                     offerprice: 0
-        
+
                 })
-        
+
             }
             await offerDB.findByIdAndDelete(ID)
             return res.redirect('/admin/offer')
-            
 
-        }catch(err){
+
+        } catch (err) {
             console.log('en error occured when product offer deleting')
         }
     }
@@ -256,7 +255,8 @@ exports.editoffer = async (req, res) => {
     const currentOffer = await offerDB.findById(ID)
     const category = await categoryDB.findOne({ _id: currentOffer.category })
 
-    res.render('admin/editoffer', { offer: currentOffer, category: category })
+
+    res.render('admin/editoffer', { offer: currentOffer, category: category, va: req.flash('validation') })
 }
 
 
@@ -278,10 +278,28 @@ exports.posteditoffer = async (req, res) => {
     console.log(offeredproduct)
     const category = req.body.category
     console.log(category)
-    
+
     if (persent > 75) {
-        return res.status(404).send('cannot add more than 75% ');
+        // return res.status(404).send('cannot add more than 75% ');
+        req.flash('validation', 'cannot offer bigger tham 75%');
+        return res.redirect(`/admin/editoffer/${ID}`)
     }
+
+    if (startdates > expires) {
+        // return res.status(404).send('cannot the expire date lesser than start date  ');
+        req.flash('validation', 'cannot start date lesser than end date ');
+        return res.redirect(`/admin/editoffer/${ID}`)
+    }
+
+    const d = new Date();  
+    const st = d.toISOString();  
+
+    if (new Date(startdate) < d) { 
+        req.flash('validation', 'Enter a valid date');
+        return res.redirect(`/admin/editoffer/${ID}`);
+    }
+
+    //  ivide valiadtion add cheyyan marakkale 
 
 
     for (let item of offeredproduct) {
@@ -416,6 +434,20 @@ exports.postproductoffer = async (req, res) => {
 
     console.log(start, expire, description, name, products, discount);
 
+    if(discount>75){
+        return res.status(404).send('please select offer less than 75%');
+    }
+
+    if(expire<start){
+        return res.status(404).send('expire date cannot more bigger than start date ');
+    }
+
+    const st=new Date()
+    const a=st.toLocaleString('en-US')
+    if(start<a){
+        return res.status(404).send('enter a valid date ')
+    }
+
     try {
         for (const productId of products) {
             const singleProduct = await productDB.findById(productId);
@@ -441,7 +473,7 @@ exports.postproductoffer = async (req, res) => {
                 start,
                 expire,
                 tyoffer: 'product',
-                products:productId
+                products: productId
             });
 
             const savedOffer = await newOffer.save();
@@ -467,6 +499,4 @@ exports.postproductoffer = async (req, res) => {
         return res.status(500).json({ success: false, message: 'An error occurred while processing offers' });
     }
 };
-
-
 

@@ -13,9 +13,11 @@ exports.debughome= async(req,res)=>{
 
 exports.getcart = async (req, res, next) => {
     const userid = req.session.userId;
+    // if(userid!==req.params.user){
+    //   return   res.redirect('/user/home')
+    // }
 
-
-    
+ const coupuns= await coupunDB.find({user:{$ne:userid}})
 
     const cart = await cartDB.findOne({ user: userid });
     if (!cart || cart.products.length === 0) {
@@ -36,24 +38,32 @@ exports.getcart = async (req, res, next) => {
         };
     });
 
-    res.render('user/cart', { userid, cart, products: cartProducts });
+    res.render('user/cart', { userid, cart, products: cartProducts,limit:req.flash('limit'),coupuns:coupuns });
 };
 
 
 
 exports.addcart = async (req, res) => {
     try {
+
+
+console.log('entered to the cart control page ')
         const productId = req.params.id;
         const userId = req.params.user;
         const { quantity, regularprice } = req.body;
-        console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
+        // if(quantity<1 || quantity==undefined){
+        //     quantity=1
+        // }
 
+        console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
+        
         const existingCart = await cartDB.findOne({ user: userId });
 
         if (existingCart) {
 
             const productInCart = existingCart.products.find(item => item.productId.toString() === productId);
 
+            
             if (productInCart) {
 
                 let newQuantity = productInCart.qty + Number(quantity);
@@ -103,26 +113,24 @@ exports.addcart = async (req, res) => {
         }
 
 
-        res.redirect(`/user/cart/${userId}`);
+        res.redirect(`/user/cart`);
     } catch (err) {
         console.error(err);
         res.status(500).send('Something went wrong');
     }
 };
- 
+
 
 exports.updateCart  = async (req, res, next) => {
     try {
         const { productId, qty } = req.body;
         const userid = req.session.userId;
-
-        // Find the user's cart
+ 
         const cart = await cartDB.findOne({ user: userid });
         if (!cart) {
             return res.json({ success: false, message: 'Cart not found' });
         }
-
-        // Update the product quantity in the cart
+ 
         const cartProduct = cart.products.find(product => product.productId.toString() === productId);
         if (cartProduct) {
             cartProduct.qty = qty;
@@ -133,8 +141,7 @@ exports.updateCart  = async (req, res, next) => {
             return res.json({ success: false, message: 'Product not found' });
         }
         const updatedPrice = product.regularprice * qty;
-
-        // Recalculate the total amount
+ 
         let newTotalAmount = 0;
         for (const cartItem of cart.products) {
             const productDetails = await productDB.findById(cartItem.productId);
@@ -155,9 +162,8 @@ exports.updateCart  = async (req, res, next) => {
         }
  
         cart.totalAmount = newTotalAmount - discount;
-        await cart.save();
-
-        // Respond with success
+        await cart.save(); 
+        
         res.json({
             success: true,
             updatedPrice: updatedPrice,
@@ -241,6 +247,11 @@ exports.addcoupun = async (req, res) => {
         const coupunid = req.body.coupunId;
         const userid = req.session.userId;
         const coupun = await coupunDB.findOne({ code: coupunid });
+
+        const cheackcoupun= await cartDB.findOne({user:userid})
+        if(cheackcoupun.coupun){
+            return  res.json({ success: false, message: `This cart already has a coupun` });
+        }
             
         if (!coupun) {
             return res.json({ success: false, message: 'There is no coupon with this code' });
@@ -299,6 +310,8 @@ exports.removecoupun= async (req,res)=>{
     const userid=req.body.user
     const cart = await cartDB.findOne({user:userid})
     let total=cart.totalAmount
+
+     
  
    const coupun=  cart.coupun
    const isactive=await coupunDB.findById(coupun)

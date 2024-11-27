@@ -10,7 +10,8 @@ const cheakout = require('../../schema/cheakout');
 // const cheakout = require('../../schema/cheakout');
 const ObjectId = mongoose.Types.ObjectId;
 const walletDB = require('../../schema/wallet')
-const coupunDB= require('../../schema/coupunSchama')
+const coupunDB = require('../../schema/coupunSchama');
+const { x } = require('pdfkit');
 
 exports.getcheackout = async (req, res) => {
     const cartId = req.params.cart;
@@ -18,6 +19,24 @@ exports.getcheackout = async (req, res) => {
 
     const cartItem = await cartDB.findById(cartId);
     const address = await AddressDB.find({ user: userId });
+    const cartTotal = cartItem.totalAmount
+
+    const coupun = await coupunDB.findById(cartItem.coupun)
+
+    // if(cartTotal+coupun.maximumDiscount<=coupun.minimumPurchase){
+    //       req.flash('limit',`please buy items more than ${coupun.minimumPurchase}`)
+    //     return res.redirect(`/user/cart/${userId}`)
+
+
+    // }
+
+    if (coupun) {
+        if (cartTotal + coupun.maximumDiscount <= coupun.minimumPurchase) {
+            req.flash('limit', `Please buy items worth more than ${coupun.minimumPurchase}`);
+            return res.redirect(`/user/cart/${userId}`);
+        }
+    }
+
 
     const cartProducts = cartItem.products.map(product => ({
         productId: product.productId,
@@ -27,10 +46,12 @@ exports.getcheackout = async (req, res) => {
     const products = await productDB.find({ _id: { $in: cartProducts.map(item => item.productId) } });
 
     const cartProductDetails = products.map(product => {
+
         const cartProduct = cartProducts.find(item => item.productId.toString() === product._id.toString());
         return {
             ...product.toObject(),
-            qty: cartProduct.qty
+            qty: cartProduct.qty,
+
         };
     });
 
@@ -39,7 +60,7 @@ exports.getcheackout = async (req, res) => {
 };
 
 
- 
+
 exports.placeorder = async (req, res) => {
     const user = req.params.user;
     console.log('this is the user id from checkout', user);
@@ -47,21 +68,90 @@ exports.placeorder = async (req, res) => {
     const { name, phone, street, city, state, postalCode, paymentMethod, products, country } = req.body;
     console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
 
+
     const cart = await cartDB.findOne({ user: user });
+
+
 
     if (!cart) {
         throw new Error("Cart not found for the user.");
     }
-     
-    const total = cart.totalAmount;
-     let coupunamount=0
-     if(cart&& cart.coupun){
-        const coupun=await coupunDB.findById(cart.coupun)
-        coupunamount+=Number(coupun.maximumDiscount)
-     }
-     console.log(coupunamount)
- 
+    let total = cart.totalAmount;
+    let coupunamount = 0;
 
+
+
+
+    if (cart && cart.coupun) {
+        const coupun = await coupunDB.findById(cart.coupun);
+        coupunamount += Number(coupun.maximumDiscount);
+
+
+    }
+    console.log('Coupon Amount:', coupunamount);
+
+    const cheakpro = await productDB.find();
+    if (coupunamount > 0) {
+        console.log('Entered the check code');
+        let subtotal = 0;
+        let cheaktotal = total + coupunamount;  
+
+        // const pro = cart.products.map((item) => {
+        for (let item of cart.products) {
+            const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
+            console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
+
+            if (findpro) {
+                subtotal += findpro.regularprice * item.qty;
+            } else {
+                console.log(`Product with ID ${item.productId} not found.`);
+            }
+            if (item.qty > findpro.quantity) {
+                return res.status(404).send(`this product :${findpro.name} have no qty by for  you selected qty `)
+            }
+        }
+
+        console.log('Calculated Subtotal:', subtotal);
+        console.log('Total after Coupon Applied:', cheaktotal);
+
+        if (cheaktotal !== subtotal) {
+            console.log('Price mismatch detected, returning error');
+            return res.status(404).send('you cant add it because of the admin make changes in the products peice  ')
+        }
+    } else {
+        let subtotal = 0;
+        let cheaktotal = total
+        // const pro = cart.products.map((item) => {
+        for (let item of cart.products) {
+            const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
+            console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
+
+
+            if (findpro) {
+                subtotal += findpro.regularprice * item.qty
+            } else {
+                console.log(`Product with ID ${item.productId} not found.`);
+            }
+            if (!findpro) {
+                return res.status(404).send(`Product with ID ${item.productId} does not exist.`);
+            }
+
+            // Continue processing only if no response is sent
+            if (item.qty > findpro.quantity) {
+                return res.status(404).send(`This product: ${findpro.name} does not have enough quantity.`);
+            }
+        }
+
+        console.log('Calculated Subtotal:', subtotal);
+        console.log('Total after Coupon Applied:', cheaktotal);
+
+        if (cheaktotal !== subtotal) {
+            console.log('Price mismatch detected, returning error');
+            return res.status(404).send('you cant add it because of the admin make changes in products price  ')
+        }
+    }
+
+    console.log('Proceeding with checkout');
 
 
     if (paymentMethod === 'cod') {
@@ -76,11 +166,21 @@ exports.placeorder = async (req, res) => {
                 return res.status(400).send("Cart is empty");
             }
 
-            const items = cart.products.map(x => ({
-                productId: x.productId,
-                qty: x.qty
-            }));
 
+            // const items = cart.products.map(x => ({
+
+            //     productId: x.productId,
+            //     qty: x.qty,
+            // }));
+            const productdata = await productDB.find()
+            const items = cart.products.map(x => {
+                const product = productdata.find(p => p._id.toString() === x.productId.toString());
+                return {
+                    productId: x.productId,
+                    qty: x.qty,
+                    soldprice: product.regularprice // Default to 0 if not found
+                };
+            });
 
             for (const item of items) {
                 const product = await productDB.findById(item.productId);
@@ -98,12 +198,14 @@ exports.placeorder = async (req, res) => {
                     await product.save();
                 }
             }
-            let discounts=0
-            for(let i of items){
+            let discounts = 0
+            for (let i of items) {
                 const product = await productDB.findById(i.productId);
-                if(product){
-                  const down = Number(product.realprice - product.regularprice) 
-                  discounts+=down
+                if (product) {
+                    if (product.realprice > product.regularprice) {
+                        const down = Number(product.realprice - product.regularprice)*i.qty;
+                        discounts += down;
+                    }
                 }
             }
             const order = new checkoutDB({
@@ -121,9 +223,9 @@ exports.placeorder = async (req, res) => {
                     pincode: postalCode,
                     country: country
                 },
-                discount:discounts,
-                applayedcoupun:coupunamount
-                 
+                discount: discounts,
+                applayedcoupun: coupunamount
+
             });
 
             await order.save();
@@ -145,7 +247,7 @@ exports.placeorder = async (req, res) => {
         });
 
         const options = {
-            amount: total * 100,
+            amount: Math.round(total * 100),
             currency: "INR",
             receipt: `receipt_${new Date().getTime()}`,
             notes: {
@@ -162,10 +264,15 @@ exports.placeorder = async (req, res) => {
                 return res.status(400).send("Cart is empty");
             }
 
-            const items = cart.products.map(x => ({
-                productId: x.productId,
-                qty: x.qty
-            }));
+            const productdata = await productDB.find()
+            const items = cart.products.map(x => {
+                const product = productdata.find(p => p._id.toString() === x.productId.toString());
+                return {
+                    productId: x.productId,
+                    qty: x.qty,
+                    soldprice: product.regularprice // Default to 0 if not found
+                };
+            });
 
             for (const item of items) {
                 const product = await productDB.findById(item.productId); // Find the product by ID
@@ -184,12 +291,14 @@ exports.placeorder = async (req, res) => {
                     await product.save();
                 }
             }
-            let discounts=0
-            for(let i of items){
+            let discounts = 0
+            for (let i of items) {
                 const product = await productDB.findById(i.productId);
-                if(product){
-                  const down = Number(product.realprice - product.regularprice) 
-                  discounts+=down
+                if (product) {
+                    if (product.realprice > product.regularprice) {
+                        const down = Number(product.realprice - product.regularprice)*i.qty;
+                        discounts += down;
+                    }
                 }
             }
             const orders = new checkoutDB({
@@ -207,8 +316,9 @@ exports.placeorder = async (req, res) => {
                     pincode: postalCode,
                     country: country
                 },
-                discount:discounts
+                discount: discounts
             });
+
 
             await orders.save();
             await cartDB.findOneAndDelete({ user: user });
@@ -300,7 +410,7 @@ exports.cancelorder = async (req, res) => {
                 //     return res.status(400).send(`Not enough stock for product with ID ${id}`);
                 // }
 
-             
+
                 singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
 
                 singleItem.quantity += buyedqty;
@@ -356,7 +466,7 @@ exports.cancelorder = async (req, res) => {
                 // console.log('Product sold:', product.sold);
                 //     console.log('Item quantity:', item.qty);
 
-                    singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
 
                 singleItem.quantity += buyedqty;
 
@@ -393,10 +503,13 @@ exports.cancelorder = async (req, res) => {
             // }
 
             // product.sold -= item.qty
-            
+
             singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
 
             singleItem.quantity += buyedqty;
+
+
+            // puthiya options 
 
             // singleItem.quantity += buyedqty;
 
@@ -404,7 +517,9 @@ exports.cancelorder = async (req, res) => {
             await singleItem.save();
         }
 
+
         res.redirect(`/user/myorders/${userid}`)
+
     }
 
 
@@ -435,7 +550,8 @@ exports.details = async (req, res) => {
     const items = db.products.map((item) => ({
 
         id: item.productId,
-        qty: item.qty
+        qty: item.qty,
+        soldprice: item.soldprice
 
     }));
 
@@ -454,11 +570,14 @@ exports.details = async (req, res) => {
 
     //   console.log(products);
     const productsWithQty = products.map(product => {
-    
+
         const productQty = items.find(item => item.id.toString() === product._id.toString()).qty;
+        const solds = items.find(item => item.id.toString() === product._id.toString()).soldprice;
         return {
             ...product.toObject(),
-            qty: productQty
+            qty: productQty,
+            solds: solds
+
         };
     });
     console.log(productsWithQty)
@@ -516,33 +635,33 @@ exports.return = async (req, res) => {
 
 
             const canceledproducts = await checkoutDB.findById(ID)
-        const items = canceledproducts.products
-        for (let pro of items) {
-            const id = pro.productId;
-            const singleItem = await productDB.findById(id);
-            const buyedqty = pro.qty;
+            const items = canceledproducts.products
+            for (let pro of items) {
+                const id = pro.productId;
+                const singleItem = await productDB.findById(id);
+                const buyedqty = pro.qty;
 
-            if (!singleItem) {
-                console.log(`Product with ID ${id} not found`);
-                return res.status(404).send(`Product with ID ${id} not found`);
+                if (!singleItem) {
+                    console.log(`Product with ID ${id} not found`);
+                    return res.status(404).send(`Product with ID ${id} not found`);
+                }
+
+                if (singleItem.quantity < buyedqty) {
+                    console.log(`Insufficient stock for product with ID ${id}`);
+                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                }
+
+
+
+                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                singleItem.quantity += buyedqty;
+
+
+
+
+                await singleItem.save();
             }
-
-            if (singleItem.quantity < buyedqty) {
-                console.log(`Insufficient stock for product with ID ${id}`);
-                return res.status(400).send(`Not enough stock for product with ID ${id}`);
-            }
-
-        
-            
-            singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-            singleItem.quantity += buyedqty;
-
-          
-
-
-            await singleItem.save();
-        }
 
 
             res.redirect(`/user/orderdetails/${ID}`);
@@ -566,35 +685,35 @@ exports.return = async (req, res) => {
             })
             newwallet.save()
 
-  
+
             const canceledproducts = await checkoutDB.findById(ID)
-        const items = canceledproducts.products
-        for (let pro of items) {
-            const id = pro.productId;
-            const singleItem = await productDB.findById(id);
-            const buyedqty = pro.qty;
+            const items = canceledproducts.products
+            for (let pro of items) {
+                const id = pro.productId;
+                const singleItem = await productDB.findById(id);
+                const buyedqty = pro.qty;
 
-            if (!singleItem) {
-                console.log(`Product with ID ${id} not found`);
-                return res.status(404).send(`Product with ID ${id} not found`);
+                if (!singleItem) {
+                    console.log(`Product with ID ${id} not found`);
+                    return res.status(404).send(`Product with ID ${id} not found`);
+                }
+
+                if (singleItem.quantity < buyedqty) {
+                    console.log(`Insufficient stock for product with ID ${id}`);
+                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                }
+
+
+
+                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                singleItem.quantity += buyedqty;
+
+
+
+
+                await singleItem.save();
             }
-            
-            if (singleItem.quantity < buyedqty) {
-                console.log(`Insufficient stock for product with ID ${id}`);
-                return res.status(400).send(`Not enough stock for product with ID ${id}`);
-            }
-
-        
-            
-            singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-            singleItem.quantity += buyedqty;
-
-          
-
-
-            await singleItem.save();
-        }
 
 
             res.redirect(`/user/orderdetails/${ID}`)
@@ -605,13 +724,128 @@ exports.return = async (req, res) => {
         await checkoutDB.findByIdAndUpdate(ID, {
             status: 'return'
         })
+        const isWallet = await walletDB.findOne({ user: userid })
+
+        // const newdate=new Date()
+        // const nowdate=newdate.toLocaleDateString('en-GB')
+        const nowdate = new Date(); // Creates a Date object representing the current date and time
+
+        if (isWallet) {
+            console.log('User already has a wallet');
+
+            const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
+
+            if (!existingWallet) {
+                throw new Error('Wallet not found for user');
+            }
+
+            const existingAmount = existingWallet.amount || 0;
+            console.log(existingAmount);
+
+            const newAmount = existingAmount + db.totalprice;
+
+            await walletDB.updateOne(
+                { user: userid },
+                {
+                    amount: newAmount,
+                    $push: {
+                        transaction: {
+                            typeoftransaction: 'debit',
+                            amountOfTransaction: db.totalprice,
+                            dateOfTransaction: nowdate,
+                        }
+                    }
+                }
+            ).then(() => console.log('Successfully updated the wallet'));
+
+
+            const canceledproducts = await checkoutDB.findById(ID)
+            const items = canceledproducts.products
+            for (let pro of items) {
+                const id = pro.productId;
+                const singleItem = await productDB.findById(id);
+                const buyedqty = pro.qty;
+
+                if (!singleItem) {
+                    console.log(`Product with ID ${id} not found`);
+                    return res.status(404).send(`Product with ID ${id} not found`);
+                }
+
+                if (singleItem.quantity < buyedqty) {
+                    console.log(`Insufficient stock for product with ID ${id}`);
+                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                }
+
+
+
+                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                singleItem.quantity += buyedqty;
+
+
+
+
+                await singleItem.save();
+            }
+        } else {
+
+            console.log('user dont have wallet ')
+            const newwallet = new walletDB({
+                user: userid,
+                amount: db.totalprice,
+                transaction: [
+                    {
+                        typeoftransaction: 'debit',
+                        amountOfTransaction: db.totalprice,
+                        dateOfTransaction: nowdate
+
+                    }
+                ]
+
+
+
+            })
+            newwallet.save()
+
+
+            const canceledproducts = await checkoutDB.findById(ID)
+            const items = canceledproducts.products
+            for (let pro of items) {
+                const id = pro.productId;
+                const singleItem = await productDB.findById(id);
+                const buyedqty = pro.qty;
+
+                if (!singleItem) {
+                    console.log(`Product with ID ${id} not found`);
+                    return res.status(404).send(`Product with ID ${id} not found`);
+                }
+
+                if (singleItem.quantity < buyedqty) {
+                    console.log(`Insufficient stock for product with ID ${id}`);
+                    return res.status(400).send(`Not enough stock for product with ID ${id}`);
+                }
+
+
+
+                singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
+
+                singleItem.quantity += buyedqty;
+
+
+
+
+                await singleItem.save();
+            }
+        }
 
         res.redirect(`/user/orderdetails/${ID}`)
     }
 
-
-
 }
+
+
+
+
 
 
 exports.wallet = async (req, res) => {

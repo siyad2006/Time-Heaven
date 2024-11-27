@@ -26,6 +26,11 @@ const cheakoutSchema = new Schema({
             qty:{
                 type:Number,
                 required:true
+            },
+            soldprice:{
+                type:Number,
+                required:false
+                
             }
          
         }

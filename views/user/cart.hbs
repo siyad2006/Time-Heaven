@@ -101,16 +101,74 @@
     </nav>
 
 
+
     <div class="container-fluid " style="margin-top: 80px;">
+        <nav aria-label="breadcrumb" class="my-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/user/home">Home</a></li>
+        <li class="breadcrumb-item"><a href="/category">Category</a></li>
+        {{!-- <li class="breadcrumb-item active" aria-current="page">Product</li> --}}
+    </ol>
+</nav>
         <h1 class="text-center mb-4">Shopping Cart</h1>
         <input type="hidden" value="{{userid}}" id="ID">
-        <div class="coupon-section mt-4 ms-5 mb-2">
+
+      
+        <div class="coupon-section mt-4 ms-5 mb-2" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Form for applying the coupon -->
             <form id="couponForm" class="d-flex align-items-center gap-2">
                 <input type="text" id="couponInput" placeholder="Enter coupon code" class="form-control"
                     style="max-width: 250px;" />
                 <button type="submit" class="btn btn-primary btn-sm">Apply Coupon</button>
             </form>
+
+            <!-- Form for removing the coupon -->
+            <div style="display: flex;gap: 10px; ">
+                <form id="removecoupun" class="d-flex align-items-center gap-2">
+                    <input type="submit" value="Remove" class="btn btn-sm btn-danger">
+                </form>
+                
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                style="align-items: start; margin-left: 0; " data-bs-target="#staticBackdrop">
+                Your Coupons
+            </button>
+            </div>
+
         </div>
+
+
+
+
+        <script>
+            document.getElementById('removecoupun').addEventListener('submit', async function (event) {
+                event.preventDefault()
+                const x = document.getElementById('ID').value
+                data = {
+                    user: x
+                }
+                const res = await fetch('/user/removecoupun', {
+                    method: 'post',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+
+                const response = await res.json()
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: 'successfully removed'
+                    }).then(() => window.location.reload())
+                } else {
+                    Swal.fire({
+                        icon: 'errror',
+                        text: 'there is no allpayed coupun'
+                    })
+                }
+            })
+        </script>
+
 
         <script>
             document.getElementById('couponForm').addEventListener('submit', async function (event) {
@@ -141,9 +199,9 @@
                         text: 'successfully added coupun',
                         showConfirmButton: false,
                         timer: 1500
-                    }).then(()=>{
-                        window.location.href=`/user/cart/${x}`
-                    } )
+                    }).then(() => {
+                        window.location.href = `/user/cart/${x}`
+                    })
                 } else {
                     Swal.fire({
                         icon: 'warning',
@@ -194,57 +252,20 @@
                 background-color: #0056b3;
             }
         </style>
-        {{!--
-        {{#each products}}
-        <div class="row">
-            <div class="col-12">
-                <div class="cart-item row align-items-center" data-product-id="{{this._id}}">
-                    <div class="col-md-2 col-3 text-center">
-                        <img src="/{{this.image.[0]}}" alt="Product Image" class="img-fluid rounded">
-                    </div>
-                    <div class="col-md-4 col-9">
-                        <h5 style="font-weight: bold;">{{this.name}}</h5>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                    </div>
-                    <div class="col-md-2 col-6 text-center">
-                        <span class="fw-bold" id="product-{{this._id}}-price" style="color: red;">Rs :
-                            {{this.regularprice}}</span>
-                    </div>
-                    <div class="col-md-2 col-6 text-center">
-
-                        <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
-                            data-product-id="{{this._id}}">
-                    </div>
-
-                    <div class="col-md-2 col-12 text-center mt-2 mt-md-0">
-                        <form action="/user/cart/remove" method="POST">
-                            <input type="hidden" name="productId" value="{{this._id}}">
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        {{/each}}
+        {{#if limit}}
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: '{{limit}}'
+            });
+        </script>
+        {{/if}}
 
 
-        <div class="row mt-4">
-            <div class="col-md-6 offset-md-6 cart-summary">
-                <div class="total-section d-flex justify-content-between">
-                    <span>Total:</span>
-                    <span id="total-amount">{{cart.totalAmount}}</span>
-                </div>
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="/user/shop" class="btn btn-secondary w-100 me-2">Continue Shopping</a>
-                    <form action="/user/checkout/{{cart.id}}" method="post">
-                        <button class="btn btn-checkout w-100" type="submit">Proceed to Checkout</button>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-        --}}
+       
         <div class="container" style="max-width: 90%; margin: auto;">
             {{#each products}}
             <div class="row mb-3">
@@ -267,9 +288,53 @@
                             class="cart-price-qty col-12 col-md-4 d-flex justify-content-between align-items-center mb-3 mb-md-0">
                             <span class="fw-bold text-danger" id="product-{{this._id}}-price">Rs:
                                 {{this.regularprice}}</span>
-                            <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
-                                data-product-id="{{this._id}}" style="max-width: 80px;">
+                            {{!-- <input type="number" class="form-control text-center" min="1" value="{{this.qty}}"
+                                data-product-id="{{this._id}}" style="max-width: 80px;"> --}}
+                            <input type="number" class="form-control text-center quantity-input" min="1" max="8"
+                                value="{{this.qty}}" data-product-id="{{this._id}}" style="max-width: 80px;">
+
                         </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                // Select all inputs with class 'quantity-input'
+                                document.querySelectorAll('.quantity-input').forEach(input => {
+                                    const maxLimit = 8; // Set the maximum quantity limit
+                                    const minLimit = 1; // Set the minimum quantity limit
+
+                                    // Add event listener for manual input changes
+                                    input.addEventListener('input', function () {
+                                        validateQuantity(this);
+                                    });
+
+                                    input.addEventListener('change', function () {
+                                        validateQuantity(this);
+                                    });
+                                });
+
+                                function validateQuantity(input) {
+                                    let value = parseInt(input.value);
+
+                                    if (value > 8) {
+                                        input.value = 8;
+                                        Swal.fire({
+                                            title: 'Limit Exceeded',
+                                            text: `You can’t select more than 8 items for this product.`,
+                                            icon: 'warning',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    } else if (value < 1 || isNaN(value)) {
+                                        input.value = 1;
+                                        Swal.fire({
+                                            title: 'Invalid Quantity',
+                                            text: `You must select at least 1 item.`,
+                                            icon: 'warning',
+                                            confirmButtonText: 'OK'
+                                        });
+                                    }
+                                }
+                            });
+                        </script>
+
 
                         <!-- Remove Button -->
                         <div class="cart-remove col-12 col-md-2 text-center">
@@ -283,9 +348,65 @@
             </div>
             {{/each}}
 
+             
+
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Your Coupons</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Coupon Details Table -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Coupon Name</th>
+                            <th scope="col">Coupon Code</th>
+                            <th scope="col">Min Purchase</th>
+                            <th scope="col">Max Discount</th>
+                            <th scope="col">Expire Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Coupon Row -->
+{{#each coupuns}}
+                        <tr>
+                            <td>{{this.title}}</td>
+                            <td>{{this.code}}</td>
+                            
+                            <td>{{this.minimumPurchase}}</td>
+                            <td>{{this.maximumDiscount}}</td>
+                            <td>{{formatDate this.expiryDate}}</td>
+                        </tr>
+                        {{/each}}
+                        <!-- Add more rows here as needed -->
+                        <!-- Example Coupon Row -->
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
             <!-- Cart Summary -->
             <div class="row mt-4">
+
                 <div class="col-md-6 offset-md-6 cart-summary">
+                    {{!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        style="align-items: start;" data-bs-target="#staticBackdrop">
+                        Your coupuns
+                    </button> --}}
+
+
                     <div
                         class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded">
                         <span class="fw-bold">Total:</span>
@@ -391,6 +512,7 @@
                 }
             }
         </style>
+
 
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

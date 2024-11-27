@@ -519,7 +519,12 @@
                         }).then(() => window.location.href = '/user/success');
                     }
                 } else {
-                    throw new Error('Failed to save data.');
+                     const errorData = await response.text();
+                    Swal.fire({
+                        icon:'warning',
+                        title:'you cant order this item',
+                        text:errorData 
+                    })
                 }
             } catch (error) {
                 Swal.fire({

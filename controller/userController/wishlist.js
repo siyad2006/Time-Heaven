@@ -7,17 +7,21 @@ exports.getpage=async (req,res)=>{
     const userid=req.session.userId
     console.log(userid)
     if(!userid){
-        return res.redirect('/user/login')
+        return res.redirect('/user/home')
     }
     const userhave=await wishlistDB.findOne({user:userid})
+    
     if(userhave){
         
         const wishlist= await wishlistDB.findOne({user:userid}).populate('products')
         // res.json(wishlist)
-          res.render('user/wishlist',{wishlist})
+        if (!wishlist.products || wishlist.products.length === 0) {
+            return res.render('user/emptyWishlist'); // Render Empty Wishlist page
+        }
+        return  res.render('user/wishlist',{wishlist,userid});
     }else{
       
-        res.status(200).send('wishlist not found')
+      return res.render('user/emptyWishlist');
     }
     
 }
@@ -28,10 +32,11 @@ exports.additem= async (req,res)=>{
     // const userid=req.session.userId
     console.log(userid)
     
-    // if(userid==undefined){
-    //     console.log('entered to debug code ')
-    //     return res.send('Redirecting to login...')
-    // }
+    if(userid==undefined){
+        console.log('entered to debug code ')
+        return res.status(404).send('login first ')
+    }
+
     console.log('entered to the add code ')
     const userhave=await wishlistDB.findOne({user:userid})
     if(userhave){

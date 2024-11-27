@@ -5,7 +5,10 @@ const multer = require('multer')
 const fs = require('fs');
 const path = require('path');
 const BrandModel = require('../../schema/brandModel');
+const product = require('../../schema/productschema');
 const dotenv = require('dotenv').config()
+const cartDB= require('../../schema/cart')
+const wishlistDB=require('../../schema/wishlistSchema')
 
 // admin login
 const login = async (req, res) => {
@@ -189,8 +192,33 @@ const blockcategory = async (req, res) => {
 
     try {
 
+
+
         let ID = req.params.id
         console.log(ID)
+
+        const categoryProducts= await product.find({category:ID})
+
+        for(let item of categoryProducts){
+
+            // const findCart=await cartDB.find({'products.productId':item._id})
+            await cartDB.updateMany(
+                { 'products.productId': item._id }, // Match documents containing the productId
+                { $pull: { products: { productId: item._id } } } // Pull the entire product object
+            );
+        }
+
+        for(let item of categoryProducts){
+            await wishlistDB.updateMany({products:item._id},{
+                $pull:{products:item._id}
+            })
+        }
+
+        for(let item of categoryProducts){
+            await product.findByIdAndUpdate(item._id,{
+                isblocked:true
+            })
+        }
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Unlisted' })
 
@@ -211,6 +239,12 @@ const blockcategory = async (req, res) => {
 // for unlist category
 const unblockcategory = async (req, res) => {
     const ID = req.params.id
+    const categoryProducts= await product.find({category:ID})
+    for(let item of categoryProducts){
+        await product.findByIdAndUpdate(item._id,{
+            isblocked:false
+        })
+    }
     try {
 
         await CategoryDB.findByIdAndUpdate(ID, { isblocked: 'Listed' })

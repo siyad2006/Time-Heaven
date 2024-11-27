@@ -18,7 +18,7 @@ router.get('/otp', userAuth.isRegistered, userController.otp)
 router.get('/login', userController.userlogin)  // , checkLogin , checkLoggedIn
 router.post('/userlogin', userController.postlogin)
 router.post('/verify-otp', userController.otpVerification);
-router.get('/home', userController.lo)
+router.get('/home',userController.lo)
 router.post('/resentotp', userController.resentotp)
 router.get('/details/:id', userController.productDetails)
 router.get('/shop', userController.shoping)
@@ -34,16 +34,16 @@ router.post('/createaddress/:id', userController.createaddress);
 router.post('/deleteaddress/:id/:user', userController.deleteaddress);
 router.get('/updateaddress/:id/:user', userController.updateaddress);
 router.post('/postchange/:id/:user', userController.updatingAddress);
-router.get('/cart/:user', userAuth.loginuser, cartController.getcart);
+router.get('/cart', userAuth.loginuser, cartController.getcart);
 router.post('/addcart/:id/:user', cartController.addcart);
 router.post('/cart/update', cartController.updateCart);
 router.post('/cart/remove', cartController.removecart);
 router.post('/checkout/:cart', cheackout.getcheackout);
-router.post('/placeorder/:user', cheackout.placeorder)
-router.get('/myorders/:user', userAuth.loginuser,cheackout.myorders)
-router.post('/cancelorder/:id', cheackout.cancelorder)
-router.get('/success', cheackout.success)
-router.get('/wishlist', userAuth.loginuser,wishlist.getpage)
+router.post('/placeorder/:user', cheackout.placeorder);
+router.get('/myorders/:user', userAuth.loginuser,cheackout.myorders);
+router.post('/cancelorder/:id', cheackout.cancelorder);
+router.get('/success', cheackout.success);
+router.get('/wishlist', userAuth.loginuser,wishlist.getpage);
 router.post('/addtowishlist', wishlist.additem)
 router.post('/wishlist/delete/:id',wishlist.delete)
 router.post('/applycoupun',cartController.addcoupun)
@@ -52,10 +52,10 @@ router.post('/return/:id',cheackout.return)
 router.get('/viewcoupun/:user',coupun.viewcoupun)
 router.get('/wallet/:id',cheackout.wallet)
 router.get('/addoffer',offer.addoffer)
-router.get('/cart/',cartController.debughome)
+// router.get('/cart/',cartController.debughome)
 router.post('/addcart/:id/',cartController.debughome);
 router.post('/removecoupun',cartController.removecoupun)
-
+router.get('/test',userController.test)
 
 
 module.exports = router
