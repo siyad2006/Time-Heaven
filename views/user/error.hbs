@@ -7,10 +7,13 @@
     <title>Error</title>
 </head>
 <body>
+
+    {{> header}}
     <div style="text-align: center; padding: 50px;">
         <h1>Oops! Something went wrong.</h1>
         <p>{{message}}</p>
-        <a href="/user/home">Go back to Home</a>
+        <a href="/">Go back to Home</a>
     </div>
+    {{> footer}}
 </body>
 </html>

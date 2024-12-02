@@ -171,6 +171,44 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
+
+           <form id="search-form" class="search-container">
+    <div class="d-flex align-items-center position-relative" style="max-width: 500px; margin: auto;">
+        <!-- Search Input -->
+        <input type="text" id="search-bar" class="form-control ps-4 py-3"
+            placeholder="Type to search..." aria-label="Search" name="search"
+            style="border: 2px solid #ddd;   background-color: #f9f9f9; box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); font-size: 16px; color: #333;">
+        
+       
+        <button type="submit" class="btn btn-gradient px-4 py-2 position-absolute end-0 top-50 translate-middle-y me-2"
+            style="  font-weight: 600; color: white; font-size: 16px;">
+            <i class="bi bi-search me-1"></i> Go
+        </button>
+    </div>
+</form>
+<style>
+    /* Gradient Button Style */
+    .btn-gradient {
+        background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Input Focus State */
+    #search-bar:focus {
+        border-color: #6a11cb;
+        background-color: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        outline: none;
+    }
+</style>
+
+
+
             <form id="categoryfilter" onchange="sortProducts()">
                 <div class="mb-3">
                     <label for="categorySelect" class="form-label">Select Category</label>
@@ -222,7 +260,7 @@
         // Get values for category, sort option, and search input
         const category = document.getElementById('categorySelect').value;
         const sortOption = document.getElementById('sortOptions').value;
-       const searchInput=''
+       const searchInput=document.getElementById('search-bar').value;
 
         console.log('Current Page:', currentPage);
         console.log('Sort Option:', sortOption);
@@ -520,42 +558,104 @@
     <div class="row g-4">
         <!-- Product 1 -->
         {{#each products}}
-        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-            <div class="card product-card shadow-sm border-0">
-                <div style="position: relative; display: inline-block;">
-                    {{#if (gt this.offerPersent 0)}}
-                    <span
-                        style="position: absolute; top: 10px; right: 10px; background: #1ad633; color: #fff; font-size: 14px; font-weight: bold; padding: 3px 8px; border-radius: 5px;">
-                        {{this.offerPersent}}% OFF
-                    </span>
-                    {{/if}}
-                    <img src="/{{this.image.[0]}}" height="170px" alt="Product 1" class="card-img-top product-image">
-                </div>
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="card product-card shadow-sm border-0">
+                        <div style="position: relative; display: inline-block;">
+                            {{#if (gt this.offerPersent 0)}}
+                            <span
+                                style="position: absolute; top: 10px; right: 10px; background: #1ad633; color: #fff; font-size: 14px; font-weight: bold; padding: 3px 8px; border-radius: 5px;">
+                                {{this.offerPersent}}% OFF
+                            </span>
+                            {{/if}}
+                            <!-- Heart Icon for Wishlist -->
+                            <form id="addtowishlist" style="position: absolute; top: 10px; left: 10px;">
 
-                <div class="card-body text-center">
-                    <h6 class="card-title mb-2" style="font-weight: 600; color: #333;">{{this.name}}</h6>
-                    {{#if (gt this.offerprice 0)}}
-                    <p>
-                        <span class="price" style="text-decoration: line-through; color: #d9534f;">₹{{this.realprice}}</span>
-                        <span class="offer-price" style="color: #5cb85c; font-weight: bold;">₹{{this.offerprice}}</span>
-                    </p>
-                    {{else}}
-                    <p>
-                        <span class="price" style="color: #5cb85c; font-weight: bold;">₹{{this.realprice}}</span>
-                    </p>
-                    {{/if}}
+                                <input type="hidden" value="{{this.id}}" id="productId">
+                                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                    <i class="fas fa-heart" style="color: #ff4d4d; font-size: 20px;"></i>
+                                </button>
+                            </form>
+                            <img src="/{{this.image.[0]}}" height="170px" alt="Product 1"
+                                class="card-img-top product-image">
+                        </div>
 
-                    <form action="/user/details/{{this.id}}" method="get">
-                        <button class="btn btn-primary btn-sm" type="submit" style="width: 100%; font-weight: 500;">
-                            View Details
-                        </button>
-                    </form>
+                        <div class="card-body text-center">
+                            <h6 class="card-title mb-2" style="font-weight: 600; color: #333;">{{this.name}}</h6>
+                            {{#if (gt this.offerprice 0)}}
+                            <p>
+                                <span class="price"
+                                    style="text-decoration: line-through; color: #d9534f;">₹{{this.realprice}}</span>
+                                <span class="offer-price"
+                                    style="color: #5cb85c; font-weight: bold;">₹{{this.offerprice}}</span>
+                            </p>
+                            {{else}}
+                            <p>
+                                <span class="price"
+                                    style="color: #5cb85c; font-weight: bold;">₹{{this.realprice}}</span>
+                            </p>
+                            {{/if}}
+                            <p style="font-size: small;margin:0%;color:#1ad633">{{this.quantity}} In Stock</p>
+                            <form action="/user/details/{{this.id}}" method="get">
+                                <button class="btn btn-primary btn-sm" type="submit"
+                                    style="width: 100%; font-weight: 500;">
+                                    View Details
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        {{/each}}
+                {{/each}}
     </div>
 </div>
+
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+<script>
+    document.querySelectorAll('#addtowishlist').forEach(form => {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const product = this.querySelector('#productId').value;
+
+            try {
+                const response = await fetch('/user/addtowishlist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId: product }),
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Successfully added to the wishlist',
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+                } else {
+                    const res = await response.text();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning',
+                        text: res,
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while adding to the wishlist.',
+                });
+            }
+        });
+    });
+</script>
 
 
     </section>

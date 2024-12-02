@@ -85,6 +85,7 @@ exports.getsalesreport = async (req, res) => {
       }
     }
 
+console.log('start and end date',startDate,endDate)
 
     if (startDate && endDate) {
       finalStartDate = new Date(startDate) || Date.now();
@@ -97,22 +98,18 @@ exports.getsalesreport = async (req, res) => {
 
     };
 
+    console.log('after final start and end date ',finalStartDate,finalEndDate)
+
     const salesData = await cheackoutDB.find(query)
       .populate('products.productId')
       .populate('userID')
 
-
-    //  return res.json(arr)
+ 
     let totalOrders = salesData.length;
     let totalRevenue = 0;
     let totalItemsSold = 0;
     let totalDiscount = 0;
-
-    // const offer = await cheackoutDB.aggregate([ 
-    //   { $group: { _id: null, totaloffer: { $sum: '$discount' } } }, { $project: { _id: 0, totaloffer: 1 } }
-    // ]) 
-    // console.log(offer)
-    // totalDiscount += offer[0].totaloffer || 0
+ 
 
     const offer = await cheackoutDB.aggregate([
       { $match: { createdAt: { $gte: finalStartDate }, status: { $in: ['shipped', 'pending', 'delevered'] } } },
@@ -318,7 +315,7 @@ exports.downloadExcel = async (req, res) => {
     if (isNaN(start) || isNaN(end)) {
       return res.status(400).send('Invalid date format');
     }
-
+    
     const query = { createdAt: { $gte: start, $lte: end }, status: { $nin: ['return', 'canceled'] } };
     const salesData = await cheackoutDB.find(query)
       .populate('products.productId')

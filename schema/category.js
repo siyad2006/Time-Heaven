@@ -16,7 +16,7 @@ const categorySchema = new mongoose.Schema({
     existOffer:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'offer',
-        required:true
+        required:false
     }
 });
 

@@ -275,29 +275,12 @@
                         style="height: 50px; width: 100px;">
                     </td>
                     <td>{{this.productId.name}}</td>
-                    <td id="qty">{{this.qty}}</td>
-
-                    <td id="sold">{{this.soldprice}}</td>
-                    <script>
-                      window.onload=function (){
-                         const sold =Number( document.getElementById('sold').textContent)
-                      const qty =Number( document.getElementById('qty').textContent)
-                      console.log(sold)
-                      console.log(qty)
-                      const Netfinal=sold*qty
-
-
-                        document.getElementById('final').textContent=Netfinal
-                      
-
-                      }
-                     
-                    </script>
-                    <td class="text-end" id="final">
-                      
-                    </td>
+                    <td class="qty">{{this.qty}}</td>
+                    <td class="sold">{{this.soldprice}}</td>
+                    <td class="text-end final"></td>
                   </tr>
                   {{/each}}
+
                   <tr>
                     <td colspan="4" class="text-end fw-bold text-danger">Total: Rs: {{order.totalprice}}</td>
                   </tr>
@@ -307,6 +290,48 @@
           </div>
         </div>
       </div>
+      {{!--
+      <script>
+        window.onload = function () {
+          const sold = Number(document.getElementById('sold').textContent)
+          const qty = Number(document.getElementById('qty').textContent)
+          console.log(sold)
+          console.log(qty)
+          const Netfinal = sold * qty
+
+
+          document.getElementById('final').textContent = Netfinal
+
+
+        }
+
+      </script> --}}
+
+      <script>
+        window.onload = function () {
+          // Select all rows and calculate the final price for each product
+          const rows = document.querySelectorAll('tr'); // Select all table rows
+
+          rows.forEach(row => {
+            const qtyElement = row.querySelector('.qty'); // Find the quantity element in the row
+            const soldElement = row.querySelector('.sold'); // Find the sold price element in the row
+            const finalElement = row.querySelector('.final'); // Find the final price element in the row
+
+            if (qtyElement && soldElement && finalElement) {
+              // Parse the numeric values from the text content
+              const qty = Number(qtyElement.textContent);
+              const sold = Number(soldElement.textContent);
+
+              // Calculate the net final price
+              const Netfinal = sold * qty;
+
+              // Update the final cell with the calculated value
+              finalElement.textContent = Netfinal.toFixed(2); // Format to 2 decimal places if needed
+            }
+          });
+        };
+      </script>
+
       <script>
 
 

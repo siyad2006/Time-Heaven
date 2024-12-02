@@ -13,12 +13,18 @@ exports.getpage=async (req,res)=>{
     
     if(userhave){
         
-        const wishlist= await wishlistDB.findOne({user:userid}).populate('products')
-        // res.json(wishlist)
+        let page=req.query.page || 0
+        let limit=10
+        let skip=(page-1)*limit
+
+        const wishlist= await wishlistDB.findOne({user:userid}).populate('products') 
+        const totalProducts = await wishlistDB.countDocuments({ user: userid });
+        const totalPages = Math.ceil(totalProducts / limit);
+
         if (!wishlist.products || wishlist.products.length === 0) {
             return res.render('user/emptyWishlist'); // Render Empty Wishlist page
         }
-        return  res.render('user/wishlist',{wishlist,userid});
+        return  res.render('user/wishlist',{wishlist,userid,currentPage: page,totalPages});
     }else{
       
       return res.render('user/emptyWishlist');
@@ -26,43 +32,46 @@ exports.getpage=async (req,res)=>{
     
 }
 
-exports.additem= async (req,res)=>{
-    const ID=req.body.productId
-    const userid=req.session.userId
-    // const userid=req.session.userId
-    console.log(userid)
-    
-    if(userid==undefined){
-        console.log('entered to debug code ')
-        return res.status(404).send('login first ')
+
+ 
+
+
+exports.additem = async (req, res) => {
+    const ID = req.body.productId;
+    const userid = req.session.userId;
+
+    if (!userid) {
+        console.log('Session userId is undefined. User needs to log in.');
+        return res.status(401).send('Login first');
     }
 
-    console.log('entered to the add code ')
-    const userhave=await wishlistDB.findOne({user:userid})
-    if(userhave){
-        console.log('entered to the edit code ')
-        //   res.render('user/wishlist')
-        const wishlist=await wishlistDB.findOne({products:ID})
-        if(wishlist){
-            console.log('entered to the repeatationi code ')
-            return res.json({success:false})
-        }else{
-             await wishlistDB.updateOne({user:userid},{$push:{products:ID}}).then(()=>console.log('succesfully addded ')).catch((err)=>console.log(err))
-        res.json({sucess:true})
-        }
-        
-       
-    }else{
-      console.log('ented to the new code ')
-        const newwishlist= new wishlistDB({
-            user:userid,
-            products:ID
-        })
-        await newwishlist.save()
-        res.json({success:true})
-        // res.status(200).send('wishlist not found')
+    try {
+        const userWishlist = await wishlistDB.findOne({ user: userid });
+
+        if (userWishlist) { 
+            const productExists = await wishlistDB.findOne({ user: userid, products: ID });
+            if (productExists) {
+                console.log('Product already in wishlist');
+                return res.json({ success: false, message: 'Product already in wishlist' });
+            }
+ 
+            await wishlistDB.updateOne(
+                { user: userid },
+                { $addToSet: { products: ID } }
+            );
+            console.log('Successfully added product to wishlist');
+            return res.json({ success: true });
+        } 
+        const newWishlist = new wishlistDB({ user: userid, products: [ID] });
+        await newWishlist.save();
+        console.log('New wishlist created and product added');
+        return res.json({ success: true });
+    } catch (err) {
+        console.error('Error handling wishlist operation:', err);
+        return res.status(500).json({ success: false, error: 'Server error' });
     }
-}
+};
+
 
 exports.delete= async (req,res)=>{
     console.log(req.params.id)

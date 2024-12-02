@@ -19,7 +19,8 @@ exports.getcheackout = async (req, res) => {
 
     const cartItem = await cartDB.findById(cartId);
     const address = await AddressDB.find({ user: userId });
-    const cartTotal = cartItem.totalAmount
+    const cartTotal = req.session.totalAmount
+    console.log('this is the total amount from cart in cheackot :',cartTotal )
 
     const coupun = await coupunDB.findById(cartItem.coupun)
 
@@ -56,7 +57,7 @@ exports.getcheackout = async (req, res) => {
     });
 
     console.log(cartProductDetails)
-    res.render('user/cheakout', { cartProducts: cartProductDetails, address, userId, cartItem });
+    res.render('user/cheakout', { cartProducts: cartProductDetails, address, userId, cartItem ,cartTotal});
 };
 
 
@@ -76,18 +77,24 @@ exports.placeorder = async (req, res) => {
     if (!cart) {
         throw new Error("Cart not found for the user.");
     }
-    let total = cart.totalAmount;
+    let total = req.session.totalAmount;
     let coupunamount = 0;
 
 
 
-
-    if (cart && cart.coupun) {
+    if (cart.coupun) {
         const coupun = await coupunDB.findById(cart.coupun);
-        coupunamount += Number(coupun.maximumDiscount);
-
-
+        console.log('Retrieved coupun:', coupun);
+    
+        if (coupun) {
+            coupunamount += Number(coupun.maximumDiscount) || 0;
+        } else {
+            console.log('No coupun document found');
+        }
+    } else {
+        console.log('No coupun ID in cart');
     }
+    
     console.log('Coupon Amount:', coupunamount);
 
     const cheakpro = await productDB.find();
@@ -167,18 +174,14 @@ exports.placeorder = async (req, res) => {
             }
 
 
-            // const items = cart.products.map(x => ({
-
-            //     productId: x.productId,
-            //     qty: x.qty,
-            // }));
+       
             const productdata = await productDB.find()
             const items = cart.products.map(x => {
                 const product = productdata.find(p => p._id.toString() === x.productId.toString());
                 return {
                     productId: x.productId,
                     qty: x.qty,
-                    soldprice: product.regularprice // Default to 0 if not found
+                    soldprice: product.regularprice  
                 };
             });
 
@@ -331,18 +334,47 @@ exports.placeorder = async (req, res) => {
 };
 
 
+// exports.myorders = async (req, res) => {
+//     const userID = req.session.userId;
+
+
+//     const orders = await checkoutDB.find({ userID: userID });
+//     console.log(orders);
+
+//     res.render('user/myorder', { orders })
+
+
+
+// }
+
 exports.myorders = async (req, res) => {
     const userID = req.session.userId;
 
+    if (!userID) {
+        return res.redirect('/user/home');
+    }
 
-    const orders = await checkoutDB.find({ userID: userID });
-    console.log(orders);
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
 
-    res.render('user/myorder', { orders })
+    const totalOrders = await checkoutDB.countDocuments({ userID });
+    const totalPages = Math.ceil(totalOrders / limit);
 
+    const orders = await checkoutDB
+        .find({ userID })
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 });
 
+    res.render('user/myorder', {
+        orders,
+        currentPage: page,
+        totalPages,
+        userID
+    });
+};
 
-}
 
 exports.cancelorder = async (req, res) => {
     const ID = req.params.id
@@ -581,8 +613,12 @@ exports.details = async (req, res) => {
         };
     });
     console.log(productsWithQty)
+    const coupun=db.applayedcoupun
+    let offer=db.discount
+    const realprice = Number(db.totalprice + coupun + db.discount)
     //   res.json(db)
-    res.render('user/orderdetails', { products: productsWithQty, order: db, date: date })
+    console.log(realprice)
+    res.render('user/orderdetails', { products: productsWithQty, order: db, date: date ,coupun,realprice,offer})
 
 
 }
@@ -592,7 +628,7 @@ exports.return = async (req, res) => {
     const ID = req.params.id
     const db = await checkoutDB.findById(ID)
     const userid = req.session.userId
-    // console.log(db)
+     
     if (db.paymentMethods == 'razorpay') {
         console.log('entered to the razorpaay code ')
         await checkoutDB.findByIdAndUpdate(ID, {

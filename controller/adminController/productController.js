@@ -10,7 +10,7 @@ const wishlistDB= require('../../schema/wishlistSchema')
 
 const addproduct = async (req, res) => {
 
-    const categoris = await category.find()
+    const categoris = await category.find({isblocked:'Listed'})
 
     res.render('admin/addproduct', { categoris })
 }
@@ -34,7 +34,7 @@ const add = async (req, res) => {
                 imagePaths.push(req.files.image3[0].path);
             }
         }
-
+        
         const newProduct = new productDB({
             name: val.productname.trim(),
             discription: val.discription.trim(),
@@ -57,6 +57,7 @@ const add = async (req, res) => {
 
 
 }
+
 const postEdit = async (req, res) => {
     const productId = req.params.id;
     const val = req.body;
@@ -100,7 +101,7 @@ const postEdit = async (req, res) => {
                 discription: val.discription.trim(),
                 brand: val.brand.trim(),
                 category: val.category,
-              
+                regularprice:val.regularprice,
                 quantity: val.quantity,
                 color: val.color.trim(),
                 image: updatedImages,

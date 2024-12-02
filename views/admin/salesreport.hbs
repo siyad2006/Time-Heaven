@@ -342,7 +342,7 @@
             </tr>
           </thead>
           <tbody>
-            
+
             {{#each salesData}}
             <tr>
               <td>{{formatDate this.createdAt}}</td>
@@ -376,48 +376,50 @@
 
   <script>
     document.getElementById('download-pdf').addEventListener('click', function () {
-  let startDate = document.getElementById('start-date').value;
-  let endDate = document.getElementById('end-date').value;
-  const searchparams= new URLSearchParams(window.location.search)
-  let filter = searchparams.get('filter')
-  console.log(filter)
+      const searchparams = new URLSearchParams(window.location.search)
+      let startDate = searchparams.get('startDate')
+      let endDate = searchparams.get('endDate')
 
-  let url = '/admin/salesreport/pdf';
-  
-   if (filter && filter !== "default") {
-    url += `?filter=${filter}`;
-  }
-  
-  if (startDate && endDate) {
-    if (url.includes('?')) {
-      url += `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
-    } else {
-      url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
-    }
-  }
+      let filter = searchparams.get('filter')
+      console.log(filter)
 
-  window.location.href = url;
-});
+      let url = '/admin/salesreport/pdf';
+
+      if (filter && filter !== "default") {
+        url += `?filter=${filter}`;
+      }
+
+      if (startDate && endDate) {
+        if (url.includes('?')) {
+          url += `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+        } else {
+          url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+        }
+      }
+
+      window.location.href = url;
+    });
 
   </script>
-  {{!-- <script>
+  {{!--
+  <script>
 
     document.getElementById('download-pdf').addEventListener('click', function () {
       let startDate = document.getElementById('start-date').value;
       let endDate = document.getElementById('end-date').value;
-      let filter= document.getElementById('filter').value;
+      let filter = document.getElementById('filter').value;
 
 
       let url = '/admin/salesreport/pdf';
-      if(filter){
-         window.location.href=`/admin/salesreport/pdf?filter=${filter}`
+      if (filter) {
+        window.location.href = `/admin/salesreport/pdf?filter=${filter}`
       }
-       if (startDate && endDate) {
+      if (startDate && endDate) {
         url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
       }
 
-      
-       
+
+
     })
   </script> --}}
 
@@ -438,14 +440,15 @@
 
   <script>
     document.getElementById('download-excel').addEventListener('click', function () {
-      let startDate = document.getElementById('start-date').value;
-      let endDate = document.getElementById('end-date').value;
-      const urlParams= new URLSearchParams(window.location.search)
+         const urlParams = new URLSearchParams(window.location.search)
+      let startDate = urlParams.get('startDate')
+      let endDate = urlParams.get('endDate')
+   
 
-      const filter=urlParams.get('filter')
+      const filter = urlParams.get('filter')
 
       let url = '/admin/salesreport/excel';
-      if(filter){
+      if (filter) {
         url += `?filter=${filter}`
       }
       if (startDate && endDate) {

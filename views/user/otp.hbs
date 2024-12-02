@@ -92,58 +92,11 @@
 </head>
 
 <body class="main-body">
-  <nav class="navbar na navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white ms-2 head-logo" href="#">
-                <img src="/img/download copy.png" alt="Logo" width="40" height="34"
-                    class="d-inline-block align-text-top"> TimeHaven
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact Us</a>
-                    </li>
-                </ul>
-
-                <div class="d-flex align-items-center">
-                    <a href="#" class="text-white ms-3">
-                        <i class="bi bi-search"></i>
-                    </a>
-                    <a href="/user/wishlist" class="text-white ms-3">
-                        <i class="bi bi-heart"></i>
-                    </a>
-                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
-                        <i class="bi bi-cart"></i>
-                    </a>
-                    <a href="/user/profile" class="text-white ms-3">
-                        <i class="bi bi-person"></i>
-                    </a>
-
-                </div>
-            </div>
-        </div>
-    </nav>
+   
 
 
 
-
-
-    <div class="container-fluid otp-div mt-5 text-white text-center">
+    <div class="container-fluid otp-div text-white text-center" style="margin-top: 212px;">
         <form id="otp-form" action="" onsubmit="return validateOtp(event)">
             <div class="mb-3">
                 <label for="otpInput" class="form-label" id="verifyname">Enter OTP</label>
@@ -275,57 +228,7 @@
         }
     </script>
 
-
-    <footer class="bg-dark text-white mt-5">
-        <div class="container py-4">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>TimeHaven is your go-to destination for stylish and affordable watches. We believe in offering
-                        quality products with exceptional service.</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Customer Service</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="text-white">Contact Us</a></li>
-                        <li><a href="#" class="text-white">Returns</a></li>
-                        <li><a href="#" class="text-white">Shipping Information</a></li>
-                        <li><a href="#" class="text-white">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Follow Us</h5>
-                    <ul class="list-unstyled d-flex">
-                        <li class="me-3">
-                            <a href="#" class="text-white">
-                                <i class="bi bi-facebook"></i>
-                            </a>
-                        </li>
-                        <li class="me-3">
-                            <a href="#" class="text-white">
-                                <i class="bi bi-twitter"></i>
-                            </a>
-                        </li>
-                        <li class="me-3">
-                            <a href="#" class="text-white">
-                                <i class="bi bi-instagram"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="text-white">
-                                <i class="bi bi-linkedin"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4 bg-white">
-            <div class="text-center">
-                <p>&copy; 2024 TimeHaven. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
+ 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

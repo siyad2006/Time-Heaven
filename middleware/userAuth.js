@@ -1,5 +1,5 @@
 function isRegistered(req, res, next) {
-  console.log('this is from isregistereed',req.session)
+  
   if (req.session.forOTP==true) {
    return next()
   } else {
@@ -9,7 +9,7 @@ function isRegistered(req, res, next) {
 
 
 function loginuser(req,res,next){
-  console.log('this is from oginuser',req.session)
+ 
   if(req.session.loginuser==true){
      
   

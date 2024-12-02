@@ -122,37 +122,38 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-    <ul class="navbar-nav w-100">
-      <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link active" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order Manage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line"></i> Sales Report</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/offer"><i class="fas fa-gift"></i> Offer</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt"></i> Coupon</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/category"><i class="fas fa-tags"></i> Category</a>
-      </li>
-     
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout</a>
-      </li>
-    </ul>
-  </div>
+        <ul class="navbar-nav w-100">
+            <li class="nav-item">
+                <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie"></i> Statistics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users"></i> User Manage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/products"><i class="fas fa-box"></i> Product Manage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/ordermanagement"><i class="fas fa-file-invoice"></i> Order
+                    Manage</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line"></i> Sales Report</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/offer"><i class="fas fa-gift"></i> Offer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt"></i> Coupon</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link " href="/admin/category"><i class="fas fa-tags"></i> Category</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/logout"><i class="fas fa-cog"></i> Logout</a>
+            </li>
+        </ul>
+    </div>
     <!-- Sidebar toggle button -->
     <button class="sidebar-toggler" id="sidebar-toggler">
         &#x22EE;
@@ -175,7 +176,7 @@
                         <th>action</th>
                         <th></th>
 
-
+                    
                     </tr>
                 </thead>
                 <tbody>
@@ -194,25 +195,12 @@
 
 
                         </td>
-                        {{!-- <td><select class="order-status" data-id="{{this._id}}">
-                                <option value="pending">pending</option>
-                                <option value="shipped">
-                                    shipped
-                                </option>
-                                <option value="delevered">
-                                    deleverd
-                                </option>
-                                <option value="canceled">
-                                    canceled
-                                </option>
 
-                            </select>
-                            </td> --}}
-                            <td>
-                                <form action="/admin/orderdetails/{{this._id}}"  method="get">
+                        <td>
+                            <form action="/admin/orderdetails/{{this._id}}" method="get">
                                 <input type="submit" value="View" class="btn btn-outline-info">
-                                </form>
-                            </td>
+                            </form>
+                        </td>
                         {{/each }}
 
                     </tr>
@@ -268,11 +256,11 @@
     <script>
         let x = document.querySelectorAll('.div-status')
         x.forEach(div => {
-          
+
             if (div.textContent == 'pending') {
                 div.style.color = '#c4ba43';
             }
-            if (div.textContent == 'shipped' || div.textContent=='delevered') {
+            if (div.textContent == 'shipped' || div.textContent == 'delevered') {
                 div.style.color = 'green'
             }
             if (div.textContent == 'canceled') {

@@ -65,12 +65,15 @@ const dashboard = async (req, res) => {
 
 // for block user 
 const blockuser = async (req, res) => {
+    const page=req.query.page || 1
+
     const val = req.params.id
     console.log(val)
 
+
     try {
         await UserDB.findByIdAndUpdate(val, { isblocked: true })
-        res.redirect('/admin/usermanage')
+        res.redirect(`/admin/usermanage?page=${page}`)
         console.err('user blocked')
     } catch (err) {
         console.log(err)
@@ -84,12 +87,13 @@ const blockuser = async (req, res) => {
 // for ubblock user
 const unblockuser = async (req, res) => {
     const val = req.params.id
+    const page=req.query.page || 1
     console.log(val)
 
     try {
         await UserDB.findByIdAndUpdate(val, { isblocked: false })
         console.warn('user inblocked ')
-        res.redirect('/admin/usermanage')
+        res.redirect(`/admin/usermanage?page=${page}`)
     } catch (err) {
         console.log(err)
     }
@@ -159,6 +163,7 @@ const addcateory = async (req, res) => {
 
 const creatcategory = async (req, res) => {
     const { categoryname, discription } = req.body;
+    const compare=categoryname.toUpperCase()
     
     try {
         const existingCategory = await CategoryDB.findOne({ categoryname: categoryname.trim() });
@@ -166,6 +171,16 @@ const creatcategory = async (req, res) => {
         if (existingCategory) {
             req.flash('category_err', 'The category name already exists');
             return res.redirect('/admin/category');
+        }
+
+        const exist=await CategoryDB.find()
+        for(let item of exist){
+
+            if(compare==item.categoryname.toUpperCase()){
+                req.flash('category_err', 'The category name already exists');
+          
+                return res.redirect('/admin/category')
+            }
         }
 
         const category = new CategoryDB({

@@ -1,5 +1,3 @@
- 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,55 +35,9 @@
 </head>
 
 <body>
-   <nav class="navbar na navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white ms-2 head-logo" href="#">
-                <img src="/img/download copy.png" alt="Logo" width="40" height="34"
-                    class="d-inline-block align-text-top"> TimeHaven
-            </a>
+     {{> header}}
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/user/shop">Shopping</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Contact Us</a>
-                    </li>
-                </ul>
-
-                <div class="d-flex align-items-center">
-                    <a href="#" class="text-white ms-3">
-                        <i class="bi bi-search"></i>
-                    </a>
-                    <a href="/user/wishlist" class="text-white ms-3">
-                        <i class="bi bi-heart"></i>
-                    </a>
-                    <a href="/user/cart/{{userid}}" class="text-white ms-3">
-                        <i class="bi bi-cart"></i>
-                    </a>
-                    <a href="/user/profile" class="text-white ms-3">
-                        <i class="bi bi-person"></i>
-                    </a>
-
-                </div>
-            </div>
-        </div>
-    </nav>
-
-
-    <div class="container checkout-section">
+    <div class="container checkout-section" style="margin-top:10px">
         <h2 class="text-center mb-4">Checkout</h2>
         <div class="row">
 
@@ -105,6 +57,7 @@
                         </div>
                     </div>
                     {{/each}} --}}
+                    {{!-- <img src="/{{cartItem.image.[0]}}" alt=""> --}}
                     <input type="hidden" value="{{cartItem}}" id="cartitem">
 
 
@@ -126,111 +79,111 @@
                         </div>
                     </div>
                     {{/each}} --}}
-<!-- Coupon Section -->
+                    <!-- Coupon Section -->
 
 
-{{!-- <div class="coupon-section mt-3">
-    <form id="coupunForm" class="d-flex align-items-center">
-        <input
-            type="text"
-            name="couponCode"
-            id="couponInput"
-            placeholder="Enter coupon code"
-            class="form-control me-2"
-            style="max-width: 200px;"
-        />
-        <button type="submit" class="btn btn-primary btn-sm">Apply Coupon</button>
-    </form>
-    <div class="mt-2">
-        <!-- Remove Coupon Button -->
-        <form action="/user/cart/remove-coupon" method="post">
-            <button type="submit" class="btn btn-danger btn-sm">Remove Coupon</button>
-        </form>
-    </div>
-</div> --}}
+                    {{!-- <div class="coupon-section mt-3">
+                        <form id="coupunForm" class="d-flex align-items-center">
+                            <input type="text" name="couponCode" id="couponInput" placeholder="Enter coupon code"
+                                class="form-control me-2" style="max-width: 200px;" />
+                            <button type="submit" class="btn btn-primary btn-sm">Apply Coupon</button>
+                        </form>
+                        <div class="mt-2">
+                            <!-- Remove Coupon Button -->
+                            <form action="/user/cart/remove-coupon" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove Coupon</button>
+                            </form>
+                        </div>
+                    </div> --}}
 
-<script>
-            document.getElementById('couponForm').addEventListener('submit', async function (event) {
-                event.preventDefault(); // Prevents the form from submitting normally
-                console.log('Form submitted');
-                const coupun = document.getElementById('couponInput').value;
-                const id = document.getElementById('ID').value
-                const x = document.getElementById('ID').value
-                const data = {
-                    coupunId: coupun
-                }
+                    <script>
+                        document.getElementById('couponForm').addEventListener('submit', async function (event) {
+                            event.preventDefault(); // Prevents the form from submitting normally
+                            console.log('Form submitted');
+                            const coupun = document.getElementById('couponInput').value;
+                            const id = document.getElementById('ID').value
+                            const x = document.getElementById('ID').value
+                            const data = {
+                                coupunId: coupun
+                            }
 
-                const result = await fetch('/user/applycoupun', {
-                    method: 'post',
-                    headers: {
-                        'content-type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
+                            const result = await fetch('/user/applycoupun', {
+                                method: 'post',
+                                headers: {
+                                    'content-type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            })
 
-                const response = await result.json();
+                            const response = await result.json();
 
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        text: 'successfully added coupun',
-                        text: 'successfully added coupun',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => window.location.href = /user/cart/${x})
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'an error occured',
-                        text: response.message
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: 'successfully added coupun',
+                                    text: 'successfully added coupun',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => window.location.href = /user/cart / ${ x })
+                            } else {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'an error occured',
+                                    text: response.message
 
-                    })
-                }
+                                })
+                            }
 
 
-            });
-        </script>
+                        });
+                    </script>
 
-<style>
-    /* Coupon Section Styling */
-.coupon-section {
-    font-size: 1rem;
-}
+                    <style>
+                        /* Coupon Section Styling */
+                        .coupon-section {
+                            font-size: 1rem;
+                        }
 
-/* Input Field */
-.coupon-section input {
-    padding: 5px;
-    font-size: 0.9rem;
-}
+                        /* Input Field */
+                        .coupon-section input {
+                            padding: 5px;
+                            font-size: 0.9rem;
+                        }
 
-/* Buttons */
-.coupon-section button {
-    font-size: 0.9rem;
-    padding: 5px 10px;
-}
+                        /* Buttons */
+                        .coupon-section button {
+                            font-size: 0.9rem;
+                            padding: 5px 10px;
+                        }
 
-/* Adjustments for Mobile */
-@media (max-width: 768px) {
-    .coupon-section {
-        text-align: center;
-    }
-    .coupon-section form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .coupon-section input {
-        margin-bottom: 10px;
-        width: 100%;
-    }
-    .coupon-section button {
-        width: 100%;
-    }
-}
-</style>
+                        /* Adjustments for Mobile */
+                        @media (max-width: 768px) {
+                            .coupon-section {
+                                text-align: center;
+                            }
+
+                            .coupon-section form {
+                                flex-direction: column;
+                                align-items: stretch;
+                            }
+
+                            .coupon-section input {
+                                margin-bottom: 10px;
+                                width: 100%;
+                            }
+
+                            .coupon-section button {
+                                width: 100%;
+                            }
+                        }
+                    </style>
                     {{#each cartProducts}}
-                    <div class="list-group-item d-flex justify-content-between"> 
+                    <div class="list-group-item d-flex justify-content-between">
                         <input type="hidden" class="product-id" value="{{this._id}}">
                         <input type="hidden" class="product-qty" value="{{this.qty}}">
+                        <span>
+                        <img src="/{{this.image.[0]}}" width="160px" alt="cant load this image ">
+                        </span>
                         <div class="product-item" data-product-id="{{this._id}}" data-qty="{{this.qty}}">
                             <div>
                                 <h5>{{this.name}}</h5>
@@ -242,7 +195,7 @@
                                 {{#if (gt this.offerprice 0)}}
                                 <p style="color: green; font-weight:700">offerprice : {{this.offerprice}}</p>
                                 {{/if}}
- 
+
                             </div>
                         </div>
                     </div>
@@ -251,7 +204,7 @@
 
 
                 </div>
-                <h5 class="text-end" style="color: rgb(196, 58, 58);">Total : {{cartItem.totalAmount}}</h5>
+                <h5 class="text-end" style="color: rgb(196, 58, 58);">Total : {{cartTotal}}</h5>
             </div>
 
 
@@ -271,7 +224,7 @@
                         <label for="phone" class="form-label">Phone Number</label>
                         <input type="text" class="form-control" id="phone" required>
                     </div>
- 
+
                     <div class="mb-3">
                         <label for="addressSelect" class="form-label"><strong>Select Address</strong></label>
                         <select id="addressSelect" class="form-select mb-4" required>
@@ -286,7 +239,7 @@
                             {{/each}}
                         </select>
                     </div>
- 
+
                     <div class="mb-3">
                         <label for="street" class="form-label">Street Address</label>
                         <input type="text" class="form-control" id="street" required>
@@ -329,7 +282,7 @@
                         <label class="form-check-label" for="razorpay">Razorpay</label>
                     </div>
 
-                    <div class="d-flex justify-content-center mt-4">
+                    <div class="d-flex justify-content-center mt-4 mb-4">
                         <button type="submit" class="btn btn-custom btn-lg">Place Order</button>
                     </div>
                 </form>
@@ -337,7 +290,8 @@
         </div>
     </div>
 
-    <footer class="bg-dark text-white mt-5">
+  
+    <footer class="bg-dark text-white ">
         <div class="container py-4">
             <div class="row">
                 <div class="col-md-4">
@@ -357,10 +311,26 @@
                 <div class="col-md-4">
                     <h5>Follow Us</h5>
                     <ul class="list-unstyled d-flex">
-                        <li class="me-3"><a href="#" class="text-white"><i class="bi bi-facebook"></i></a></li>
-                        <li class="me-3"><a href="#" class="text-white"><i class="bi bi-twitter"></i></a></li>
-                        <li class="me-3"><a href="#" class="text-white"><i class="bi bi-instagram"></i></a></li>
-                        <li><a href="#" class="text-white"><i class="bi bi-linkedin"></i></a></li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-twitter"></i>
+                            </a>
+                        </li>
+                        <li class="me-3">
+                            <a href="#" class="text-white">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="text-white">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -373,11 +343,11 @@
 
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- 
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
- 
+
     <script>
         document.getElementById('addressSelect').addEventListener('change', function () {
             const selectedOption = this.options[this.selectedIndex];
@@ -447,7 +417,7 @@
 
                 if (!productIdElem || !qtyElem) {
                     console.error('Missing product element details', product);
-                    return null;  
+                    return null;
                 }
 
                 return {
@@ -519,11 +489,11 @@
                         }).then(() => window.location.href = '/user/success');
                     }
                 } else {
-                     const errorData = await response.text();
+                    const errorData = await response.text();
                     Swal.fire({
-                        icon:'warning',
-                        title:'you cant order this item',
-                        text:errorData 
+                        icon: 'warning',
+                        title: 'you cant order this item',
+                        text: errorData
                     })
                 }
             } catch (error) {

@@ -4,6 +4,7 @@ const path = require('path')
 const cors = require("cors");
 const userRouter = require('./Router/userRouter/user');
 const adminRouter = require('./Router/adminRouter/admin')
+const start=require('./Router/userRouter/start')
 const flash = require('connect-flash');
 const nocache = require('nocache')
 const swal = require('sweetalert2')
@@ -53,7 +54,7 @@ app.use(session({
     }
 }));
 
-
+// localStorage.setItem('Application Name ', 'Time Heaven')
 app.use(flash())
 
 app.use((req, res, next) => {
@@ -119,23 +120,24 @@ try {
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/user/register' }), (req, res) => {
-    res.redirect('/user/home')
+    res.redirect('/')
 })
 
 
 app.use('/user', userRouter)
 app.use('/admin', adminRouter)
+app.use('/',start)
 
 
 app.use((req, res, next) => {
     res.status(404);
-    res.render('error', { message: "Page Not Found" });
+    res.render('user/error', { message: "Page Not Found" });
 });
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500);
-    res.render('error', { message: "Internal Server Error" });
+    res.render('user/error', { message: "Internal Server Error" });
 });
 
 app.listen(3000, () => {

@@ -213,7 +213,7 @@
             }
         }
     </style>
-     <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/jquery-3.3.1.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/jquery.nice-select.min.js"></script>
     <script src="/js/jquery.nicescroll.min.js"></script>
@@ -238,35 +238,124 @@
     <!-- Rest of the HTML remains the same -->
     <!-- Only the styling has been enhanced -->
     {{> header}}
-       
+
     <div class="container">
-        <div class="product-container row" >
+        <div class="product-container row">
             <!-- Image Gallery Section -->
-            <div class="col-md-6 product-image-gallery"  >
+            <div class="col-md-6 product-image-gallery">
                 <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    {{!-- <div class="carousel-inner h-100 ">
+                        <div class="carousel-item active zoom-container">
+                            <img src="/{{product.image.[0]}}" class="d-block w-100" alt="Product Image 1">
+                            <div class="zoom-overlay"></div>
+                        </div>
+                        <div class="carousel-item zoom-container">
+                            <img src="/{{product.image.[1]}}" class="d-block w-100" alt="Product Image 2">
+                            <div class="zoom-overlay"></div>
+                        </div>
+                        <div class="carousel-item zoom-container">
+                            <img src="/{{product.image.[2]}}" class="d-block w-100" alt="Product Image 3">
+                            <div class="zoom-overlay"></div>
+                        </div>
+                    </div> --}}
+
+
                     <div class="carousel-inner h-100">
-                        <div class="carousel-item active  ">
-                            <img src="/{{product.image.[0]}}" class="d-block" alt="Product Image 1" >
+                        <div class="carousel-item active zoom-container">
+                            <img src="/{{product.image.[0]}}" class="d-block w-100 zoom-image" alt="Product Image 1">
+                            <div class="zoom-overlay"></div>
                         </div>
-                        <div class="carousel-item  ">
-                            <img src="/{{product.image.[1]}}" class="d-block" alt="Product Image 2">
+                        <div class="carousel-item zoom-container">
+                            <img src="/{{product.image.[1]}}" class="d-block w-100 zoom-image" alt="Product Image 2">
+                            <div class="zoom-overlay"></div>
                         </div>
-                        <div class="carousel-item  ">
-                            <img src="/{{product.image.[2]}}" class="d-block" alt="Product Image 3">
+                        <div class="carousel-item zoom-container">
+                            <img src="/{{product.image.[2]}}" class="d-block w-100 zoom-image" alt="Product Image 3">
+                            <div class="zoom-overlay"></div>
                         </div>
                     </div>
-                    <button class="carousel-control-prev custom-carousel-control" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+
+
+                    {{!-- <style>
+                        .zoom-container {
+                            position: relative;
+                            overflow: hidden;
+                        }
+                    </style> --}}
+                    <style>
+                        .zoom-container {
+                            position: relative;
+                            overflow: hidden;
+                            /* Keep the zoom overlay contained */
+                        }
+
+                        .zoom-overlay {
+                            display: none;
+                            position: absolute;
+                            width: 200px;
+                            /* Adjust this value for zoom area size */
+                            height: 200px;
+                            border: 2px solid rgba(0, 0, 0, 0.3);
+                            pointer-events: none;
+                            /* Make it non-interactive */
+                            z-index: 10;
+                            background-repeat: no-repeat;
+                            background-color: rgba(255, 255, 255, 0.2);
+                            /* Optional debug visibility */
+                        }
+                    </style>
+
+                    <!-- Custom Carousel Controls -->
+                    <button class="carousel-control-prev custom-carousel-control" type="button"
+                        data-bs-target="#productCarousel" data-bs-slide="prev" style="margin-top: 230px;">
                         <div class="control-circle">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         </div>
                     </button>
-                    <button class="carousel-control-next custom-carousel-control" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                    <button class="carousel-control-next custom-carousel-control" type="button"
+                        data-bs-target="#productCarousel" data-bs-slide="next" style="margin-top: 230px;">
                         <div class="control-circle">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         </div>
                     </button>
                 </div>
             </div>
+
+            <!-- Custom CSS to center the controls -->
+            <style>
+                .carousel-control-prev,
+                .carousel-control-next {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 5;
+                    width: 5%;
+                }
+
+                .carousel-control-prev {
+                    left: 0;
+                }
+
+                .carousel-control-next {
+                    right: 0;
+                }
+
+                .control-circle {
+                    background-color: rgba(0, 0, 0, 0.5);
+                    /* Optional: For background color of control button */
+                    border-radius: 50%;
+                    padding: 10px;
+                }
+
+                .carousel-inner img {
+                    object-fit: cover;
+                    /* Ensures the image covers the area without stretching */
+                    width: 100%;
+                    height: 100%;
+                }
+            </style>
+
+
 
             <!-- Rest of the product details remain the same -->
             <div class="col-md-6 product-details">
@@ -282,38 +371,88 @@
                     </div>
                     <span>(42 Reviews)</span>
                 </div>
+                <input type="hidden" value="{{product.quantity}}" id="qty">
 
-                <p class="text-muted mb-3" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;" >{{product.discription}}</p>
+                <p class="text-muted mb-3"
+                    style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">
+                    {{product.discription}}</p>
 
                 <div class="product-price">${{product.regularprice}}</div>
-
+                <p style="font-size: small;margin:0%;color:#1ad633">{{product.quantity}} In Stock</p>
                 <div class="mb-3">
+
                     <strong>Color:</strong> Silver
-                    
+
                 </div>
 
                 <div class="quantity-control">
                     <button onclick="decreaseQuantity()">-</button>
-                    <input type="number" id="quantity" value="1" min="1" max="8" style="width: 70px; text-align: center;">
+                    <input type="number" id="quantity" value="1" min="1" max="8"
+                        style="width: 70px; text-align: center;">
                     <button onclick="increaseQuantity()">+</button>
                 </div>
 
                 <div class="action-buttons">
-                    <form action="/user/addcart/{{product.id}}/{{userid}}" method="post" onsubmit="updateHiddenQuantity()">
+                    <form action="/user/addcart/{{product.id}}/{{userid}}" method="post"
+                        onsubmit="updateHiddenQuantity()">
                         <input type="hidden" value="{{product.regularprice}}" name="regularprice">
                         <input type="hidden" id="hiddenQuantity" name="quantity" value="1">
                         <button type="submit" class="btn btn-primary d-flex align-items-center">
                             <i class="bi bi-cart-plus me-2"></i> Add to Cart
                         </button>
                     </form>
-                    <form action="/user/addtowishlist" method="post">
+                    <form id="addtowishlist">
+                        <input type="hidden" value="{{product.id}}" id="productId">
+
                         <button type="submit" class="btn btn-danger d-flex align-items-center">
                             <i class="bi bi-heart me-2"></i> Add to Wishlist
                         </button>
                     </form>
                 </div>
             </div>
-        </div>    i
+        </div>
+        <script>
+            document.getElementById('addtowishlist').addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                const product = document.getElementById('productId').value;
+
+                try {
+                    const response = await fetch('/user/addtowishlist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId: product }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Successfully added to the wishlist',
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    } else {
+                        const res = await response.text();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: res,
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while adding to the wishlist.',
+                    });
+                }
+            });
+
+        </script>
         <style>
             .product-container {
                 max-width: 1200px;
@@ -451,7 +590,8 @@
             }
         </style>
     </div>
-      <script>
+    {{!--
+    <script>
         document.querySelectorAll('.zoom-container').forEach(container => {
             const overlay = container.querySelector('.zoom-overlay');
             const img = container.querySelector('.zoom-image');
@@ -476,15 +616,47 @@
             });
         });
 
+    </script> --}}
+
+    <script>
+        document.querySelectorAll('.zoom-container').forEach(container => {
+            const overlay = container.querySelector('.zoom-overlay');
+            const img = container.querySelector('.zoom-image');
+
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const xPos = e.clientX - rect.left; // Mouse X position relative to the container
+                const yPos = e.clientY - rect.top;  // Mouse Y position relative to the container
+
+                // Show the zoom overlay
+                overlay.style.display = 'block';
+                overlay.style.left = `${xPos - overlay.offsetWidth / 2}px`;
+                overlay.style.top = `${yPos - overlay.offsetHeight / 2}px`;
+
+                // Set the zoomed image as background
+                overlay.style.backgroundImage = `url(${img.src})`;
+                overlay.style.backgroundSize = `${img.width * 2}px ${img.height * 2}px`; // Double the size for zoom
+                overlay.style.backgroundPosition = `-${xPos * 2}px -${yPos * 2}px`; // Position the zoom
+            });
+
+            container.addEventListener('mouseleave', () => {
+                // Hide the overlay on mouse leave
+                overlay.style.display = 'none';
+            });
+        });
+
+
     </script>
-     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript"
         src="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.6/src/jquery.ez-plus.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.16/dist/sweetalert2.all.min.js"></script>
 
- <script>
+    <script>
         document.getElementById('addtowishlist').addEventListener('click', async function () {
             const product = document.getElementById('productId').value;
 
@@ -584,6 +756,7 @@
                 hiddenQuantityInput.value = ''; // Reset to prevent invalid data
                 return false;
             } else {
+
                 hiddenQuantityInput.value = quantity; // Assign the valid quantity
                 return true; // Validation successful
             }
@@ -593,11 +766,56 @@
             const isValid = updateHiddenQuantity(); // Check quantity before submission
 
             if (!isValid) {
-                event.preventDefault();  
-                }
+                event.preventDefault();
+            }
         });
 
     </script>
+
+    <div class="container mb-2">
+        <div class="row g-4">
+            <!-- Product 1 -->
+            {{#each products}}
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                <div class="card product-card shadow-sm border-0">
+                    <div style="position: relative; display: inline-block;">
+                        {{#if (gt this.offerPersent 0)}}
+                        <span
+                            style="position: absolute; top: 10px; right: 10px; background: #1ad633; color: #fff; font-size: 14px; font-weight: bold; padding: 3px 8px; border-radius: 5px;">
+                            {{this.offerPersent}}% OFF
+                        </span>
+                        {{/if}}
+                        <img src="/{{this.image.[0]}}" height="170px" alt="Product 1"
+                            class="card-img-top product-image">
+                    </div>
+
+                    <div class="card-body text-center">
+                        <h6 class="card-title mb-2" style="font-weight: 600; color: #333;">{{this.name}}</h6>
+                        {{#if (gt this.offerprice 0)}}
+                        <p>
+                            <span class="price"
+                                style="text-decoration: line-through; color: #d9534f;">₹{{this.realprice}}</span>
+                            <span class="offer-price"
+                                style="color: #5cb85c; font-weight: bold;">₹{{this.offerprice}}</span>
+                        </p>
+                        {{else}}
+                        <p>
+                            <span class="price" style="color: #5cb85c; font-weight: bold;">₹{{this.realprice}}</span>
+                        </p>
+                        {{/if}}
+
+                        <form action="/user/details/{{this.id}}" method="get">
+                            <button class="btn btn-primary btn-sm" type="submit" style="width: 100%; font-weight: 500;">
+                                View Details
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
 
     {{> footer}}
 

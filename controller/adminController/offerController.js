@@ -35,10 +35,11 @@ exports.createoffer = async (req, res) => {
     startdate.setHours(0, 0, 0, 0);
     date.setHours(0, 0, 0, 0);
     console.log(startdate)
+    const today = new Date()
     const d = Date.now(); // Get the current timestamp
-    const st = new Date(d).toLocaleString('en-US');
-    if (startdate < st) {
-        return res.status(404).send('Add a valid date ');
+  
+    if (startdate < today.setHours(0,0,0,0)) {
+        return res.status(404).send('Add a valid date');
     }
 
     if (startdate > date) {
@@ -71,7 +72,7 @@ exports.createoffer = async (req, res) => {
             }
         }
 
-        console.log(big);  // This will now print the largest discountValue
+        console.log(big);   
 
         const getoffer = await offerDB.findOne({ _id: products[0].existOffer })
         console.log('this is the get offer : ', getoffer)
@@ -294,7 +295,7 @@ exports.posteditoffer = async (req, res) => {
     const d = new Date();  
     const st = d.toISOString();  
 
-    if (new Date(startdate) < d) { 
+    if (new Date(startdate).setHours(0,0,0,0) < d.setHours(0,0,0,0)) { 
         req.flash('validation', 'Enter a valid date');
         return res.redirect(`/admin/editoffer/${ID}`);
     }
@@ -442,12 +443,12 @@ exports.postproductoffer = async (req, res) => {
         return res.status(404).send('expire date cannot more bigger than start date ');
     }
 
-    const st=new Date()
-    const a=st.toLocaleString('en-US')
-    if(start<a){
-        return res.status(404).send('enter a valid date ')
+    const st = new Date();  
+    const a = st.toISOString();    
+    
+    if (new Date(start) < new Date(a).setHours(0,0,0,0)) {
+      return res.status(404).send('Enter a valid date');
     }
-
     try {
         for (const productId of products) {
             const singleProduct = await productDB.findById(productId);
@@ -461,7 +462,7 @@ exports.postproductoffer = async (req, res) => {
                 const existingOffer = await offerDB.findById(singleProduct.existOffer);
                 if (existingOffer && existingOffer.discountValue > discount) {
                     console.log(`Skipping product ${productId} as the new offer discount (${discount}%) is less than the existing offer (${existingOffer.discountValue}%)`);
-                    continue;
+                    return res.status(404).send(`Skipping product ${productId} as the new offer discount (${discount}%) is less than the existing offer (${existingOffer.discountValue}%)`)
                 }
             }
 

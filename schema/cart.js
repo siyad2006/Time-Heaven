@@ -24,11 +24,11 @@ const cartSchema = new Schema({
             }
         }
     ],
-    totalAmount: {
-        type: Number,
-        required: false,
-        default: 0  
-    },
+    // totalAmount: {
+    //     type: Number,
+    //     required: false,
+    //     default: 0  
+    // },
     coupun:{
         type:Schema.Types.ObjectId,
         required:false,

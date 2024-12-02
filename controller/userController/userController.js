@@ -12,7 +12,7 @@ const offerDB= require('../../schema/offerSchema')
 
 const userRegister = async (req, res) => {
     if(req.session.regestered==true){
-        return res.redirect('/user/home')
+        return res.redirect('/')
     }
     console.log('User registration page accessed successfully.');
     res.render('user/userRegister', { error: req.flash('error') });
@@ -247,7 +247,7 @@ const postlogin = async (req, res) => {
 
                     req.session.userId = name._id;
                     // console.log(req.session)
-                    res.json({ success: true, message: 'the message is sucess', redirectUrl: '/user/home' })
+                    res.json({ success: true, message: 'the message is sucess', redirectUrl: '/' })
 
                     console.log('Admin logged in:', req.session.loginuser);
 
@@ -346,7 +346,9 @@ let productDetails = async (req, res) => {
 
     console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
-    res.render('user/productdetailied', { product, userid });
+    const products= await productDB.find({category:product.category._id}).limit(4)
+    
+    res.render('user/productdetailied', { product, userid ,products});
 };
 
 
@@ -459,7 +461,10 @@ const userprofile = async (req, res) => {
 
 const logout = async (req, res) => {
     req.session.loginuser = false
-    delete req.session.userId
+    req.session.userId=null
+    req.session.passport=false
+    req.session.regestered=false
+    req.session.totalAmount=null
     console.log(req.session.userlogin)
     res.redirect('/user/login')
 }
