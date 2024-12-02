@@ -130,35 +130,7 @@ const addcateory = async (req, res) => {
     res.render('admin/addcategory')
 }
 
-
-// create a new category
-// const creatcategory = async (req, res) => {
-//     const { categoryname, discription } = req.body
-//     console.log(req.body)
-//     const cheack = await CategoryDB.find({categoryname:categoryname.trim()})
-//     console.log(cheack,'dsljflsjf')
-//     if (cheack) {
-//         res.redirect('/admin/category')
-//         return req.flash('category_err', 'the category name is already exists ')
-//         // console.log(req.flash('category_err'));
-//     } else {
-
-
-
-//         try {
-//             const category = new CategoryDB({
-//                 categoryname,
-//                 discription
-//             })
-
-//             await category.save()
-//             res.redirect('/admin/category')
-//             req.flash('success_msg', 'saved sucessfully')
-//         } catch {
-//             console.log('an error occured when save category ')
-//         }
-//     }
-// }
+ 
 
 
 const creatcategory = async (req, res) => {
@@ -216,10 +188,9 @@ const blockcategory = async (req, res) => {
 
         for(let item of categoryProducts){
 
-            // const findCart=await cartDB.find({'products.productId':item._id})
-            await cartDB.updateMany(
-                { 'products.productId': item._id }, // Match documents containing the productId
-                { $pull: { products: { productId: item._id } } } // Pull the entire product object
+              await cartDB.updateMany(
+                { 'products.productId': item._id },  
+                { $pull: { products: { productId: item._id } } } 
             );
         }
 
@@ -300,7 +271,11 @@ const editing = async (req, res) => {
 
     try {
         
-        const existingCategory = await CategoryDB.findOne({ categoryname });
+        // const existingCategory = await CategoryDB.findOne({ categoryname });
+        const existingCategory = await CategoryDB.findOne({ 
+            categoryname: { $regex: new RegExp(`^${categoryname}`, 'i') } 
+        });
+        
 
         if (existingCategory && existingCategory._id.toString() !== ID) {
                        return res.redirect('/admin/category');

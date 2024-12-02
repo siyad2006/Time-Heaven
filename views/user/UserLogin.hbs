@@ -57,57 +57,56 @@
                     <input type="password" placeholder="Confirm Password" id="repass" class="form-control">
                     <i class="zmdi zmdi-lock"></i>
                 </div>
-                <button type="submit" onclick="return validation()">Register
+                <button type="submit" onclick="return validation()" style="margin-bottom: 5px;">Login
                     <i class="zmdi zmdi-arrow-right"></i>
                 </button>
-  </form>
-                <!-- Google Sign-In Option -->
-                <div class="google-signin-wrapper">
-                    <button class="google-signin-btn" style="margin-top: 165px;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
-                            alt="Google Logo" class="google-logo">
-                       <a href="/auth/google" style="text-decoration: none;">Sign in with Google</a> 
-                    </button>
-                </div>
+                <a href="/user/register" style="margin-top: 5px;">Don't you have an accound?</a>
+
+            </form>
+            <!-- Google Sign-In Option -->
+            <div class="google-signin-wrapper">
+                <button class="google-signin-btn" style="margin-top: 165px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+                        alt="Google Logo" class="google-logo">
+                    <a href="/auth/google" style="text-decoration: none;">Sign in with Google</a>
+                </button>
+            </div>
 
 
-          
+
         </div>
     </div>
     <style>
-
-
         .google-signin-wrapper {
-    margin-top: 10px;
-    text-align: center;
-}
+            margin-top: 10px;
+            text-align: center;
+        }
 
-.google-signin-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px 10px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #555;
-    transition: background-color 0.3s ease;
-    width: fit-content;
-    margin: 0 auto;
-}
+        .google-signin-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            transition: background-color 0.3s ease;
+            width: fit-content;
+            margin: 0 auto;
+        }
 
-.google-signin-btn:hover {
-    background-color: #f7f7f7;
-}
+        .google-signin-btn:hover {
+            background-color: #f7f7f7;
+        }
 
-.google-logo {
-    width: 16px;
-    height: 16px;
-    margin-right: 5px;
-}
-
+        .google-logo {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

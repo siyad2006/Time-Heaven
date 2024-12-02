@@ -44,58 +44,10 @@
             <div class="col-md-6">
                 <h4>Cart Products</h4>
                 <div class="list-group">
-                    {{!-- {{#each cartProducts}}
-                    <div class="list-group-item d-flex justify-content-between">
-
-                        <div>
-                            <h5>{{this.name}}</h5>
-                            <p>{{this.description}}</p>
-                        </div>
-                        <div>
-                            <p>Qty: {{this.qty}}</p>
-                            <p>Price: ${{this.regularprice}}</p>
-                        </div>
-                    </div>
-                    {{/each}} --}}
-                    {{!-- <img src="/{{cartItem.image.[0]}}" alt=""> --}}
+                   
                     <input type="hidden" value="{{cartItem}}" id="cartitem">
 
-
-                    {{!-- {{#each cartProducts}}
-                    <div class="list-group-item d-flex justify-content-between">
-
-                        <input type="hidden" class="product-id" value="{{this._id}}">
-                        <input type="hidden" class="product-qty" value="{{this.qty}}">
-                        <div class="product-item" data-product-id="{{this._id}}" data-qty="{{this.qty}}">
-                            <div>
-
-                                <h5>{{this.name}}</h5>
-                                <p>{{this.description}}</p>
-                            </div>
-                            <div>
-                                <p>Qty: {{this.qty}}</p>
-                                <p>Price: ${{this.regularprice}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    {{/each}} --}}
-                    <!-- Coupon Section -->
-
-
-                    {{!-- <div class="coupon-section mt-3">
-                        <form id="coupunForm" class="d-flex align-items-center">
-                            <input type="text" name="couponCode" id="couponInput" placeholder="Enter coupon code"
-                                class="form-control me-2" style="max-width: 200px;" />
-                            <button type="submit" class="btn btn-primary btn-sm">Apply Coupon</button>
-                        </form>
-                        <div class="mt-2">
-                            <!-- Remove Coupon Button -->
-                            <form action="/user/cart/remove-coupon" method="post">
-                                <button type="submit" class="btn btn-danger btn-sm">Remove Coupon</button>
-                            </form>
-                        </div>
-                    </div> --}}
-
+ 
                     <script>
                         document.getElementById('couponForm').addEventListener('submit', async function (event) {
                             event.preventDefault(); // Prevents the form from submitting normally

@@ -447,8 +447,7 @@ exports.cancelorder = async (req, res) => {
 
                 singleItem.quantity += buyedqty;
 
-                // singleItem.quantity += buyedqty;
-
+ 
 
                 await singleItem.save();
             }

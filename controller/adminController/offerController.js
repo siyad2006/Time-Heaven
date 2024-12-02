@@ -36,7 +36,7 @@ exports.createoffer = async (req, res) => {
     date.setHours(0, 0, 0, 0);
     console.log(startdate)
     const today = new Date()
-    const d = Date.now(); // Get the current timestamp
+    const d = Date.now();
   
     if (startdate < today.setHours(0,0,0,0)) {
         return res.status(404).send('Add a valid date');
@@ -81,7 +81,7 @@ exports.createoffer = async (req, res) => {
         }
         // start 
         // if (getoffer.discountValue < persent) {
-
+        
 
         console.log('we can apply that offer , because our offer is bigger ')
         //  return res.status(404).send('apply new offer to it  ')
@@ -262,8 +262,7 @@ exports.editoffer = async (req, res) => {
 
 
 
-
-// this is for when we try to edit the offer 
+ 
 exports.posteditoffer = async (req, res) => {
     console.log('edit offer page got successfully')
     const ID = req.params.id
@@ -299,8 +298,6 @@ exports.posteditoffer = async (req, res) => {
         req.flash('validation', 'Enter a valid date');
         return res.redirect(`/admin/editoffer/${ID}`);
     }
-
-    //  ivide valiadtion add cheyyan marakkale 
 
 
     for (let item of offeredproduct) {
@@ -430,7 +427,7 @@ exports.postproductoffer = async (req, res) => {
     const expire = new Date(req.body.expire);
     const description = req.body.discription;
     const name = req.body.name;
-    const products = req.body.products; // Array of product IDs
+    const products = req.body.products;  
     const discount = req.body.discount;
 
     console.log(start, expire, description, name, products, discount);

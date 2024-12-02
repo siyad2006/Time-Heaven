@@ -286,6 +286,7 @@
           <option value="default">Filter</option>
           <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
+          <option value="monthly">monthly</option>
           <option value="yearly">Yearly</option>
           <!-- Add other options as necessary -->
         </select>
@@ -440,10 +441,10 @@
 
   <script>
     document.getElementById('download-excel').addEventListener('click', function () {
-         const urlParams = new URLSearchParams(window.location.search)
+      const urlParams = new URLSearchParams(window.location.search)
       let startDate = urlParams.get('startDate')
       let endDate = urlParams.get('endDate')
-   
+
 
       const filter = urlParams.get('filter')
 

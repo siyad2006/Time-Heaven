@@ -219,9 +219,7 @@
         <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1" required>
       </div> --}}
 
-
-<!-- HTML -->
- <!-- Image Input 1 -->
+ 
 <div class="mb-3">
     <label for="imageUpload1" class="form-label">Add Image 1</label>
     <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1" required>
@@ -230,8 +228,7 @@
     <img id="previewImage1" style="max-width: 100%; display: none;" />
 </div>
 <button id="cropImage1" class="btn btn-primary mt-2">Crop and Replace</button>
-
-<!-- Image Input 2 -->
+ 
 <div class="mb-3">
     <label for="imageUpload2" class="form-label">Add Image 2</label>
     <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2" required>
@@ -240,8 +237,7 @@
     <img id="previewImage2" style="max-width: 100%; display: none;" />
 </div>
 <button id="cropImage2" class="btn btn-primary mt-2">Crop and Replace</button>
-
-<!-- Image Input 3 -->
+ 
 <div class="mb-3">
     <label for="imageUpload3" class="form-label">Add Image 3</label>
     <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3" required>
@@ -250,8 +246,7 @@
     <img id="previewImage3" style="max-width: 100%; display: none;" />
 </div>
 <button id="cropImage3" class="btn btn-primary mt-2">Crop and Replace</button>
-
-<!-- Include Cropper.js -->
+ 
 <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet">
 <script src="https://unpkg.com/cropperjs"></script>
 
@@ -300,8 +295,7 @@ function setupImageCropper(inputId, previewId, cropButtonId) {
         }
     });
 }
-
-// Initialize croppers for all inputs
+ 
 setupImageCropper('imageUpload1', 'previewImage1', 'cropImage1');
 setupImageCropper('imageUpload2', 'previewImage2', 'cropImage2');
 setupImageCropper('imageUpload3', 'previewImage3', 'cropImage3');

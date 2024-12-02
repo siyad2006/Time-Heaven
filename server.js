@@ -53,8 +53,7 @@ app.use(session({
         secure: false        
     }
 }));
-
-// localStorage.setItem('Application Name ', 'Time Heaven')
+ 
 app.use(flash())
 
 app.use((req, res, next) => {
@@ -84,7 +83,6 @@ hbs.registerHelper('formatDate', function (date) {
 });
 
 
-
 // Register the times helper
 hbs.registerHelper('times', function(n, block) {
     let result = '';
@@ -96,11 +94,7 @@ hbs.registerHelper('times', function(n, block) {
 
 // Register the subtract helper
 
-cron.schedule('0 0 * * *', () => {
-    console.log('Checking for expired offers and restoring prices...');
-    restorePricesAfterOfferExpiration();  // Call your function
-});
-
+ 
 // Set up 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');

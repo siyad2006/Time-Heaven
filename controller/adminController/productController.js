@@ -5,12 +5,13 @@ const productDB = require('../../schema/productschema')
 const category = require('../../schema/category');
 const product = require('../../schema/productschema');
 const cartDB = require('../../schema/cart');
-const wishlistDB= require('../../schema/wishlistSchema')
+const wishlistDB = require('../../schema/wishlistSchema');
+const offerDB = require('../../schema/offerSchema');
 // const { default: products } = require('razorpay/dist/types/products');
 
 const addproduct = async (req, res) => {
 
-    const categoris = await category.find({isblocked:'Listed'})
+    const categoris = await category.find({ isblocked: 'Listed' })
 
     res.render('admin/addproduct', { categoris })
 }
@@ -34,7 +35,7 @@ const add = async (req, res) => {
                 imagePaths.push(req.files.image3[0].path);
             }
         }
-        
+
         const newProduct = new productDB({
             name: val.productname.trim(),
             discription: val.discription.trim(),
@@ -45,7 +46,7 @@ const add = async (req, res) => {
             color: val.color.trim(),
             image: imagePaths,
             status: val.status || "available",
-            realprice:val.regularprice
+            realprice: val.regularprice
         });
 
 
@@ -94,6 +95,32 @@ const postEdit = async (req, res) => {
             return oldImage;
         });
 
+        let productOffer = await productDB.findById(productId)
+
+        if (productOffer && productOffer.existOffer) {
+
+            const offer = await offerDB.findById(productOffer.existOffer)
+            let discount = offer.discountValue
+            let offerId = offer._id
+            let offeredValue = val.regularprice - Number(val.regularprice * (discount / 100))
+            
+
+
+            await productDB.updateOne(
+                { _id: productId },
+                {
+                    existOffer: offerId,
+                    offerPersent: discount,
+                    offerprice: offeredValue,
+                    regularprice: offeredValue,
+                    realprice: val.regularprice
+                }
+            );
+            console.log('offer product updated successfully ')
+            return res.redirect('/admin/products')
+
+        }
+
         await productDB.findByIdAndUpdate(
             productId,
             {
@@ -101,12 +128,12 @@ const postEdit = async (req, res) => {
                 discription: val.discription.trim(),
                 brand: val.brand.trim(),
                 category: val.category,
-                regularprice:val.regularprice,
+                regularprice: val.regularprice,
                 quantity: val.quantity,
                 color: val.color.trim(),
                 image: updatedImages,
                 status: val.status || "available",
-                realprice:val.regularprice
+                realprice: val.regularprice
             },
             { new: true }
         );
@@ -148,37 +175,37 @@ const blockproduct = async (req, res) => {
 
         const carts = await cartDB.find({ 'products.productId': ID })
         for (let item of carts) {
-            let total=item.totalAmount
+            let total = item.totalAmount
             let productqty = item.products.find((i) => i.productId.toString() === ID)
-            let qty=0
+            let qty = 0
             if (product) {
-                 qty += productqty.qty; 
-                
+                qty += productqty.qty;
+
             }
 
-            if(qty<=0){
-                qty=1
+            if (qty <= 0) {
+                qty = 1
             }
-            
-            const currentproductPrice=await productDB.findById(ID,{regularprice:1}) 
-            const qtyPrice=Number(currentproductPrice.regularprice*qty)
-            const updatedPrice= Number(total-qtyPrice)
-            await cartDB.updateMany({ _id:item._id},
-                { $pull: { products: { 'productId': ID } },totalAmount:updatedPrice }
+
+            const currentproductPrice = await productDB.findById(ID, { regularprice: 1 })
+            const qtyPrice = Number(currentproductPrice.regularprice * qty)
+            const updatedPrice = Number(total - qtyPrice)
+            await cartDB.updateMany({ _id: item._id },
+                { $pull: { products: { 'productId': ID } }, totalAmount: updatedPrice }
             )
 
         }
 
-        const wishlist= await wishlistDB.find({products:ID})
+        const wishlist = await wishlistDB.find({ products: ID })
 
-        for(let item of wishlist){
-            await wishlistDB.updateOne({_id:item._id},{
-                $pull:{products:ID}
+        for (let item of wishlist) {
+            await wishlistDB.updateOne({ _id: item._id }, {
+                $pull: { products: ID }
             })
         }
 
         console.log('complete the task and entered to anotehr codes')
-        
+
 
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: true })
         res.redirect('/admin/products')
@@ -215,7 +242,7 @@ const deleteproduct = async (req, res) => {
 
 
 const editproduct = async (req, res) => {
-    if(!req.session.admin){
+    if (!req.session.admin) {
         res.redirect('/admin/login')
     }
     const ID = req.params.id
