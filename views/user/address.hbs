@@ -47,51 +47,7 @@
     </section>
 
 
-    <!-- Saved Addresses Section -->
-    {{!-- <div class="container mt-5 pt-4">
-        <h4 class="text-center mb-4">Saved Addresses</h4>
-        <div class="row justify-content-center">
-            <!-- Address Card 1 -->
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Home Address</h5>
-                        <p class="card-text">123 Main St, Cityville, State 12345, Country</p>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button class="btn btn-outline-primary btn-sm">Edit</button>
-                            <button class="btn btn-outline-danger btn-sm">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Address Card 2 -->
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Work Address</h5>
-                        <p class="card-text">456 Business Rd, Office City, State 67890, Country</p>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button class="btn btn-outline-primary btn-sm">Edit</button>
-                            <button class="btn btn-outline-danger btn-sm">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Address Card 3 -->
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Vacation Home</h5>
-                        <p class="card-text">789 Coastal Ln, Beach Town, State 54321, Country</p>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button class="btn btn-outline-primary btn-sm">Edit</button>
-                            <button class="btn btn-outline-danger btn-sm">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
+    
 
    <button type="button" class="btn btn-sm ms-2 mt-2 btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal">
     your Addresses
@@ -195,7 +151,7 @@
             const pincode = document.getElementById('postalCode').value.trim();
             const country = document.getElementById('country').value.trim();
             const title=document.getElementById('title').value.trim();
-            // Check for empty fields
+    
             if (!nam || !phone || !address || !city || !state || !pincode || !country) {
                 swal.fire({
                     icon: 'warning',
@@ -204,9 +160,8 @@
                 });
                 return false;
             }
-
-            // Validate phone number (must be exactly 10 digits)
-            const phoneRegex = /^\d{10}$/; // Regex for exactly 10 digits
+ 
+            const phoneRegex = /^\d{10}$/; 
             if (!phoneRegex.test(phone)) {
                 swal.fire({
                     icon: 'warning',
@@ -215,9 +170,8 @@
                 });
                 return false;
             }
-
-            // Validate name (must only contain alphabets and spaces)
-            const nameRegex = /^[A-Za-z\s]+$/; // Regex for alphabets and spaces only
+ 
+            const nameRegex = /^[A-Za-z\s]+$/; 
             if (!nameRegex.test(nam)) {
                 swal.fire({
                     icon: 'warning',
@@ -226,7 +180,7 @@
                 });
                 return false;
             }
-            const pincodeRegex = /^\d{6}$/; // Regex for exactly 6 digits
+            const pincodeRegex = /^\d{6}$/;  
             if (!pincodeRegex.test(pincode)) {
                 swal.fire({
                     icon: 'warning',
@@ -235,8 +189,7 @@
                 });
                 return false;
             }
-
-            // AJAX request if all validations pass
+ 
             $.ajax({
                 method: 'post',
                 url: `/user/createaddress/${userid}`,

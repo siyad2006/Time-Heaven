@@ -82,8 +82,7 @@ const blockuser = async (req, res) => {
 
 }
 
-
-
+ 
 // for ubblock user
 const unblockuser = async (req, res) => {
     const val = req.params.id

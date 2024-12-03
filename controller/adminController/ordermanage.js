@@ -86,6 +86,8 @@ exports.getsalesreport = async (req, res) => {
     }
 
     console.log('start and end date', startDate, endDate)
+    
+ 
 
     if (startDate && endDate) {
       finalStartDate = new Date(startDate) || Date.now();
@@ -138,11 +140,11 @@ exports.getsalesreport = async (req, res) => {
       return ini;
     }, 0);
 
-    const coupunAmount= await cheackoutDB.aggregate([
-      {$match:{createdAt:{ $gte: finalStartDate,$lte: finalEndDate},status:{$nin:['return,canceled']}}},{$group:{_id:null,coupun:{$sum:'$applayedcoupun'}}},{$project:{_id:0,coupun:1}}
+    const coupunAmount = await cheackoutDB.aggregate([
+      { $match: { createdAt: { $gte: finalStartDate, $lte: finalEndDate }, status: { $nin: ['return,canceled'] } } }, { $group: { _id: null, coupun: { $sum: '$applayedcoupun' } } }, { $project: { _id: 0, coupun: 1 } }
     ])
-console.log('coupun amount ',coupunAmount)
-totalDiscount += coupunAmount[0]?.coupun || 0
+    console.log('coupun amount ', coupunAmount)
+    totalDiscount += coupunAmount[0]?.coupun || 0
 
     console.log(coupundiscount)
 
@@ -153,20 +155,24 @@ totalDiscount += coupunAmount[0]?.coupun || 0
 
 
     });
+    req.session.totalOrders = totalOrders
+    req.session.totalRevenue = totalRevenue
+    req.session.totalDiscount = totalDiscount
 
     console.log('totalOrders', totalOrders,
       'totalRevenue', totalRevenue,
       'totalItemsSold', totalItemsSold,
       'totalDiscount', totalDiscount,
       'salesData', salesData);
-
+    console.log(req.session)
     res.render('admin/salesreport', {
       totalOrders,
       totalRevenue,
       totalItemsSold,
       totalDiscount,
       salesData,
-      valid: req.flash('date')
+      valid: req.flash('date'),
+     
     });
   } catch (error) {
     console.error('Error generating sales report:', error);
@@ -195,7 +201,7 @@ exports.downloadpdf = async (req, res) => {
         case 'daily':
           console.log('entered to the daily ')
           start.setHours(0, 0, 0, 0);
-          
+
           break;
         case 'weekly':
           console.log('entered to the weekly ')
@@ -247,6 +253,9 @@ exports.downloadpdf = async (req, res) => {
 
 
     doc.fontSize(20).text('Sales Report', { align: 'center' });
+    doc.text(`totalOrder : ${req.session.totalOrders}`)
+    doc.text(`revenew : ${req.session.totalRevenue}`)
+    doc.text(`discount :${req.session.totalDiscount}`)
     doc.moveDown();
 
     salesData.forEach((sale, index) => {
@@ -287,7 +296,7 @@ exports.downloadExcel = async (req, res) => {
 
     if (filter) {
       switch (filter) {
-        case 'dailly':
+        case 'daily':
           start = start.setHours(0, 0, 0, 0)
           break;
         case 'weekly':

@@ -77,7 +77,7 @@ exports.createoffer = async (req, res) => {
         const getoffer = await offerDB.findOne({ _id: products[0].existOffer })
         console.log('this is the get offer : ', getoffer)
         if (big > persent) {
-            return res.status(404).send('in cart a product already have offer bigger than it , so first delete the product offfer')
+            return res.status(404).send(' in this category  product already have offer bigger than it , so first delete the product offfer')
         }
         // start 
         // if (getoffer.discountValue < persent) {

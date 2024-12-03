@@ -163,11 +163,11 @@ exports.placeorder = async (req, res) => {
 
     if (paymentMethod === 'cod') {
         try {
-            function generateOrderId() {
-                return `ORDER-${uuidv4()}`;
-            }
+            // function generateOrderId() {
+            //     return `ORDER-${uuidv4()}`;
+            // }
 
-            console.log(generateOrderId());
+            // console.log(generateOrderId());
 
             if (!cart || cart.products.length === 0) {
                 return res.status(400).send("Cart is empty");
@@ -395,7 +395,7 @@ exports.cancelorder = async (req, res) => {
 
         // const newdate=new Date()
         // const nowdate=newdate.toLocaleDateString('en-GB')
-        const nowdate = new Date(); // Creates a Date object representing the current date and time
+        const nowdate = new Date();  
 
         if (isWallet) {
             console.log('User already has a wallet');

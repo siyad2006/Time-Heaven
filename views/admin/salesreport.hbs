@@ -402,27 +402,7 @@
     });
 
   </script>
-  {{!--
-  <script>
-
-    document.getElementById('download-pdf').addEventListener('click', function () {
-      let startDate = document.getElementById('start-date').value;
-      let endDate = document.getElementById('end-date').value;
-      let filter = document.getElementById('filter').value;
-
-
-      let url = '/admin/salesreport/pdf';
-      if (filter) {
-        window.location.href = `/admin/salesreport/pdf?filter=${filter}`
-      }
-      if (startDate && endDate) {
-        url += `?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
-      }
-
-
-
-    })
-  </script> --}}
+   
 
   <!-- SweetAlert2 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -438,6 +418,28 @@
     })
   </script>
   {{/if}}
+
+  {{!-- <input type="hidden" value="{{startDate}}" id="backendSD"> --}}
+
+  <script>
+    document.addEventListener('DOMContentLoaded',function (){
+
+      const url= new URLSearchParams(window.location.search)
+      let startdate= document.getElementById('filter')
+      
+      
+
+      const start=url.get('filter')
+      
+      if(start !== 'default'){
+        startdate.value=start
+      }
+
+      
+     
+     
+    })
+  </script>
 
   <script>
     document.getElementById('download-excel').addEventListener('click', function () {
