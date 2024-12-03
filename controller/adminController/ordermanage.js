@@ -138,7 +138,11 @@ exports.getsalesreport = async (req, res) => {
       return ini;
     }, 0);
 
-    totalDiscount += coupundiscount
+    const coupunAmount= await cheackoutDB.aggregate([
+      {$match:{createdAt:{ $gte: finalStartDate,$lte: finalEndDate},status:{$nin:['return,canceled']}}},{$group:{_id:null,coupun:{$sum:'$applayedcoupun'}}},{$project:{_id:0,coupun:1}}
+    ])
+console.log('coupun amount ',coupunAmount)
+totalDiscount += coupunAmount[0]?.coupun || 0
 
     console.log(coupundiscount)
 

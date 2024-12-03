@@ -81,9 +81,9 @@ hbs.registerHelper('or', function (a, b) {
 hbs.registerHelper('formatDate', function (date) {
     return new Date(date).toLocaleDateString('en-US');  
 });
-
-
-// Register the times helper
+hbs.registerHelper('neq', function (a, b) {
+    return a !== b;
+  });
 hbs.registerHelper('times', function(n, block) {
     let result = '';
     for (let i = 0; i < n; i++) {

@@ -25,11 +25,13 @@ const postregister = async (req, res) => {
     const { username, Email, password } = req.body;
     console.log(username, Email, password);
 
+ 
+    // const exists = await UserDB.findOne({ username: username });
+    // const mailExists = await UserDB.findOne({ Email: Email });
 
-
-    // Check if user already exists
-    const exists = await UserDB.findOne({ username: username });
-    const mailExists = await UserDB.findOne({ Email: Email });
+    const exists = await UserDB.findOne({ username: { $regex: `^${username}$`, $options: 'i' } });
+    const mailExists = await UserDB.findOne({ Email: { $regex: `^${Email}$`, $options: 'i' } });
+    
 
     if (exists || mailExists) {
         req.flash('error', "the user is already exists")

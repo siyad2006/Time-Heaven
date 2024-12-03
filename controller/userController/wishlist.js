@@ -22,7 +22,7 @@ exports.getpage=async (req,res)=>{
         const totalPages = Math.ceil(totalProducts / limit);
 
         if (!wishlist.products || wishlist.products.length === 0) {
-            return res.render('user/emptyWishlist'); // Render Empty Wishlist page
+            return res.render('user/emptyWishlist'); 
         }
         return  res.render('user/wishlist',{wishlist,userid,currentPage: page,totalPages});
     }else{
@@ -32,6 +32,44 @@ exports.getpage=async (req,res)=>{
     
 }
 
+// exports.getpage = async (req, res) => {
+//     const userid = req.session.userId;
+
+//     if (!userid) {
+//         return res.redirect('/user/home');
+//     }
+
+//     const userhave = await wishlistDB.findOne({ user: userid });
+
+//     if (userhave) {
+//         let page = parseInt(req.query.page) || 1;
+//         let limit = 5 ;
+//         let skip = (page - 1) * limit;
+
+//         const wishlist = await wishlistDB
+//             .findOne({ user: userid })
+//             .populate({
+//                 path: 'products',
+//                 options: { skip, limit },
+//             });
+
+//         const totalProducts = wishlist.products.length;
+//         const totalPages = Math.ceil(totalProducts / limit);
+
+//         if (!wishlist.products || wishlist.products.length === 0) {
+//             return res.render('user/emptyWishlist');
+//         }
+
+//         return res.render('user/wishlist', {
+//             wishlist,
+//             userid,
+//             currentPage: page,
+//             totalPages,
+//         });
+//     } else {
+//         return res.render('user/emptyWishlist');
+//     }
+// };
 
  
 

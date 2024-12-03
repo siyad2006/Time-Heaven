@@ -14,7 +14,7 @@
 
 <body>
     <!-- Navbar and Main Content Here -->
- {{> header}}
+    {{> header}}
     <style>
         .edit-container {
             margin-top: 60px;
@@ -91,7 +91,7 @@
 
         function validation() {
             const name = document.getElementById('username').value;
-            
+
             const phone = document.getElementById('phone').value;
             const regex = /^[A-Za-z\s]+$/
 
@@ -112,7 +112,7 @@
                 });
                 return false;
             }
-            if (phone.length < 10 || phone.length > 10 ) {
+            if (phone.length < 10 || phone.length > 10) {
                 swal.fire({
                     icon: 'error',
                     title: 'error',
@@ -120,7 +120,15 @@
                 })
                 return false
             }
-           
+            if (!/^\d{10}$/.test(phone)) {
+                swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Phone number must be exactly 10 digits.'
+                });
+                return false;
+            }
+
 
 
             return true
@@ -131,8 +139,8 @@
 
 
     </script>
-    
- 
+
+
 
     <!-- Bootstrap JS and Other Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
