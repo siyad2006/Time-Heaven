@@ -572,7 +572,7 @@
                 <div class="col-md-6 offset-md-6 cart-summary">
                     <!-- Subtotal Section -->
                     <div                   
-                        class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded">
+                        class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded" style="margin-top: 15px;">
                         <span class="fw-bold">Subtotal:</span>
                         <span id="subtotal-amount" class="fw-bold text-primary">Rs: {{realprice}}</span>
                     </div>
@@ -590,7 +590,7 @@
                     </div>
 
                     <!-- Buttons -->
-                    <div class="d-flex justify-content-between mt-4">
+                    <div class="d-flex justify-content-between mt-4" style="margin-bottom: 35px;">
                         <a href="/user/shop" class="btn btn-outline-secondary w-100 me-2 btn-resize">Continue
                             Shopping</a>
                         <form action="/user/checkout/{{cart.id}}" method="post" class="w-100">

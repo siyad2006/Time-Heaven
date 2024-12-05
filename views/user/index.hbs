@@ -169,52 +169,52 @@
 
     </section>
     <!-- SweetAlert2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
-<!-- SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 
-<script>
-    document.querySelectorAll('#addtowishlist').forEach(form => {
-        form.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            const product = this.querySelector('#productId').value;
+    <script>
+        document.querySelectorAll('#addtowishlist').forEach(form => {
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const product = this.querySelector('#productId').value;
 
-            try {
-                const response = await fetch('/user/addtowishlist', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productId: product }),
-                });
-
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Successfully added to the wishlist',
-                        showConfirmButton: false,
-                        timer: 1500,
+                try {
+                    const response = await fetch('/user/addtowishlist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId: product }),
                     });
-                } else {
-                    const res = await response.text();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Successfully added to the wishlist',
+                            showConfirmButton: false,
+                            timer: 1500,
+                        });
+                    } else {
+                        const res = await response.text();
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: res,
+                        });
+                    }
+                } catch (error) {
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        text: res,
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An error occurred while adding to the wishlist.',
                     });
                 }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while adding to the wishlist.',
-                });
-            }
+            });
         });
-    });
-</script>
+    </script>
 
 
     <!-- Bootstrap JS -->

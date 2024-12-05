@@ -78,6 +78,14 @@
                                 <input type="submit" id="b" value="Cancel Order" style="font-weight: bold;"
                                     class="btn btn-danger cancel-button">
                             </form>
+                            <form action="">
+
+                                <input type="submit" id="b" value="rePay"
+                                    style="font-weight: bold; display:none;width:130px"
+                                    class="btn btn-warning repay-button">
+
+                            </form>
+
                         </td>
                         <td>
                             <form action="/user/orderdetails/{{this.id}}" method="get">
@@ -104,6 +112,7 @@
                 const statusElement = row.querySelector('.payment-status');
 
                 const cancelButton = row.querySelector('.cancel-button');
+                const repay = row.querySelector('.repay-button');
 
                 if (statusElement && cancelButton) {
 
@@ -112,12 +121,19 @@
                     if (statusText === 'return' || statusText === 'shipped' || statusText === 'delevered' || statusText === 'canceled') {
                         cancelButton.disabled = true;
                     }
+
+
+                    if (statusText == 'payment-pending') {
+                        cancelButton.style.display = 'none'
+                        repay.style.display = 'inline'
+
+                    }
                 }
             });
         };
     </script>
 
-  
+
 
 
     <script>
@@ -163,25 +179,25 @@
 
 
 
-<nav aria-label="Order Pagination" style="margin-bottom: 10px;">
-    <ul class="pagination justify-content-center">
-        {{#if (gt currentPage 1)}}
-        <li class="page-item">
-            <a class="page-link" href="/user/myorders/{{../userID}}?page={{subtract currentPage 1}}">Previous</a>
-        </li>
-        {{/if}}
-        {{#each (range 1 totalPages)}}
-        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
-            <a class="page-link" href="/user/myorders/{{../userID}}?page={{this}}">{{this}}</a>
-        </li>
-        {{/each}}
-        {{#if (lt currentPage totalPages)}}
-        <li class="page-item">
-            <a class="page-link" href="/user/myorders/{{../userID}}?page={{add currentPage 1}}">Next</a>
-        </li>
-        {{/if}}
-    </ul>
-</nav>
+    <nav aria-label="Order Pagination" style="margin-bottom: 10px;">
+        <ul class="pagination justify-content-center">
+            {{#if (gt currentPage 1)}}
+            <li class="page-item">
+                <a class="page-link" href="/user/myorders/{{../userID}}?page={{subtract currentPage 1}}">Previous</a>
+            </li>
+            {{/if}}
+            {{#each (range 1 totalPages)}}
+            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+                <a class="page-link" href="/user/myorders/{{../userID}}?page={{this}}">{{this}}</a>
+            </li>
+            {{/each}}
+            {{#if (lt currentPage totalPages)}}
+            <li class="page-item">
+                <a class="page-link" href="/user/myorders/{{../userID}}?page={{add currentPage 1}}">Next</a>
+            </li>
+            {{/if}}
+        </ul>
+    </nav>
 
 
     {{> footer}}

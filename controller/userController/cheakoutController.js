@@ -6,12 +6,16 @@ const { v4: uuidv4 } = require('uuid');
 const Razorpay = require('razorpay');
 require('dotenv').config()
 const mongoose = require('mongoose');
-const cheakout = require('../../schema/cheakout');
+// const cheakout = require('../../schema/cheakout');
 // const cheakout = require('../../schema/cheakout');
 const ObjectId = mongoose.Types.ObjectId;
 const walletDB = require('../../schema/wallet')
 const coupunDB = require('../../schema/coupunSchama');
 const { x } = require('pdfkit');
+const PDFDocument = require('pdfkit')
+const fs = require('fs')
+const path = require('path')
+const userDB = require('../../schema/userModel')
 
 exports.getcheackout = async (req, res) => {
     const cartId = req.params.cart;
@@ -20,7 +24,7 @@ exports.getcheackout = async (req, res) => {
     const cartItem = await cartDB.findById(cartId);
     const address = await AddressDB.find({ user: userId });
     const cartTotal = req.session.totalAmount
-    console.log('this is the total amount from cart in cheackot :',cartTotal )
+    console.log('this is the total amount from cart in cheackot :', cartTotal)
 
     const coupun = await coupunDB.findById(cartItem.coupun)
 
@@ -57,7 +61,7 @@ exports.getcheackout = async (req, res) => {
     });
 
     console.log(cartProductDetails)
-    res.render('user/cheakout', { cartProducts: cartProductDetails, address, userId, cartItem ,cartTotal});
+    res.render('user/cheakout', { cartProducts: cartProductDetails, address, userId, cartItem, cartTotal });
 };
 
 
@@ -85,7 +89,7 @@ exports.placeorder = async (req, res) => {
     if (cart.coupun) {
         const coupun = await coupunDB.findById(cart.coupun);
         console.log('Retrieved coupun:', coupun);
-    
+
         if (coupun) {
             coupunamount += Number(coupun.maximumDiscount) || 0;
         } else {
@@ -94,14 +98,14 @@ exports.placeorder = async (req, res) => {
     } else {
         console.log('No coupun ID in cart');
     }
-    
+
     console.log('Coupon Amount:', coupunamount);
 
     const cheakpro = await productDB.find();
     if (coupunamount > 0) {
         console.log('Entered the check code');
         let subtotal = 0;
-        let cheaktotal = total + coupunamount;  
+        let cheaktotal = total + coupunamount;
 
         // const pro = cart.products.map((item) => {
         for (let item of cart.products) {
@@ -163,6 +167,10 @@ exports.placeorder = async (req, res) => {
 
     if (paymentMethod === 'cod') {
         try {
+
+            if (total > 1000) {
+                return res.status(400).send('you cant buy as items Cash On Delivery Above Rs:1000 ')
+            }
             // function generateOrderId() {
             //     return `ORDER-${uuidv4()}`;
             // }
@@ -174,14 +182,14 @@ exports.placeorder = async (req, res) => {
             }
 
 
-       
+
             const productdata = await productDB.find()
             const items = cart.products.map(x => {
                 const product = productdata.find(p => p._id.toString() === x.productId.toString());
                 return {
                     productId: x.productId,
                     qty: x.qty,
-                    soldprice: product.regularprice  
+                    soldprice: product.regularprice
                 };
             });
 
@@ -206,7 +214,7 @@ exports.placeorder = async (req, res) => {
                 const product = await productDB.findById(i.productId);
                 if (product) {
                     if (product.realprice > product.regularprice) {
-                        const down = Number(product.realprice - product.regularprice)*i.qty;
+                        const down = Number(product.realprice - product.regularprice) * i.qty;
                         discounts += down;
                     }
                 }
@@ -227,14 +235,15 @@ exports.placeorder = async (req, res) => {
                     country: country
                 },
                 discount: discounts,
-                applayedcoupun: coupunamount
+                applayedcoupun: coupunamount,
+                paymentStatus: true
 
             });
 
             await order.save();
             await cartDB.findOneAndDelete({ user: user });
-
-            res.json({ success: true });
+            const orderid = order._id
+            res.json({ success: true, redirect: `/user/success/${orderid}` });
         } catch (error) {
             console.error(error);
             res.status(500).send("Error processing order");
@@ -260,7 +269,8 @@ exports.placeorder = async (req, res) => {
 
         try {
             const order = await razorpay.orders.create(options);
-            res.json({ order_id: order.id, currency: order.currency, amount: order.amount });
+            // console.log('this is the text event of razorpat', req.body.event)
+            // res.json({order_id: order.id, currency: order.currency, amount: order.amount  });
             console.log('this is from success of Razor');
 
             if (!cart || cart.products.length === 0) {
@@ -273,18 +283,19 @@ exports.placeorder = async (req, res) => {
                 return {
                     productId: x.productId,
                     qty: x.qty,
-                    soldprice: product.regularprice // Default to 0 if not found
+                    soldprice: product.regularprice
                 };
             });
 
+
             for (const item of items) {
-                const product = await productDB.findById(item.productId); // Find the product by ID
+                const product = await productDB.findById(item.productId);
                 if (product) {
 
                     if (product.quantity < item.qty) {
                         return res.status(400).send(`Not enough stock for product: ${product.name}`);
                     }
-                    // product.sold += Number(item.qty)
+
                     console.log('Product sold:', product.sold);
                     console.log('Item quantity:', item.qty);
 
@@ -299,7 +310,7 @@ exports.placeorder = async (req, res) => {
                 const product = await productDB.findById(i.productId);
                 if (product) {
                     if (product.realprice > product.regularprice) {
-                        const down = Number(product.realprice - product.regularprice)*i.qty;
+                        const down = Number(product.realprice - product.regularprice) * i.qty;
                         discounts += down;
                     }
                 }
@@ -309,7 +320,7 @@ exports.placeorder = async (req, res) => {
                 paymentMethods: paymentMethod,
                 totalprice: total,
                 products: items,
-                status: 'pending',
+                status: 'payment-pending',
                 address: {
                     name: name,
                     phone: phone,
@@ -324,6 +335,7 @@ exports.placeorder = async (req, res) => {
 
 
             await orders.save();
+            res.json({ order_id: order.id, currency: order.currency, amount: order.amount, orderID: orders._id });
             await cartDB.findOneAndDelete({ user: user });
 
         } catch (error) {
@@ -395,7 +407,7 @@ exports.cancelorder = async (req, res) => {
 
         // const newdate=new Date()
         // const nowdate=newdate.toLocaleDateString('en-GB')
-        const nowdate = new Date();  
+        const nowdate = new Date();
 
         if (isWallet) {
             console.log('User already has a wallet');
@@ -447,7 +459,7 @@ exports.cancelorder = async (req, res) => {
 
                 singleItem.quantity += buyedqty;
 
- 
+
 
                 await singleItem.save();
             }
@@ -563,13 +575,20 @@ exports.success = async (req, res) => {
 
     const user = req.session.userId
 
-    const cart = await cartDB.findOne({ user: user })
-    if (cart) {
-        await cartDB.deleteOne({ user: user })
-        return res.render('user/sucess')
-    } else {
+    const order = await checkoutDB.findByIdAndUpdate(req.params.orderid, {
+        paymentStatus: true,
+        status: 'pending'
+    })
+
+    console.log('this is the order document', order)
+
+    // const cart = await cartDB.findOne({ user: user })
+    // if (cart) {
+    //     await cartDB.deleteOne({ user: user })
+    //     return res.render('user/sucess')
+    // } else {
         return res.render('user/sucess');
-    }
+    // }
 
 }
 
@@ -612,12 +631,12 @@ exports.details = async (req, res) => {
         };
     });
     console.log(productsWithQty)
-    const coupun=db.applayedcoupun
-    let offer=db.discount
+    const coupun = db.applayedcoupun
+    let offer = db.discount
     const realprice = Number(db.totalprice + coupun + db.discount)
     //   res.json(db)
     console.log(realprice)
-    res.render('user/orderdetails', { products: productsWithQty, order: db, date: date ,coupun,realprice,offer})
+    res.render('user/orderdetails', { products: productsWithQty, order: db, date: date, coupun, realprice, offer })
 
 
 }
@@ -627,7 +646,7 @@ exports.return = async (req, res) => {
     const ID = req.params.id
     const db = await checkoutDB.findById(ID)
     const userid = req.session.userId
-     
+
     if (db.paymentMethods == 'razorpay') {
         console.log('entered to the razorpaay code ')
         await checkoutDB.findByIdAndUpdate(ID, {
@@ -889,3 +908,332 @@ exports.wallet = async (req, res) => {
     console.log(wallet)
     res.render('user/wallet', { wallet })
 }
+
+
+
+exports.dowloadsummary = async (req, res) => {
+    try {
+        const orderid = req.body.orderid;
+        console.log(orderid);
+
+        const doc = new PDFDocument();
+        const filepath = path.join(__dirname, '..', 'invoice.pdf');
+        const writeable = fs.createWriteStream(filepath);
+
+        const order = await checkoutDB.findById(orderid);
+        const user = await userDB.findById(order.userID)
+
+        console.log('this is the user ', user)
+        // const productarray=order.products.map((i)=>{
+        //      return i.productId
+
+        // })
+
+        // console.log(productarray)
+        //         const products=await productDB.find({_id:{$in:productarray}}) 
+        //         console.log('products ',products)
+
+        //         const productDetails=order.products.map((item)=>{
+        //             let details= products.find((i)=> i._id.toString() === item._id.toString() )
+        //             if (details) {
+        //                 return {
+        //                     name: details.name, 
+        //                     qty: item.qty,
+        //                     price: item.soldprice
+        //                 };
+        //             }
+        //         })
+
+        //         console.log('this is the products details',productDetails)
+
+
+        const productarray = order.products.map(i => i.productId);
+        console.log(productarray);
+
+        const products = await productDB.find({ _id: { $in: productarray } });
+        console.log('products ', products);
+
+
+        const productDetails = order.products.map((item) => {
+
+            let details = products.find((i) => i._id.toString() === item.productId.toString());
+            if (details) {
+                return {
+                    name: details.name,
+                    qty: item.qty,
+                    price: item.soldprice
+                };
+            }
+            return null;
+        });
+
+        console.log('this is the products details', productDetails);
+
+
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        // Generate PDF content
+        doc.pipe(writeable);
+        doc.fillColor('#007ACC')
+            .fontSize(26)
+            .font('Helvetica-Bold')
+            .text('INVOICE', { align: 'center' });
+        doc.moveDown();
+
+        doc.fillColor('#000')
+            .fontSize(12)
+            .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'right' });
+        doc.moveDown();
+
+        doc.fillColor('#007ACC')
+            .fontSize(18)
+            .font('Helvetica-Bold')
+            .text('Order Details:', { underline: true });
+        doc.moveDown(0.5);
+
+        doc.fillColor('#000')
+            .fontSize(14)
+            .font('Helvetica')
+            .text(`Order ID: ${order._id}`)
+            .text(`Name: ${user.username}`)
+            .text(`Email : ${user.Email}`)
+            .text(`Payment Method: ${order.paymentMethods}`)
+            .text(`Order Status: ${order.status}`)
+            .text(`Order Date: ${new Date(order.createdAt).toLocaleString()}`);
+        doc.moveDown();
+
+        doc.fillColor('#007ACC')
+            .fontSize(18)
+            .font('Helvetica-Bold')
+            .text('Billing Address:', { underline: true });
+        doc.moveDown(0.5);
+
+        doc.fillColor('#000')
+            .fontSize(14)
+            .font('Helvetica')
+            .text(`Name: ${order.address.name}`)
+            .text(`Phone: ${order.address.phone}`)
+            .text(`Address: ${order.address.houseAddress}`)
+            .text(`City: ${order.address.city}`)
+            .text(`State: ${order.address.state}`)
+            .text(`Pincode: ${order.address.pincode}`)
+            .text(`Country: ${order.address.country}`);
+        doc.moveDown();
+
+        doc.fillColor('#007ACC')
+            .fontSize(18)
+            .font('Helvetica-Bold')
+            .text('Products Purchased:', { underline: true });
+        doc.moveDown(0.5);
+
+        doc.fillColor('#000')
+        // productDetails.forEach((product, index) => {
+        //     doc.fontSize(14)
+        //         .font('Helvetica')
+        //         .text(`  ${index + 1}. Product Name: ${product.name}`)
+        //         .text(`     Quantity:  Rs :  ${product.qty}`)
+        //         .text(`     Price per unit:  Rs : ${product.soldprice}`);
+        //     doc.moveDown(0.5);
+        // });
+
+        productDetails.forEach((product, index) => {
+            doc.fontSize(14)
+                .font('Helvetica')
+                .text(`  ${index + 1}. Product Name: ${product.name}`)
+                .text(`     Quantity: ${product.qty}`)
+                .text(`     Price per unit: ₹${product.price}`); // Assuming price is the correct field
+            doc.moveDown(0.5); // You can tweak the spacing here if needed
+        });
+
+
+        doc.moveDown();
+        doc.fillColor('#007ACC')
+            .fontSize(18)
+            .font('Helvetica-Bold')
+            .text('Price Summary:', { underline: true });
+        doc.moveDown(0.5);
+
+        doc.fillColor('#000')
+            .fontSize(14)
+            .font('Helvetica')
+            .text(`Total Price:  Rs : ${order.totalprice}`)
+            .text(`Discount:  Rs : ${order.discount}`)
+            .fillColor('#FF0000')
+            .text(`Final Amount:  Rs : ${order.totalprice}`, { align: 'right', bold: true });
+        doc.moveDown(2);
+
+        doc.fillColor('#007ACC')
+            .fontSize(10)
+            .font('Helvetica-Oblique')
+            .text('Thank you for shopping with us!', { align: 'center' });
+        doc.text('If you have any questions about this invoice, please contact our support.', { align: 'center' });
+
+        doc.end();
+
+
+        writeable.on('finish', () => {
+            console.log('PDF file created successfully.');
+
+            if (!fs.existsSync(filepath)) {
+                console.error('The file does not exist.');
+                return res.status(500).json({ success: false, message: 'File creation failed.' });
+            }
+
+            // Respond with the redirect URL
+            return res.json({ success: true, redirect: '/user/getinvoice' });
+        });
+
+        writeable.on('error', (writeErr) => {
+            console.error('Error writing PDF:', writeErr);
+            return res.status(500).json({ success: false, message: 'Error generating PDF.' });
+        });
+
+    } catch (err) {
+        console.error('Error from download summary:', err);
+        return res.status(500).json({ success: false, message: 'Internal server error.' });
+    }
+};
+
+// exports.dowloadsummary = async (req, res) => {
+//     try {
+// console.log('entered to the pdf download code ')
+//         if(!req.session.userId){
+//             return res.redirect('/user/login')
+//         }
+
+//         const doc = new PDFdocument();
+//         const filepath = path.join(__dirname, '..', 'invoice.pdf');
+//         const writeable = fs.createWriteStream(filepath);
+
+//         doc.fontSize(20).text('Invoice', { align: 'center' });
+//         doc.moveDown();
+
+//         doc.pipe(writeable);
+//         doc.end();
+
+
+//         res.json({success:true , redirect:'/user/invoice'})
+//     } catch (err) {
+//         console.log('Error from download summary:', err);
+//         res.status(500).send('An error occurred');
+//     }
+// };
+
+
+exports.invoice = async (req, res) => {
+    console.log('this is the invoice')
+    let paths = path.join(__dirname, '..', 'invoice.pdf')
+    console.log(paths)
+
+
+    // ith veruthe disable aaki vechkkan 
+
+    res.download(paths, (err) => {
+        if (err) {
+            console.log(err)
+        } else {
+            fs.unlink(paths, (err) => {
+                if (err) {
+                    console.log('an error occured when delete the file')
+                } else {
+                    console.log('successfully deleted the file ')
+                }
+            })
+        }
+    })
+
+}
+
+
+exports.pendingorder = async (req, res) => {
+    const userid = req.params.user
+
+    await cartDB.findOneAndDelete({ user: userid })
+
+    res.redirect(`/user/myorders/${userid}`)
+
+}
+
+
+// exports.repay = async (req, res) => {
+// console.log(req.body)
+
+//     try {
+
+
+// const db= await checkoutDB.findById(req.body.orderid)
+// let total=db.totalprice
+
+//         console.log('successfully entered to the repay function')
+//         const razorpay = new Razorpay({
+//             key_id: process.env.RAZORPAY_ID,
+//             key_secret: process.env.RAZORPAY_SECRET
+//         });
+
+//         const options = {
+//             amount: Math.round(total * 100),
+//             currency: "INR",
+//             receipt: `receipt_${new Date().getTime()}`,
+//             notes: {
+//                 key: "value"
+//             }
+//         };
+
+//         const order = await razorpay.orders.create(options);
+
+//         res.json({ order_id: order.id, currency: order.currency, amount: order.amount, orderID: orders._id });
+//         // res.status(200)
+//     } catch (err) {
+//         console.log('error from repay ', err)
+//     }
+
+
+// }
+
+
+exports.repay = async (req, res) => {
+    try {
+        console.log(req.body);
+
+        if (!req.body.orderid) {
+            return res.status(400).json({ error: 'Order ID is required' });
+        }
+
+        const db = await checkoutDB.findById(req.body.orderid);
+        if (!db) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const total = db.totalprice;
+        console.log('Successfully entered the repay function');
+
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_ID,
+            key_secret: process.env.RAZORPAY_SECRET
+        });
+
+        const options = {
+            amount: Math.round(total * 100), // Convert to smallest currency unit (e.g., paise)
+            currency: "INR",
+            receipt: `receipt_${new Date().getTime()}`,
+            notes: {
+                key: "value"
+            }
+        };
+
+        const order = await razorpay.orders.create(options);
+
+        res.status(200).json({
+            order_id: order.id,
+            currency: order.currency,
+            amount: order.amount,
+            orderID: db._id
+        });
+    } catch (err) {
+        console.error('Error from repay:', err);
+        res.status(500).json({ error: 'An error occurred while processing the repayment', details: err.message });
+    }
+};

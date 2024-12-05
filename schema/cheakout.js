@@ -23,26 +23,26 @@ const cheakoutSchema = new Schema({
                 ref: 'product',
                 required: true
             },
-            qty:{
-                type:Number,
-                required:true
+            qty: {
+                type: Number,
+                required: true
             },
-            soldprice:{
-                type:Number,
-                required:false
-                
+            soldprice: {
+                type: Number,
+                required: false
+
             }
-         
+
         }
     ],
     status: {
         type: String,
-        enum:['pending','shipping','delivered','canceled','return'],
+        enum: ['pending', 'shipping', 'delivered', 'canceled', 'return','payment-pending'],
         required: true
     },
     address: {
-        
-      
+
+
         name: {
             type: String,
             require: true
@@ -71,17 +71,22 @@ const cheakoutSchema = new Schema({
             type: String,
             require: true
         }
-        
+
     },
-    discount:{
-        type:Number,
-        required:false,
-        default:0
+    discount: {
+        type: Number,
+        required: false,
+        default: 0
     },
-    applayedcoupun:{
-        type:Number,
-        required:false,
-        default:0
+    applayedcoupun: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    paymentStatus: {
+        type: Boolean,
+        required: false,
+        default: false
     }
     // orderId:{
     //     type:String,

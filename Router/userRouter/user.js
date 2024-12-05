@@ -42,7 +42,7 @@ router.post('/checkout/:cart', cheackout.getcheackout);
 router.post('/placeorder/:user', cheackout.placeorder);
 router.get('/myorders/:user', userAuth.loginuser,cheackout.myorders);
 router.post('/cancelorder/:id', cheackout.cancelorder);
-router.get('/success', cheackout.success);
+router.get('/success/:orderid', cheackout.success);
 router.get('/wishlist', userAuth.loginuser,wishlist.getpage);
 router.post('/addtowishlist', wishlist.additem)
 router.post('/wishlist/delete/:id',wishlist.delete)
@@ -56,6 +56,10 @@ router.get('/addoffer',offer.addoffer)
 router.post('/addcart/:id/',cartController.debughome);
 router.post('/removecoupun',cartController.removecoupun)
 router.get('/test',userController.test)
+router.post('/ordersummary',cheackout.dowloadsummary)
+router.get('/getinvoice',cheackout.invoice)
+router.get('/pendingpayment/:user',cheackout.pendingorder)
+router.post('/repay',cheackout.repay)
 
 
 module.exports = router
