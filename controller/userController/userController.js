@@ -348,6 +348,11 @@ let productDetails = async (req, res) => {
 
     console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
+
+    if(product.isblocked==true){
+      return   res.redirect('/')
+    }
+
     const products= await productDB.find({category:product.category._id}).limit(4)
     
     res.render('user/productdetailied', { product, userid ,products});

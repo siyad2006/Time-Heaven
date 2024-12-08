@@ -1,9 +1,26 @@
 
 // const { default: products } = require('razorpay/dist/types/products')
 const wishlistDB=require('../../schema/wishlistSchema')
-
-
+const userDB= require('../../schema/userModel')
+const productDB= require('../../schema/productschema')
 exports.getpage=async (req,res)=>{
+
+
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
+
     const userid=req.session.userId
     console.log(userid)
     if(!userid){
@@ -75,8 +92,40 @@ exports.getpage=async (req,res)=>{
 
 
 exports.additem = async (req, res) => {
+
+
+   
+    const uid = req.session.userId;
+   
+
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+     const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+    
+    
+   
+   
+     
     const ID = req.body.productId;
     const userid = req.session.userId;
+
+    const findpro= await productDB.findById(ID).populate('category')
+    if(findpro.category.isblocked=='Unlisted' || findpro.isblocked==true){
+        return res.status(404).send('the itrem is unlisted ')
+    }
+    // if (findpro.category.isblocked == 'Unlisted' || findpro.isblocked == true) {
+    //     return res.status(403).json({ redirect: '/' });
+    // }
+    
 
     if (!userid) {
         console.log('Session userId is undefined. User needs to log in.');
@@ -112,6 +161,21 @@ exports.additem = async (req, res) => {
 
 
 exports.delete= async (req,res)=>{
+
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
     console.log(req.params.id)
     const userid=req.session.userId
     const ID=req.params.id

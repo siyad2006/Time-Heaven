@@ -130,30 +130,36 @@
 <body>
 
   <!-- Sidebar -->
- 
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul class="navbar-nav w-100">
       <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i>
+          Statistics</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
+        <a class="nav-link active" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+            style="margin-right: 10px;"></i> Order Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
+        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+          Sales Report</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+          Coupon</a>
       </li>
       <li class="nav-item">
         <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
@@ -173,13 +179,14 @@
   <div class="content" id="content">
     <h1>Add product</h1>
 
-    
-  <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);margin-top: 70px; margin-left: 20px;"
-        aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/admin/products">Product</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Add product</li>
-        </ol>
+
+    <nav
+      style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);margin-top: 70px; margin-left: 20px;"
+      aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/admin/products">Product</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Add product</li>
+      </ol>
     </nav>
 
 
@@ -221,68 +228,68 @@
         <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1" required>
       </div> --}}
 
- 
-<div class="mb-3">
-    <label for="imageUpload1" class="form-label">Add Image 1</label>
-    <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1" required>
-</div>
-<div>
-    <img id="previewImage1" style="max-width: 100%; display: none;" />
-</div>
-<button id="cropImage1" class="btn btn-primary mt-2">Crop and Replace</button>
- 
-<div class="mb-3">
-    <label for="imageUpload2" class="form-label">Add Image 2</label>
-    <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2" required>
-</div>
-<div>
-    <img id="previewImage2" style="max-width: 100%; display: none;" />
-</div>
-<button id="cropImage2" class="btn btn-primary mt-2">Crop and Replace</button>
- 
-<div class="mb-3">
-    <label for="imageUpload3" class="form-label">Add Image 3</label>
-    <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3" required>
-</div>
-<div>
-    <img id="previewImage3" style="max-width: 100%; display: none;" />
-</div>
-<button id="cropImage3" class="btn btn-primary mt-2">Crop and Replace</button>
- 
-<link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet">
-<script src="https://unpkg.com/cropperjs"></script>
 
-<script>
-  
-function setupImageCropper(inputId, previewId, cropButtonId) {
-    const imageInput = document.getElementById(inputId);
-    const previewImage = document.getElementById(previewId);
-    const cropButton = document.getElementById(cropButtonId);
-    let cropper;
- 
-    imageInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            previewImage.src = imageUrl;
-            previewImage.style.display = 'block';
+      <div class="mb-3">
+        <label for="imageUpload1" class="form-label">Add Image 1</label>
+        <input type="file" class="form-control" id="imageUpload1" accept="image/*" name="image1" required>
+      </div>
+      <div>
+        <img id="previewImage1" style="max-width: 100%; display: none;" />
+      </div>
+      <button id="cropImage1" class="btn btn-primary mt-2">Crop and Replace</button>
 
-            if (cropper) cropper.destroy();
-            cropper = new Cropper(previewImage, {
+      <div class="mb-3">
+        <label for="imageUpload2" class="form-label">Add Image 2</label>
+        <input type="file" class="form-control" id="imageUpload2" accept="image/*" name="image2" required>
+      </div>
+      <div>
+        <img id="previewImage2" style="max-width: 100%; display: none;" />
+      </div>
+      <button id="cropImage2" class="btn btn-primary mt-2">Crop and Replace</button>
+
+      <div class="mb-3">
+        <label for="imageUpload3" class="form-label">Add Image 3</label>
+        <input type="file" class="form-control" id="imageUpload3" accept="image/*" name="image3" required>
+      </div>
+      <div>
+        <img id="previewImage3" style="max-width: 100%; display: none;" />
+      </div>
+      <button id="cropImage3" class="btn btn-primary mt-2">Crop and Replace</button>
+
+      <link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet">
+      <script src="https://unpkg.com/cropperjs"></script>
+
+      <script>
+
+        function setupImageCropper(inputId, previewId, cropButtonId) {
+          const imageInput = document.getElementById(inputId);
+          const previewImage = document.getElementById(previewId);
+          const cropButton = document.getElementById(cropButtonId);
+          let cropper;
+
+          imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+              const imageUrl = URL.createObjectURL(file);
+              previewImage.src = imageUrl;
+              previewImage.style.display = 'block';
+
+              if (cropper) cropper.destroy();
+              cropper = new Cropper(previewImage, {
                 aspectRatio: 1,
                 viewMode: 1,
-            });
-        }
-    });
- 
-    cropButton.addEventListener('click', () => {
-        if (cropper) {
-            const canvas = cropper.getCroppedCanvas({
+              });
+            }
+          });
+
+          cropButton.addEventListener('click', () => {
+            if (cropper) {
+              const canvas = cropper.getCroppedCanvas({
                 width: 300,
                 height: 300,
-            });
+              });
 
-            canvas.toBlob((blob) => {
+              canvas.toBlob((blob) => {
                 const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
 
                 const dataTransfer = new DataTransfer();
@@ -291,22 +298,42 @@ function setupImageCropper(inputId, previewId, cropButtonId) {
                 imageInput.files = dataTransfer.files;
 
                 alert('Cropped image is now ready to be saved!');
-            }, 'image/jpeg');
-        } else {
-            alert('Please select and crop an image first!');
+              }, 'image/jpeg');
+            } else {
+              alert('Please select and crop an image first!');
+            }
+          });
         }
-    });
-}
- 
-setupImageCropper('imageUpload1', 'previewImage1', 'cropImage1');
-setupImageCropper('imageUpload2', 'previewImage2', 'cropImage2');
-setupImageCropper('imageUpload3', 'previewImage3', 'cropImage3');
-</script>
 
+        setupImageCropper('imageUpload1', 'previewImage1', 'cropImage1');
+        setupImageCropper('imageUpload2', 'previewImage2', 'cropImage2');
+        setupImageCropper('imageUpload3', 'previewImage3', 'cropImage3');
+      </script>
+      
+      {{!--
       <div class="mb-3">
         <label for="brandInput" class="form-label">Brand</label>
         <input type="text" class="form-control" id="brandInput" name="brand" required>
+      </div> --}}
+
+      <div class="mb-3">
+        <label for="brandInput" class="form-label">Brand</label>
+        <select class="form-control" id="brandInput" name="brand" required>
+          <option value="" disabled selected>Select a brand</option>
+          <option value="Rolex">Rolex</option>
+          <option value="Omega">Omega</option>
+          <option value="Casio">Casio</option>
+          <option value="Seiko">Seiko</option>
+          <option value="Tag Heuer">Tag Heuer</option>
+          <option value="Patek Philippe">Patek Philippe</option>
+          <option value="Audemars Piguet">Audemars Piguet</option>
+          <option value="Tissot">Tissot</option>
+          <option value="Citizen">Citizen</option>
+          <option value="Fossil">Fossil</option>
+        </select>
       </div>
+
+
       <div class="mb-3">
         <label for="statusSelect" class="form-label">Status</label>
         <select class="form-select" id="statusSelect" name="status">
@@ -323,7 +350,7 @@ setupImageCropper('imageUpload3', 'previewImage3', 'cropImage3');
         const productName = document.getElementById('exampleInputEmail1').value.trim();
         const description = document.getElementById('exampleInputPassword1').value.trim();
         const brand = document.getElementById('brandInput').value.trim();
-      const priceRegex = /^\d+$/;
+        const priceRegex = /^\d+$/;
 
 
         if (productName === '' || description === '' || brand === '') {
@@ -336,13 +363,13 @@ setupImageCropper('imageUpload3', 'previewImage3', 'cropImage3');
           return false;
         }
 
-        return true; 
+        return true;
       }
     </script>
 
 
 
- 
+
     <script>
       const sidebar = document.getElementById('sidebar');
       const sidebarToggler = document.getElementById('sidebar-toggler');

@@ -13,7 +13,7 @@ const offer=require('../../controller/adminController/offerController')
 router.get('/login', adminAuth.adminLogin, AdminController.login)
 router.post('/login', AdminController.postLogin)
 router.get('/usermanage', adminAuth.isAdmin, AdminController.usermanage)
-router.get('/dashboard', adminAuth.isAdmin, AdminController.dashboard);
+router.get('/dashboard',  AdminController.dashboard);
 router.post('/blockuser/:id', AdminController.blockuser)
 router.post('/unblockuser/:id', AdminController.unblockuser)
 router.get('/category', adminAuth.isAdmin, AdminController.category)
@@ -49,7 +49,7 @@ router.post('/posteditoffer/:id',offer.posteditoffer)
 router.get('/salesreport',adminAuth.isAdmin,order.getsalesreport)
 router.get('/salesreport/pdf',adminAuth.isAdmin,order.downloadpdf)
 router.get('/salesreport/excel',adminAuth.isAdmin,order.downloadExcel)
-router.get('/orderdetails/:id',order.orderview)
+router.get('/orderdetails/:id',order.orderview) // add session here 
 router.get('/productoffer',adminAuth.isAdmin,offer.getproductoffer)
 router.post('/product-offer',offer.postproductoffer)
 

@@ -124,25 +124,31 @@
   <div class="sidebar" id="sidebar">
     <ul class="navbar-nav w-100">
       <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i>
+          Statistics</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
+        <a class="nav-link active " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i>
+          User Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
+        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+            style="margin-right: 10px;"></i> Order Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
+        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+          Sales Report</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+          Coupon</a>
       </li>
       <li class="nav-item">
         <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
@@ -192,8 +198,8 @@
 
             <td>
               {{!-- <input type="button" style="background-color: red; color:white" value="Block"> --}}
-              <form action="/admin/blockuser/{{this.id}}" onsubmit="return alerts(event)"  method="post">
-              
+              <form action="/admin/blockuser/{{this.id}}" onsubmit="return alerts(event)" method="post">
+
                 <button type="submit" style="background-color: red; color: white;">
                   Block
                 </button>
@@ -203,7 +209,7 @@
             </td>
 
             <td>
-              <form action="/admin/unblockuser/{{this.id}}" onsubmit="return alerts(event)"  method="post">
+              <form action="/admin/unblockuser/{{this.id}}" onsubmit="return alerts(event)" method="post">
                 <button type="submit" style="background-color: rgb(48, 194, 19); color: white;">
                   Un Block
                 </button>
@@ -220,28 +226,30 @@
 
 
       </table>
-<script>
- 
- async function alerts(event) {
-    if (event) event.preventDefault(); 
-    
-    const result = await Swal.fire({
-        icon: 'warning',
-        title: 'Warning',
-        text: 'Are you sure to perform this action?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-    });
 
-    if (result.isConfirmed) {
-       
-        event.target.submit();
-    } else {
-        console.log('Action cancelled');
-    }
-}
-</script>
+
+      <script>
+
+        async function alerts(event) {
+          if (event) event.preventDefault();
+
+          const result = await Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: 'Are you sure to perform this action?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+          });
+
+          if (result.isConfirmed) {
+
+            event.target.submit();
+          } else {
+            console.log('Action cancelled');
+          }
+        }
+      </script>
 
       <nav aria-label="Page navigation example justify-content-center">
         <ul class="pagination">
@@ -275,8 +283,6 @@
           content.classList.toggle('expanded');
         });
       </script>
-
-
 
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>

@@ -21,6 +21,21 @@ exports.getcheackout = async (req, res) => {
     const cartId = req.params.cart;
     const userId = req.session.userId;
 
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
+
     const cartItem = await cartDB.findById(cartId);
     const address = await AddressDB.find({ user: userId });
     const cartTotal = req.session.totalAmount
@@ -69,6 +84,20 @@ exports.getcheackout = async (req, res) => {
 exports.placeorder = async (req, res) => {
     const user = req.params.user;
     console.log('this is the user id from checkout', user);
+
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
 
     const { name, phone, street, city, state, postalCode, paymentMethod, products, country } = req.body;
     console.log(name, phone, street, city, state, postalCode, paymentMethod, products);
@@ -133,25 +162,58 @@ exports.placeorder = async (req, res) => {
         let subtotal = 0;
         let cheaktotal = total
         // const pro = cart.products.map((item) => {
+        // for (let item of cart.products) {
+        //     const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
+        //     console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
+
+
+        //     if (findpro) {
+        //         subtotal += findpro.regularprice * item.qty
+        //     } else {
+        //         console.log(`Product with ID ${item.productId} not found.`);
+        //     }
+
+           
+        //     if (!findpro) {
+        //         console.log(`Product with ID ${item.productId} is missing.`);
+        //         cart.products = cart.products.filter(cartItem => cartItem.productId.toString() !== item.productId.toString());
+        //     }
+            
+ 
+
+        //     if (!findpro) {
+        //         return res.status(404).send(`Product with ID ${item.productId} does not exist.`);
+        //     }
+
+        //     // Continue processing only if no response is sent
+        //     if (item.qty > findpro.quantity) {
+        //         return res.status(404).send(`This product: ${findpro.name} does not have enough quantity.`);
+        //     }
+        // }
+
+
         for (let item of cart.products) {
             const findpro = cheakpro.find(x => x._id.toString() === item.productId.toString());
             console.log('Checking product ID:', item.productId, 'Found Product:', findpro);
-
-
+        
             if (findpro) {
-                subtotal += findpro.regularprice * item.qty
+                subtotal += findpro.regularprice * item.qty;
             } else {
-                console.log(`Product with ID ${item.productId} not found.`);
+                console.log(`Product with ID ${item.productId} is missing.`);
+                cart.products = cart.products.filter(cartItem => cartItem.productId.toString() !== item.productId.toString());
+                // Skip further processing for this item
+                continue;
             }
-            if (!findpro) {
-                return res.status(404).send(`Product with ID ${item.productId} does not exist.`);
-            }
-
-            // Continue processing only if no response is sent
+        
+            // Continue processing only if the product exists
             if (item.qty > findpro.quantity) {
                 return res.status(404).send(`This product: ${findpro.name} does not have enough quantity.`);
             }
         }
+        
+        // After the loop, save the updated cart (if necessary) and proceed with the process
+        await cart.save();
+        
 
         console.log('Calculated Subtotal:', subtotal);
         console.log('Total after Coupon Applied:', cheaktotal);
@@ -245,7 +307,7 @@ exports.placeorder = async (req, res) => {
             const orderid = order._id
             res.json({ success: true, redirect: `/user/success/${orderid}` });
         } catch (error) {
-            console.error(error);
+            console.log(error);
             res.status(500).send("Error processing order");
         }
     }
@@ -339,7 +401,7 @@ exports.placeorder = async (req, res) => {
             await cartDB.findOneAndDelete({ user: user });
 
         } catch (error) {
-            console.error("Error creating order:", error);
+            console.log("Error creating order:", error);
             res.status(500).send("Error creating Razorpay order");
         }
     }
@@ -366,6 +428,20 @@ exports.myorders = async (req, res) => {
         return res.redirect('/user/home');
     }
 
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
@@ -391,6 +467,20 @@ exports.myorders = async (req, res) => {
 exports.cancelorder = async (req, res) => {
     const ID = req.params.id
     const userid = req.session.userId
+
+    const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
 
     // console.log(user)
     const db = await checkoutDB.findById(ID)
@@ -587,7 +677,7 @@ exports.success = async (req, res) => {
     //     await cartDB.deleteOne({ user: user })
     //     return res.render('user/sucess')
     // } else {
-        return res.render('user/sucess');
+    return res.render('user/sucess');
     // }
 
 }
@@ -596,6 +686,21 @@ exports.details = async (req, res) => {
     console.log('entered to the order details code')
     const order = req.params.id
     const db = await checkoutDB.findById(order)
+
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
 
     const items = db.products.map((item) => ({
 
@@ -642,6 +747,22 @@ exports.details = async (req, res) => {
 }
 
 exports.return = async (req, res) => {
+
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
+
     console.log('retrun')
     const ID = req.params.id
     const db = await checkoutDB.findById(ID)
@@ -903,6 +1024,23 @@ exports.return = async (req, res) => {
 
 
 exports.wallet = async (req, res) => {
+
+    const uid = req.session.userId;
+    if (!uid) {
+        return res.redirect('/user/login');
+    }
+    const isblockuser = await userDB.findById(uid);
+    if (!isblockuser) {
+
+        return res.redirect('/user/logout');
+    }
+    if (isblockuser.isblocked === true) {
+        return res.redirect('/user/logout');
+    }
+
+
+
+
     console.log(req.params.id)
     const wallet = await walletDB.findOne({ user: req.params.id })
     console.log(wallet)
@@ -915,6 +1053,22 @@ exports.dowloadsummary = async (req, res) => {
     try {
         const orderid = req.body.orderid;
         console.log(orderid);
+        const uid = req.session.userId;
+
+
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
 
         const doc = new PDFDocument();
         const filepath = path.join(__dirname, '..', 'invoice.pdf');
@@ -1078,7 +1232,7 @@ exports.dowloadsummary = async (req, res) => {
             console.log('PDF file created successfully.');
 
             if (!fs.existsSync(filepath)) {
-                console.error('The file does not exist.');
+                console.log('The file does not exist.');
                 return res.status(500).json({ success: false, message: 'File creation failed.' });
             }
 
@@ -1087,12 +1241,12 @@ exports.dowloadsummary = async (req, res) => {
         });
 
         writeable.on('error', (writeErr) => {
-            console.error('Error writing PDF:', writeErr);
+            console.log('Error writing PDF:', writeErr);
             return res.status(500).json({ success: false, message: 'Error generating PDF.' });
         });
 
     } catch (err) {
-        console.error('Error from download summary:', err);
+        console.log('Error from download summary:', err);
         return res.status(500).json({ success: false, message: 'Internal server error.' });
     }
 };
@@ -1196,6 +1350,21 @@ exports.pendingorder = async (req, res) => {
 
 exports.repay = async (req, res) => {
     try {
+        
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
         console.log(req.body);
 
         if (!req.body.orderid) {
@@ -1233,7 +1402,7 @@ exports.repay = async (req, res) => {
             orderID: db._id
         });
     } catch (err) {
-        console.error('Error from repay:', err);
+        console.log('Error from repay:', err);
         res.status(500).json({ error: 'An error occurred while processing the repayment', details: err.message });
     }
 };

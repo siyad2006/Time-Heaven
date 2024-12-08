@@ -17,7 +17,6 @@ const addproduct = async (req, res) => {
 }
 
 
-
 const add = async (req, res) => {
     const val = req.body;
     console.log(val.regularprice)
@@ -173,6 +172,9 @@ const blockproduct = async (req, res) => {
     try {
         const ID = req.params.id
 
+       
+
+
         const carts = await cartDB.find({ 'products.productId': ID })
         for (let item of carts) {
             let total = item.totalAmount
@@ -206,7 +208,7 @@ const blockproduct = async (req, res) => {
 
         console.log('complete the task and entered to anotehr codes')
 
-
+        
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: true })
         res.redirect('/admin/products')
     } catch (err) {
@@ -216,7 +218,15 @@ const blockproduct = async (req, res) => {
 
 const unblockproduct = async (req, res) => {
     try {
+
         const ID = req.params.id
+
+        const categoryblock= await productDB.findById(ID).populate('category')
+
+        if(categoryblock.category.isblocked=='Unlisted'){
+            return res.redirect('/admin/products')
+        }
+
         await productDB.findByIdAndUpdate({ _id: ID }, { isblocked: false })
         res.redirect('/admin/products')
 

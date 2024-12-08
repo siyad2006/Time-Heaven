@@ -18,8 +18,14 @@ exports.getordermanage = async (req, res) => {
 
   const totalPages = Math.ceil(totalOrders / limit);
 
+  const out = await cheackoutDB
+  .find()
+  .sort({ createdAt: -1 }) 
+  .limit(limit)  
+  .skip(skip)            
+  .populate('userID');    
 
-  const out = await cheackoutDB.find().limit(limit).skip(skip).populate('userID')
+  // const out = await cheackoutDB.find().limit(limit).skip(skip).sort({createdAt:-1}).populate('userID')
   res.render('admin/ordermanage', {
     out: out,
     currentPage: page,
@@ -252,24 +258,105 @@ exports.downloadpdf = async (req, res) => {
 
 
 
-    doc.fontSize(20).text('Sales Report', { align: 'center' });
-    doc.text(`totalOrder : ${req.session.totalOrders}`)
-    doc.text(`revenew : ${req.session.totalRevenue}`)
-    doc.text(`discount :${req.session.totalDiscount}`)
-    doc.moveDown();
+    // doc.fontSize(20).text('Sales Report', { align: 'center' });
+    // doc.text(`totalOrder : ${req.session.totalOrders}`)
+    // doc.text(`revenew : ${req.session.totalRevenue}`)
+    // doc.text(`discount :${req.session.totalDiscount}`)
+    // doc.moveDown();
 
-    salesData.forEach((sale, index) => {
-      doc.fontSize(12).text(`Order ${index + 1}`);
-      doc.text(`User: ${sale.userID.username}`);
-      doc.text(`Order ID: ${sale._id}`);
-      doc.text(`Net Sales: ₹${sale.totalprice}`);
-      doc.text(`discount : ${sale.discount}`);
-      doc.text(`Date: ${sale.createdAt}`);
+    // salesData.forEach((sale, index) => {
+    //   doc.fontSize(12).text(`Order ${index + 1}`);
+    //   doc.text(`User: ${sale.userID.username}`);
+    //   doc.text(`Order ID: ${sale._id}`);
+    //   doc.text(`Net Sales: ₹${sale.totalprice}`);
+    //   doc.text(`discount : ${sale.discount}`);
+    //   doc.text(`Date: ${sale.createdAt}`);
 
-      doc.moveDown();
-    });
+    //   doc.moveDown();
+    // });
 
-    doc.end();
+    // doc.end();
+ 
+    // Add a title page with styling
+doc.fontSize(28)
+.fillColor('#2C3E50')
+.text('Sales Report', { align: 'center' })
+.moveDown(0.5);
+
+// Add current date
+doc.fontSize(12)
+.fillColor('#7F8C8D')
+.text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'center' })
+.moveDown(1.5);
+
+// Summary section in a box
+doc.rect(50, doc.y, 500, 100)
+.fillColor('#F8F9FA')
+.fill();
+
+// Reset position for summary text
+doc.y -= 90;
+
+// Summary statistics with better formatting
+doc.fontSize(16)
+.fillColor('#2C3E50')
+.text(`Total Orders: ${req.session.totalOrders}`, { align: 'left', indent: 20 })
+.text(`Revenue: ₹${req.session.totalRevenue}`, { align: 'left', indent: 20 })
+.text(`Discount: ₹${req.session.totalDiscount}`, { align: 'left', indent: 20 })
+.moveDown(2);
+
+// Add a separator line
+doc.moveTo(50, doc.y)
+.lineTo(550, doc.y)
+.stroke()
+.moveDown();
+
+// Orders section
+salesData.forEach((sale, index) => {
+ // Add alternating background for better readability
+ if (index % 2 === 0) {
+     doc.rect(50, doc.y - 5, 500, 80)
+        .fillColor('#F8F9FA')
+        .fill();
+ }
+
+ doc.fillColor('#2C3E50')
+    .fontSize(14)
+    .font('Helvetica-Bold')
+    .text(`Order ${index + 1}`, { continued: true })
+    .font('Helvetica')
+    .fontSize(12)
+    .text(`    Date: ${new Date(sale.createdAt).toLocaleDateString()}`, { align: 'right' });
+
+ doc.fontSize(12)
+    .font('Helvetica')
+    .text(`Customer: ${sale.userID.username}`, { indent: 20 })
+    .text(`Order ID: ${sale._id}`, { indent: 20 })
+    .text(`Net Sales: ₹${sale.totalprice}`, { indent: 20 })
+    .text(`Discount: ₹${sale.discount}`, { indent: 20 })
+    .moveDown();
+
+ // Add a subtle separator between orders
+ if (index < salesData.length - 1) {
+     doc.moveTo(70, doc.y)
+        .lineTo(530, doc.y)
+        .strokeColor('#E0E0E0')
+        .stroke()
+        .moveDown(0.5);
+ }
+
+ // Add new page if content is near the bottom
+ if (doc.y > 700) {
+     doc.addPage();
+ }
+});
+
+// Add footer
+doc.fontSize(10)
+.text('End of Sales Report', { align: 'center' });
+
+doc.end();
+
 
     res.download(filePath, 'sales_report.pdf', (err) => {
       if (err) {

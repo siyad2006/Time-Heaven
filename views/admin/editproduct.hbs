@@ -130,30 +130,36 @@
 
 <body>
 
- 
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <ul class="navbar-nav w-100">
       <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
+        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i>
+          Statistics</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
+        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
+        <a class="nav-link active" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product
+          Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
+        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice"
+            style="margin-right: 10px;"></i> Order Management</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
+        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i>
+          Sales Report</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
+        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i>
+          Coupon</a>
       </li>
       <li class="nav-item">
         <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
@@ -240,7 +246,7 @@
         <canvas id="canvas3" style="display:none;"></canvas>
       </div>
 
-       
+
       <div style="display:inline;">
         <img src="/{{product.image.[0]}}" style="height: 100px; width: 150px;" alt="Product Image 1">
       </div>
@@ -250,12 +256,34 @@
       <div style="display:inline;">
         <img src="/{{product.image.[2]}}" style="height: 100px; width: 150px;" alt="Product Image 3">
       </div>
- 
 
-      <div class="mb-3">
+
+       <div class="mb-3">
         <label for="brandInput" class="form-label">Brand</label>
-        <input type="text" class="form-control" id="brandInput" name="brand" value="{{product.brand}}" required>
-      </div>
+        {{!-- <input type="text" class="form-control" id="brandInput" name="brand" value="{{product.brand}}" required> --}}
+        <div>
+          <p style="font-size: medium; color:#ff4444; font-weight:600">{{product.brand}}</p>
+        </div>
+      </div>  
+
+      {{!-- <div class="mb-3">
+        <label for="brandInput" class="form-label">Brand</label>
+        <select class="form-control" id="brandInput" name="brand" required>
+          <option value="" disabled selected>Select a brand</option>
+          <option value="Rolex">Rolex</option>
+          <option value="Omega">Omega</option>
+          <option value="Casio">Casio</option>
+          <option value="Seiko">Seiko</option>
+          <option value="Tag Heuer">Tag Heuer</option>
+          <option value="Patek Philippe">Patek Philippe</option>
+          <option value="Audemars Piguet">Audemars Piguet</option>
+          <option value="Tissot">Tissot</option>
+          <option value="Citizen">Citizen</option>
+          <option value="Fossil">Fossil</option>
+        </select>
+      </div> --}}
+
+
       <div class="mb-3">
         <label for="statusSelect" class="form-label">Status</label>
         <select class="form-select" id="statusSelect" name="status">

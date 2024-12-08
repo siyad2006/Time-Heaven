@@ -179,40 +179,50 @@
         &#x22EE; <!-- Unicode for 3 vertical dots -->
     </button>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <ul class="navbar-nav w-100">
-      <li class="nav-item">
-        <a class="nav-link a" href="/admin/dashboard"><i class="fas fa-chart-pie" style="margin-right: 10px;"></i> Statistics</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/usermanage"><i class="fas fa-users" style="margin-right: 10px;"></i> User Management</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/products"><i class="fas fa-box" style="margin-right: 10px;"></i> Product Management</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/ordermanagement"><i class="fas fa-file-invoice" style="margin-right: 10px;"></i> Order Management</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/salesreport"><i class="fas fa-chart-line" style="margin-right: 10px;"></i> Sales Report</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link active" href="/admin/offer"><i class="fas fa-gift" style="margin-right: 10px;"></i> Offer</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/coupun"><i class="fas fa-ticket-alt" style="margin-right: 10px;"></i> Coupon</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link " href="/admin/category"><i class="fas fa-tags" style="margin-right: 10px;"></i> Category</a>
-      </li>
+    <!-- Main content -->
+    <div class="content" id="content">
+        <div class="offer-form" style="margin-top: 70px;">
+            <h4>Add Category Offer</h4>
+            <form id="offerForm" onsubmit="return sending(event)">
+                <div class="form-group">
+                    <label for="offerName">Offer Name</label>
+                    <input name="name" type="text" class="form-control" id="offerName" placeholder="Enter offer name"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="offerDescription">Description</label>
+                    <textarea name="discription" class="form-control" id="offerDescription"
+                        placeholder="Enter offer description" rows="3"></textarea>
+                </div>
 
-      <li class="nav-item">
-        <a class="nav-link" href="/admin/logout"><i class="fas fa-cog" style="margin-right: 10px;"></i> Logout</a>
-      </li>
-    </ul>
-  </div>
+                <div class="form-group">
+                    <select name="category" id="product" class="custom-select" name="category" multiple>
+                        <option value="default" disabled>Select Products</option>
+                        {{#each products}}
+                        <option value="{{this.id}}" style="color: green;">Product Name: {{this.name}}, Rs:
+                            {{this.realprice}}</option>
+                        {{/each}}
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label for="discount">Discount Percentage</label>
+                    <input type="number" name="persent" class="form-control" id="discount"
+                        placeholder="Enter discount percentage" min="0" max="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="discount">Start Date</label>
+                    <input type="date" id="start" name="startdate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="discount">Expire Date</label>
+                    <input type="date" id="expire" name="date" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-custom mt-2">Save Offer</button>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>

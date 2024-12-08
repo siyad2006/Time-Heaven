@@ -13,77 +13,121 @@ exports.debughome = async (req, res) => {
 }
 
 exports.getcart = async (req, res, next) => {
-    const userid = req.session.userId;
 
-    const coupuns = await coupunDB.find({ user: { $ne: userid } })
-
-    const cart = await cartDB.findOne({ user: userid });
-    if (!cart || cart.products.length === 0) {
-        return res.render('user/emptycart')
-    }
+    try {
 
 
-    let discount = 0
-    if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
-        const coupunAmount = await coupunDB.findById(cart.coupun);
-        if (coupunAmount) {
-            console.log('this is existing coupun', coupunAmount);
-            discount += coupunAmount.maximumDiscount
-        } else {
-            console.log('Coupon not found');
+
+        // const uid = req.session.userId
+        // const isblockuser = await userDB.findById(uid)
+        // if (isblockuser.isblocked == true) {
+        //     return res.redirect('/user/logout')
+        // }
+
+
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
         }
-    }
-    console.log('this is the discount ', discount)
-    const cartItems = cart.products.map(product => ({
-        productId: product.productId,
-        qty: product.qty
-    }));
-    const products = await productDB.find({ _id: { $in: cartItems.map(item => item.productId) } });
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
 
-
-    const cartProducts = products.map(product => {
-        const cartItem = cartItems.find(item => item.productId.toString() === product._id.toString());
-        return {
-            ...product.toObject(),
-            qty: cartItem ? cartItem.qty : 0
-        };
-    });
-
-    let pricee = 0;
-    console.log("Mapped Cart Products:", cartProducts);
-
-    for (let item of cartProducts) {
-        if (item.regularprice && item.qty) {
-            pricee += item.regularprice * item.qty;
-        } else {
-            console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
+            return res.redirect('/user/logout');
         }
-    }
-
-    console.log(`Total Price: ${pricee}`);
-
-    let realprice = 0
-    for (let item of cartProducts) {
-        if (item.realprice && item.qty) {
-            realprice += item.realprice * item.qty;
-        } else {
-            console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
         }
+
+
+        const userid = req.session.userId;
+
+        const coupuns = await coupunDB.find({ user: { $ne: userid } })
+
+        const cart = await cartDB.findOne({ user: userid });
+        if (!cart || cart.products.length === 0) {
+            return res.render('user/emptycart')
+        }
+
+
+        let discount = 0
+        if (cart && cart.coupun && mongoose.Types.ObjectId.isValid(cart.coupun)) {
+            const coupunAmount = await coupunDB.findById(cart.coupun);
+            if (coupunAmount) {
+                console.log('this is existing coupun', coupunAmount);
+                discount += coupunAmount.maximumDiscount
+            } else {
+                console.log('Coupon not found');
+            }
+        }
+        console.log('this is the discount ', discount)
+        const cartItems = cart.products.map(product => ({
+            productId: product.productId,
+            qty: product.qty
+        }));
+        const products = await productDB.find({ _id: { $in: cartItems.map(item => item.productId) } });
+
+
+        const cartProducts = products.map(product => {
+            const cartItem = cartItems.find(item => item.productId.toString() === product._id.toString());
+            return {
+                ...product.toObject(),
+                qty: cartItem ? cartItem.qty : 0
+            };
+        });
+
+        let pricee = 0;
+        console.log("Mapped Cart Products:", cartProducts);
+
+        for (let item of cartProducts) {
+            if (item.regularprice && item.qty) {
+                pricee += item.regularprice * item.qty;
+            } else {
+                console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
+            }
+        }
+
+        console.log(`Total Price: ${pricee}`);
+
+        let realprice = 0
+        for (let item of cartProducts) {
+            if (item.realprice && item.qty) {
+                realprice += item.realprice * item.qty;
+            } else {
+                console.log(`Invalid data for product: ${item._id}, Regular Price: ${item.regularprice}, Quantity: ${item.qty}`);
+            }
+        }
+
+
+        console.log('discount', discount)
+        console.log('real price', realprice)
+        req.session.totalAmount = pricee - discount
+        const totalAmount = req.session.totalAmount
+
+        res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice });
+    } catch (err) {
+        console.log('error from get cart', err)
+        res.redirect('/user/logout')
     }
 
-
-    console.log('discount', discount)
-    console.log('real price', realprice)
-    req.session.totalAmount = pricee - discount
-    const totalAmount = req.session.totalAmount
-
-    res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount,realprice });
 };
 
 
 
 exports.addcart = async (req, res) => {
     try {
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
 
         console.log('entered to the cart control page ')
         const productId = req.params.id;
@@ -91,6 +135,11 @@ exports.addcart = async (req, res) => {
         const { quantity, regularprice } = req.body;
         if (quantity < 1 || quantity == undefined) {
             quantity = 1
+        }
+
+        const findpro = await productDB.findById(productId).populate('category')
+        if (findpro.category.isblocked == 'Unlisted' || findpro.isblocked == true) {
+            return res.redirect('/')
         }
 
         console.log('Product ID:', productId, 'User ID:', userId, 'Quantity:', quantity, 'Price:', regularprice);
@@ -139,7 +188,11 @@ exports.addcart = async (req, res) => {
                 console.log('Added new product to cart:', existingCart);
             }
         } else {
-
+            console.log('entered to the else code of cart ')
+            const findpro = await productDB.findById(productId).populate('category')
+            if (findpro.category.isblocked == 'Unlisted' || findpro.isblocked == true) {
+                return res.redirect('/')
+            }
             const finalQuantity = Math.min(Number(quantity), 8);
 
             const newCart = new cartDB({
@@ -158,13 +211,29 @@ exports.addcart = async (req, res) => {
         res.redirect(`/user/cart`);
     } catch (err) {
         console.error(err);
-        res.status(500).send('Something went wrong');
+        res.redirect('/user/logout')
     }
 };
 
 
 exports.updateCart = async (req, res, next) => {
     try {
+
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
+
         const { productId, qty } = req.body;
         const userid = req.session.userId;
 
@@ -191,7 +260,7 @@ exports.updateCart = async (req, res, next) => {
                 newTotalAmount += productDetails.regularprice * cartItem.qty;
             }
         }
-        let subtotal=0
+        let subtotal = 0
         for (const cartItem of cart.products) {
 
             const productDetails = await productDB.findById(cartItem.productId);
@@ -218,7 +287,7 @@ exports.updateCart = async (req, res, next) => {
         req.session.totalAmount = newTotalAmount - discount;
         console.log(req.session)
         await cart.save();
-       
+
         res.json({
             success: true,
             updatedPrice: updatedPrice,
@@ -229,7 +298,8 @@ exports.updateCart = async (req, res, next) => {
 
     } catch (error) {
         console.error('Error updating cart:', error);
-        res.json({ success: false, message: 'An error occurred while updating the cart' });
+        // res.json({ success: false, message: 'An error occurred while updating the cart' });
+        res.redirect('/user/logout')
     }
 };
 
@@ -238,12 +308,33 @@ exports.updateCart = async (req, res, next) => {
 
 
 exports.removecart = async (req, res) => {
-    console.log('started the remove function');
-    const userid = req.session.userId;
-    const { productId } = req.body;
-    console.log(productId);
+
+
+
+
 
     try {
+
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
+
+        console.log('started the remove function');
+        const userid = req.session.userId;
+        const { productId } = req.body;
+        console.log(productId);
+
         const cartItem = await cartDB.findOne({ user: userid });
         if (!cartItem) {
             console.log('No cart found for user');
@@ -293,7 +384,7 @@ exports.removecart = async (req, res) => {
         res.redirect(`/user/cart`);
     } catch (err) {
         console.log('Error:', err);
-        res.redirect(`/user/cart`);
+        res.redirect(`/user/logout`);
     }
 };
 
@@ -302,6 +393,22 @@ exports.removecart = async (req, res) => {
 
 exports.addcoupun = async (req, res) => {
     try {
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
+        }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
+
+
         console.log('this is from add coupun')
         console.log(req.session.userId)
         console.log(req.body);
@@ -361,55 +468,79 @@ exports.addcoupun = async (req, res) => {
         }
     } catch (error) {
         console.error('Error:', error);
-        return res.status(500).json({ success: false, message: 'An error occurred while processing the coupon' });
+        // return res.status(500).json({ success: false, message: 'An error occurred while processing the coupon' });
+        res.redirect('/user/logout')
     }
 };
 
 
 
 exports.removecoupun = async (req, res) => {
-    console.log('success fully entered to remove coupun cart ')
-    console.log(req.body)
-    const userid = req.body.user
-    const cart = await cartDB.findOne({ user: userid })
-    let total = cart.totalAmount
+
+    try {
 
 
 
-    const coupun = cart.coupun
-    const isactive = await coupunDB.findById(coupun)
-    console.log(isactive)
-    if (!isactive) {
-        return res.json({ success: false })
-    }
-    let down = isactive.maximumDiscount
-    const coupunuser = isactive.user
-    console.log(coupunuser)
-    let count = 0
-    for (let use of coupunuser) {
-        if (userid == use) {
-            console.log(use, userid)
-            count++
+        const uid = req.session.userId;
+        if (!uid) {
+            return res.redirect('/user/login');
         }
+        const isblockuser = await userDB.findById(uid);
+        if (!isblockuser) {
+
+            return res.redirect('/user/logout');
+        }
+        if (isblockuser.isblocked === true) {
+            return res.redirect('/user/logout');
+        }
+
+
+
+        console.log('success fully entered to remove coupun cart ')
+        console.log(req.body)
+        const userid = req.body.user
+        const cart = await cartDB.findOne({ user: userid })
+        let total = cart.totalAmount
+
+
+
+        const coupun = cart.coupun
+        const isactive = await coupunDB.findById(coupun)
+        console.log(isactive)
+        if (!isactive) {
+            return res.json({ success: false })
+        }
+        let down = isactive.maximumDiscount
+        const coupunuser = isactive.user
+        console.log(coupunuser)
+        let count = 0
+        for (let use of coupunuser) {
+            if (userid == use) {
+                console.log(use, userid)
+                count++
+            }
+        }
+        console.log(count)
+        if (count > 0) {
+            const updatedAmount = Number(total + down)
+
+            await coupunDB.findByIdAndUpdate(isactive._id, {
+                $pull: { user: userid }
+            }).then(() => console.log('pulled the user '))
+            req.session.totalAmount = updatedAmount
+            await cartDB.updateOne({ coupun: isactive._id }, {
+                coupun: null,
+
+
+            })
+            console.log('every think is fine')
+            res.json({ success: true, message: 'coupun removed ' })
+        } else {
+            res.json({ success: true, message: 'there is no coupun to remove' })
+        }
+    } catch (err) {
+        console.log('an error occured when remove coupun', err)
+        res.redirect('/user/logout')
     }
-    console.log(count)
-    if (count > 0) {
-        const updatedAmount = Number(total + down)
-
-        await coupunDB.findByIdAndUpdate(isactive._id, {
-            $pull: { user: userid }
-        }).then(() => console.log('pulled the user '))
-        req.session.totalAmount = updatedAmount
-        await cartDB.updateOne({ coupun: isactive._id }, {
-            coupun: null,
-
-
-        })
-        console.log('every think is fine')
-        res.json({ success: true, message: 'coupun removed ' })
-    } else {
-        res.json({ success: true, message: 'there is no coupun to remove' })
-    }
-
 
 }
