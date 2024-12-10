@@ -274,7 +274,7 @@
 
                 }
 
-                if (status == 'retrun' || status == 'payment-pending') {
+                if (status == 'return' || status == 'payment-pending' || status=='canceled') {
                   Array.from(values.options).forEach((option) => {
                     if (option.value == 'pending') {
                       option.disabled = true

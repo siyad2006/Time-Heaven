@@ -67,7 +67,9 @@
 
 
                     <tr>
-                        <td>{{this._id}}</td>
+                        {{!-- <td id=".orderid">{{this._id}}</td> --}}
+                        <td class="orderid" data-orderid="{{this._id}}">{{this._id}}</td>
+
                         <input type="hidden" value="{{this._id}}" id="userid">
                         <td style="color: green;font-weight:bold">RS: {{this.totalprice}}</td>
                         <td style="font-weight: bold;">{{this.paymentMethods}}</td>
@@ -78,7 +80,7 @@
                                 <input type="submit" id="b" value="Cancel Order" style="font-weight: bold;"
                                     class="btn btn-danger cancel-button">
                             </form>
-                            <form action="">
+                            <form action="" id="repayForm">
 
                                 <input type="submit" id="b" value="rePay"
                                     style="font-weight: bold; display:none;width:130px"
@@ -102,6 +104,99 @@
             </table>
         </div>
     </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.querySelectorAll('.repay-button').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const row = event.target.closest('tr');
+                if (!row) {
+                    console.error('Row not found for the clicked button.');
+                    return;
+                }
+                console.log('Row found:', row);
+
+                const orderidElement = row.querySelector('.orderid');
+                if (!orderidElement) {
+                    console.error('Order ID element not found in the row.');
+                    return;
+                }
+
+                const orderid = orderidElement.dataset.orderid?.trim();
+                if (!orderid) {
+                    console.error('Order ID is null or undefined.');
+                    return;
+                }
+
+                console.log('Initiating repayment for Order ID:', orderid);
+
+                try {
+                    const result = await fetch(`/user/repay`, {
+                        method: 'POST',
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        body: JSON.stringify({ orderid })
+                    });
+
+                    if (result.ok) {
+                        const data = await result.json();
+
+                        console.log('Repayment Response:', data);
+
+                        const options = {
+                            key: "rzp_test_9BMcPF20vveDHZ",
+                            amount: data.amount,
+                            currency: data.currency,
+                            name: 'Time Heaven',
+                            description: 'Order Payment',
+                            order_id: data.order_id,
+                            handler: function (response) {
+                                console.log('Payment Successful:', response);
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Your payment was successful!',
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
+                                    window.location.href = `/user/success/${data.orderID}`;
+                                });
+                            },
+                            modal: {
+                                ondismiss: function () {
+                                    console.log('Payment cancelled or failed.');
+                                    Swal.fire({
+                                        title: 'Payment Failed!',
+                                        text: 'You cancelled the payment or it failed. Please try again.',
+                                        icon: 'error',
+                                        showConfirmButton: true
+                                    });
+                                    window.location.href = `/user/pendingpayment/${orderid}`;
+                                }
+                            },
+                            prefill: {
+                                name: 'siyad AK',
+                                email: 'siyadz4x@gmail.com',
+                                phone_number: '6238765947'
+                            },
+                            notes: {
+                                address: 'Mannarkkde, Kottoppadam (po)'
+                            }
+                        };
+
+                        const rzp1 = new Razorpay(options);
+                        rzp1.open();
+                    } else {
+                        console.error('Server Error:', result.statusText);
+                    }
+                } catch (error) {
+                    console.error('Error initiating repayment:', error);
+                }
+            });
+        });
+    </script>
 
     <script>
         window.onload = function () {

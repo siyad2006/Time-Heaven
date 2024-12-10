@@ -100,7 +100,12 @@ exports.getcart = async (req, res, next) => {
 
         console.log('discount', discount)
         console.log('real price', realprice)
+
         req.session.totalAmount = pricee - discount
+        req.session.realprice=realprice
+        req.session.discount=discount
+
+        console.log(req.session)
         const totalAmount = req.session.totalAmount
 
         res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice });

@@ -194,194 +194,15 @@
       <div class="col-md-4">
         <div class="card text-white bg-danger">
           <div class="card-body">
-            <h5 class="card-title">Pending Orders</h5>
-            <p class="card-text">12</p>
+            <h5 class="card-title">Payment-Pending Orders</h5>
+            <p class="card-text">{{pendingCount}}</p>
           </div>
         </div>
       </div>
     </div>
 
 
-
-    {{!-- <div class="graph-container">
-      <div class="chart-controls">
-        <select id="timeRange" class="time-range-select">
-          <option value="week">Week</option>
-          <option value="month">Month</option>
-        </select>
-      </div>
-      <div class="chart-wrapper">
-        <canvas id="adminChart"></canvas>
-      </div>
-    </div>
-
-    <style>
-      .graph-container {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin: 20px 0;
-      }
-
-      .chart-controls {
-        margin-bottom: 20px;
-      }
-
-      .time-range-select {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        background: white;
-      }
-
-      .chart-wrapper {
-        height: 400px;
-        width: 100%;
-      }
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script>
-      // Sample data - replace with your actual data from the server
-      const chartData = {
-        week: {
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          users: [400, 300, 520, 270, 400, 380, 430],
-          revenue: [2400, 1398, 3800, 4300, 2400, 1890, 2300],
-          orders: [180, 230, 280, 340, 390, 190, 220]
-        },
-        month: {
-          labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-          users: [2400, 1398, 3800, 2780],
-          revenue: [12000, 9800, 15000, 13900],
-          orders: [1200, 980, 1500, 1390]
-        }
-      };
-
-      // Initialize the chart
-      let adminChart;
-
-      function initChart(timeRange = 'week') {
-        const ctx = document.getElementById('adminChart').getContext('2d');
-
-        // Destroy existing chart if it exists
-        if (adminChart) {
-          adminChart.destroy();
-        }
-
-        adminChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: chartData[timeRange].labels,
-            datasets: [
-              {
-                label: 'Users',
-                data: chartData[timeRange].users,
-                borderColor: '#8884d8',
-                backgroundColor: '#8884d820',
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
-              },
-              {
-                label: 'Revenue',
-                data: chartData[timeRange].revenue,
-                borderColor: '#82ca9d',
-                backgroundColor: '#82ca9d20',
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
-              },
-              {
-                label: 'Orders',
-                data: chartData[timeRange].orders,
-                borderColor: '#ffc658',
-                backgroundColor: '#ffc65820',
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'top',
-                labels: {
-                  padding: 20,
-                  font: {
-                    size: 12
-                  }
-                }
-              },
-              tooltip: {
-                backgroundColor: 'white',
-                titleColor: '#333',
-                bodyColor: '#666',
-                borderColor: '#ddd',
-                borderWidth: 1,
-                padding: 12,
-                displayColors: true,
-                callbacks: {
-                  label: function (context) {
-                    let label = context.dataset.label || '';
-                    if (label) {
-                      label += ': ';
-                    }
-                    if (context.parsed.y !== null) {
-                      label += context.parsed.y.toLocaleString();
-                    }
-                    return label;
-                  }
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                grid: {
-                  color: '#f0f0f0'
-                },
-                ticks: {
-                  font: {
-                    size: 11
-                  }
-                }
-              },
-              x: {
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  font: {
-                    size: 11
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
-
-      // Event listener for time range selector
-      document.getElementById('timeRange').addEventListener('change', (e) => {
-        initChart(e.target.value);
-      });
-
-      // Initialize chart on load
-      document.addEventListener('DOMContentLoaded', () => {
-        initChart();
-      });
-    </script> --}}
-
-
+ 
 
     <div class="graph-container">
       <div class="chart-controls">
@@ -422,19 +243,7 @@
       }
     </style>
 
-    {{!-- / Sample sales data - replace with your actual data from the server
-    const salesData = {
-    week: {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    sales: [2400, 1398, 3800, 4300, 2400, 1890, 2300]
-    },
-    month: {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-    sales: [12000, 9800, 15000, 13900]
-    }
-    };
-    --}}
-
+    
     <script>
       window.onload = function () {
         const url = new URLSearchParams(window.location.search)
@@ -599,7 +408,7 @@
             <li>
               {{!-- <span class="rank">1</span> --}}
               <div class="item-details">
-                <span class="item-name">{{this.categoryName}}</span>
+                <span class="item-name">{{this.categoryname}}</span>
                 <span class="item-value">{{this.sold}} sold</span>
               </div>
             </li>

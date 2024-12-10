@@ -156,7 +156,26 @@
 
 
                 </div>
-                <h5 class="text-end" style="color: rgb(196, 58, 58);">Total : {{cartTotal}}</h5>
+                {{!-- <h5 class="text-end" style="color: rgb(196, 58, 58);">Total : {{cartTotal}}</h5> --}}
+           <div class="card p-3" style="border: 1px solid #ccc; border-radius: 10px; max-width: 400px;margin-top:40px;margin-left:152px">
+  <h5 class="text-end" style="color: rgb(196, 58, 58); ">Checkout Summary</h5>
+  <hr>
+  <div class="d-flex justify-content-between">
+    <p>Subtotal:</p>
+    <p>{{realprice}}</p>
+  </div>
+  <div class="d-flex justify-content-between">
+    <p>Coupon Discount:</p>
+    <p>- {{discount}}</p>
+  </div>
+ 
+  <hr>
+  <div class="d-flex justify-content-between fw-bold">
+    <p>Total:</p>
+    <p>Rs :{{cartTotal}}</p>
+  </div>
+</div>
+
             </div>
 
 
@@ -224,9 +243,9 @@
                         <label class="form-check-label" for="cod">Cash on Delivery (COD)</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal"
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="wallet"
                             required>
-                        <label class="form-check-label" for="paypal">PayPal</label>
+                        <label class="form-check-label" for="paypal">wallet</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" value="razorpay"
@@ -314,7 +333,7 @@
     </script>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    
+
 
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -326,6 +345,20 @@
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const postalCode = document.getElementById('postalCode').value;
+            const street = document.getElementById('street').value.trim()
+            const city = document.getElementById('city').value.trim()
+            const country = document.getElementById('country').value.trim()
+            const state = document.getElementById('state').value.trim()
+
+            if (name == "" || street == '' || city == '' || country == '') {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'All fields are required',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
 
             const namePattern = /^[A-Za-z\s]+$/;
@@ -472,6 +505,7 @@
                         title: 'you cant order this item',
                         text: errorData
                     })
+ 
                 }
             } catch (error) {
                 Swal.fire({

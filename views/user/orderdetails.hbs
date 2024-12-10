@@ -55,6 +55,21 @@
             <button class="btn btn-outline-primary" id="summary"><i class="fa-solid fa-file-download me-2"></i>Download
                 Summary</button>
         </div>
+        <!-- SweetAlert2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css" rel="stylesheet">
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+ 
+ {{#if expire}}
+<script>
+    Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: '{{expire}}'   
+    });
+</script>
+{{/if}}
 
         <!-- User Information Section -->
         <div class="card order-card mb-4">
@@ -76,7 +91,24 @@
                 <h4 class="mb-0">Order Summary</h4>
             </div>
             <div class="card-body">
-                <p><i class="fa-solid fa-calendar-alt me-2"></i><strong>Order Date:</strong> {{date}}</p>
+                {{!-- <p><i class="fa-solid fa-calendar-alt me-2" id="date"></i><strong>Order Date:</strong>
+                <p style="display: flex;">{{date}}</p>
+                </p> --}}
+                <p style="display: flex; align-items: center;">
+                    <i class="fa-solid fa-calendar-alt me-2" id="date"></i>
+                    <strong>Order Date:</strong>
+                    <span style="margin-left: 5px;" id="date">{{date}}</span>
+                </p>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const dateElement = document.getElementById('date');
+                        console.log('Date element:', dateElement);
+                        console.log('This is the form:', dateElement ? dateElement.textContent : 'Element not found');
+                    });
+
+                </script>
+
                 {{!-- <p><i class="fa-solid fa-circle-check me-2"></i><strong>Status:</strong> <span
                         class="badge  bg-success">{{order.status}}</span></p> --}}
                 <p>
@@ -208,7 +240,7 @@
         </div>
     </div>
 
-{{!-- 
+    {{!--
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
@@ -294,79 +326,79 @@
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<script>
-    document.getElementById('repayForm').addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const orderid = document.getElementById('orderid').value;
-        console.log('This is the ID of this order:', orderid);
+    <script>
+        document.getElementById('repayForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const orderid = document.getElementById('orderid').value;
+            console.log('This is the ID of this order:', orderid);
 
-        try {
-            const result = await fetch(`/user/repay`, {
-                method: 'post',
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify({ orderid: orderid })
-            });
-
-            if (result.ok) {
-                const data = await result.json();
-
-                console.log('Response is success:', data);
-
-                const options = {
-                    key: "rzp_test_9BMcPF20vveDHZ",  
-                    amount: data.amount,  
-                    currency: data.currency, 
-                    name: 'Time Heaven',  
-                    description: 'Order Payment', 
-                    image: 'https://yourlogo.com/logo.png', 
-                    order_id: data.order_id, 
-                    handler: function (response) {
-                        console.log('Payment Successful, Order ID:', data.orderID);
-
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Your payment was successful!',
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => window.location.href = `/user/success/${data.orderID}`);
+            try {
+                const result = await fetch(`/user/repay`, {
+                    method: 'post',
+                    headers: {
+                        'content-type': 'application/json'
                     },
-                    modal: {
-                        ondismiss: function () {
-                            console.log('Payment failed or cancelled by the user.');
+                    body: JSON.stringify({ orderid: orderid })
+                });
+
+                if (result.ok) {
+                    const data = await result.json();
+
+                    console.log('Response is success:', data);
+
+                    const options = {
+                        key: "rzp_test_9BMcPF20vveDHZ",
+                        amount: data.amount,
+                        currency: data.currency,
+                        name: 'Time Heaven',
+                        description: 'Order Payment',
+                        image: 'https://yourlogo.com/logo.png',
+                        order_id: data.order_id,
+                        handler: function (response) {
+                            console.log('Payment Successful, Order ID:', data.orderID);
 
                             Swal.fire({
-                                title: 'Payment Failed!',
-                                text: 'You cancelled the payment or it failed. Please try again.',
-                                icon: 'error',
-                                showConfirmButton: true
-                            });
+                                title: 'Success!',
+                                text: 'Your payment was successful!',
+                                icon: 'success',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => window.location.href = `/user/success/${data.orderID}`);
+                        },
+                        modal: {
+                            ondismiss: function () {
+                                console.log('Payment failed or cancelled by the user.');
 
-                            window.location.href = `/user/pendingpayment/${orderid}`;
+                                Swal.fire({
+                                    title: 'Payment Failed!',
+                                    text: 'You cancelled the payment or it failed. Please try again.',
+                                    icon: 'error',
+                                    showConfirmButton: true
+                                });
+
+                                window.location.href = `/user/pendingpayment/${orderid}`;
+                            }
+                        },
+                        prefill: {
+                            name: 'siyad AK',
+                            email: 'siyadz4x@gmail.com',
+                            phone_number: '6238765947'
+                        },
+                        notes: {
+                            address: 'Mannarkkde, Kottoppadam (po)'
                         }
-                    },
-                    prefill: {
-                        name: 'siyad AK',  
-                        email: 'siyadz4x@gmail.com',  
-                        phone_number: '6238765947'  
-                    },
-                    notes: {
-                        address: 'Mannarkkde, Kottoppadam (po)' 
-                    }
-                };
+                    };
 
-                const rzp1 = new Razorpay(options);
-                rzp1.open();
-            } else {
-                console.error('Server responded with error:', result.statusText);
+                    const rzp1 = new Razorpay(options);
+                    rzp1.open();
+                } else {
+                    console.error('Server responded with error:', result.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching repay API:', error);
             }
-        } catch (error) {
-            console.error('Error fetching repay API:', error);
-        }
-    });
-</script>
+        });
+    </script>
 
 
     <script>

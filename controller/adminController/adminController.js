@@ -65,82 +65,64 @@ const dashboard = async (req, res) => {
         const totalUsers = await UserDB.countDocuments();
 
 
+        const paymentPending = await checkoutDB.aggregate([
+            { $match: { status: { $in: ['payment-pending'] } } },
+            { $count: 'pendingcount' }
+        ])
+
+        console.log('this is the pending count ', paymentPending[0].pendingcount)
+
+        let pendingCount = paymentPending[0].pendingcount || 0
         const totalsaless = await checkoutDB.aggregate([
             { $match: { status: { $nin: ['canceled', 'return', 'payment-pending'] } } },
             { $group: { _id: null, totalsales: { $sum: '$totalprice' } } },
             { $project: { _id: 0, totalsales: 1 } }
-        ])
+        ]);
 
-        // console.log('this is total sales',totalsales)
-        //  top selling products 
-        let totalsales = totalsaless[0].totalsales
-        // console.log(totalsales[0].totalsales)
+        let totalsales = 0;
+
+        if (totalsaless && totalsaless.length > 0 && totalsaless[0].totalsales) {
+            totalsales = totalsaless[0].totalsales;
+        }
+
+        console.log('This is total sales:', totalsales);
 
         const topProducts = await product.find().sort({ sold: -1 }).limit(10)
 
         const categories = await CategoryDB.find()
 
-        // const topCategories = []
-
-        // for (let item of categories) {
-        //     let sold = 0
-
-        //     const categoryProducts = await product.find({ category: item._id })
-
-        //     categoryProducts.map((i) => {
-
-        //         const itemsold = i.sold
-
-        //         sold +=Number( itemsold)
-
-        //     })
-        //     const obj = {
-        //         categoryName: item.categoryname,
-        //         sold:Number(sold)
-
-        //     }
-        //     topCategories.push(obj)
-
-        // } 
-
-        // console.log('this is the categories', topCategories)
-
-        // const sortedAnswer = topCategories.sort((b, a) => a.sold - b.sold)
-
-        // console.log('this is the sorted answer ', sortedAnswer)
 
         const topCategories = [];
 
-for (let item of categories) {
-    let sold = 0;
+        for (let item of categories) {
+            let sold = 0;
 
-    const categoryProducts = await product.find({ category: item._id });
+            const categoryProducts = await product.find({ category: item._id });
 
-    categoryProducts.map((i) => {
-        const itemsold = Number(i.sold || 0); // Default to 0 if undefined or invalid
-        if (!isNaN(itemsold)) {
-            sold += itemsold; // Add only valid numbers
-        } else {
-            console.warn(`Invalid sold value for product: ${i.sold}`);
+            categoryProducts.map((i) => {
+                const itemsold = Number(i.sold || 0); // Default to 0 if undefined or invalid
+                if (!isNaN(itemsold)) {
+                    sold += itemsold; // Add only valid numbers
+                } else {
+                    console.warn(`Invalid sold value for product: ${i.sold}`);
+                }
+            });
+
+            const obj = {
+                categoryName: item.categoryname,
+                sold: Number(sold),
+            };
+            topCategories.push(obj);
         }
-    });
 
-    const obj = {
-        categoryName: item.categoryname,
-        sold: Number(sold),
-    };
-    topCategories.push(obj);
-}
+        console.log('This is the categories:', topCategories);
 
-console.log('This is the categories:', topCategories);
-
-const sortedAnswer = topCategories.sort((b, a) => a.sold - b.sold);
-
-console.log('This is the sorted answer:', sortedAnswer);
+        // const sortedAnswer = topCategories.sort((b, a) => a.sold - b.sold);
+        const sortedAnswer = await CategoryDB.find({}).sort({ sold: -1 }).limit(10)
+        console.log('This is the sorted answer:', sortedAnswer);
 
 
-
-        // Best brands
+ 
 
         const brandproducts = await product.aggregate([
             { $unwind: '$brand' },
@@ -154,8 +136,8 @@ console.log('This is the sorted answer:', sortedAnswer);
 
         for (const item of brandproducts) {
             if (!seen.has(item.brand)) {
-                uniqueBrands.push(item.brand); // Add to unique list if not seen
-                seen.add(item.brand); // Mark as seen
+                uniqueBrands.push(item.brand); 
+                seen.add(item.brand);  
             }
         }
 
@@ -179,20 +161,20 @@ console.log('This is the sorted answer:', sortedAnswer);
 
         let topBrands = [];
 
-for (let item of uniqueBrands) {
-    let sold = 0;
+        for (let item of uniqueBrands) {
+            let sold = 0;
 
-    const productsInBrand = await product.find({ brand: item });
-    for (let i of productsInBrand) {
-        // Ensure `sold` is a number or default to 0 if undefined
-        sold += Number(i.sold) || 0;
-    }
+            const productsInBrand = await product.find({ brand: item });
+            for (let i of productsInBrand) {
+           
+                sold += Number(i.sold) || 0;
+            }
 
-    topBrands.push({
-        brandname: item,
-        sold: sold
-    });
-}
+            topBrands.push({
+                brandname: item,
+                sold: sold
+            });
+        }
 
         console.log('top brands from loops with  sold', topBrands)
 
@@ -247,7 +229,7 @@ for (let item of uniqueBrands) {
                 // console.log(test)
 
 
-                console.log(yearlyData)
+                console.log('yearly data',yearlyData)
 
                 const formattedData = {
                     year: {
@@ -256,51 +238,13 @@ for (let item of uniqueBrands) {
                     }
                 };
 
-                res.render('admin/dashboard', { totalUsers, topProducts, categories: sortedAnswer, formattedData: JSON.stringify(formattedData), brands, totalsales })
+                res.render('admin/dashboard', { totalUsers, topProducts, categories: sortedAnswer, formattedData: JSON.stringify(formattedData), brands, totalsales, pendingCount })
 
                 break;
 
             case 'month':
                 if (true) {
 
-
-                    // const monthlyData = await product.aggregate([
-                    //     {
-                    //         $match: { sold: { $gt: 0 } }
-                    //     },
-                    //     {
-                    //         $project: {
-                    //             year: { $year: "$createdAt" },
-                    //             month: { $month: "$createdAt" },
-                    //             salesAmount: { $multiply: ["$sold", "$regularprice"] }
-                    //         }
-                    //     },
-                    //     {
-                    //         $group: {
-                    //             _id: { year: "$year", month: "$month" },
-                    //             totalSalesAmount: { $sum: "$salesAmount" }
-                    //         }
-                    //     },
-                    //     {
-                    //         $sort: { "_id.year": 1, "_id.month": 1 }
-                    //     }
-                    // ]);
-
-
-                    // console.log(monthlyData);
-
-                    // const formattedData = {
-                    //     year: {
-                    //         labels: Array.from({ length: 12 }, (_, i) => i + 1),
-                    //         sales: Array(12).fill(0)
-                    //     }
-                    // };
-
-
-                    // monthlyData.forEach(item => {
-                    //     const monthIndex = item._id.month - 1;
-                    //     formattedData.year.sales[monthIndex] = item.totalSalesAmount;
-                    // });
 
                     const monthlyData = await checkoutDB.aggregate([
                         {
@@ -352,65 +296,14 @@ for (let item of uniqueBrands) {
                         categories: sortedAnswer,
                         formattedData: JSON.stringify(formattedData),
                         brands,
-                        totalsales
+                        totalsales,
+                        pendingCount
                     });
                 }
 
                 break;
 
-            case 'week':
-                const weeklyComparisonData = await checkoutDB.aggregate([
-                    {
-                        $match: {
-                            status: { $nin: ['canceled', 'return', 'payment-pending'] },
-                            createdAt: {
-                                $gte: new Date(new Date().setDate(new Date().getDate() - 14)), // From two weeks ago
-                                $lt: new Date() // Till now
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            week: { $week: "$createdAt" }, // Extract week number
-                            year: { $year: "$createdAt" }, // Extract year
-                            salesAmount: "$totalprice"
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: { year: "$year", week: "$week" },
-                            totalSalesAmount: { $sum: "$salesAmount" }
-                        }
-                    },
-                    { $sort: { "_id.year": 1, "_id.week": 1 } } // Sort by year and week
-                ]);
-                
-                console.log('Weekly Comparison Data:', weeklyComparisonData);
-                
-                // Prepare the response for two weeks
-                const currentWeek = weeklyComparisonData[weeklyComparisonData.length - 1] || { _id: { week: 0, year: 0 }, totalSalesAmount: 0 };
-                const previousWeek = weeklyComparisonData[weeklyComparisonData.length - 2] || { _id: { week: 0, year: 0 }, totalSalesAmount: 0 };
-                
-                const formattedWeeklyComparisonData = {
-                    weeks: [
-                        `Year ${previousWeek._id.year}, Week ${previousWeek._id.week}`,
-                        `Year ${currentWeek._id.year}, Week ${currentWeek._id.week}`
-                    ],
-                    sales: [previousWeek.totalSalesAmount, currentWeek.totalSalesAmount]
-                };
-                
-                console.log('Formatted Weekly Comparison Data:', formattedWeeklyComparisonData);
-                
-                res.render('admin/dashboard', {
-                    totalUsers,
-                    topProducts,
-                    categories: sortedAnswer,
-                    formattedData: JSON.stringify(formattedWeeklyComparisonData),
-                    brands,
-                    totalsales
-                });
-                
-           break;
+
 
         }
 
@@ -534,6 +427,7 @@ const creatcategory = async (req, res) => {
 
 
 // for List category
+
 const blockcategory = async (req, res) => {
 
 

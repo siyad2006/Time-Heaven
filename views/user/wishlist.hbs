@@ -154,26 +154,28 @@
 
 <nav aria-label="Wishlist Pagination">
     <ul class="pagination justify-content-center">
+        <!-- Previous Button -->
         {{#if (gt currentPage 1)}}
         <li class="page-item">
             <a class="page-link" href="/user/wishlist?page={{subtract currentPage 1}}">Previous</a>
         </li>
         {{/if}}
 
+        <!-- Page Numbers -->
         {{#each (range 1 totalPages)}}
         <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
             <a class="page-link" href="/user/wishlist?page={{this}}">{{this}}</a>
         </li>
         {{/each}}
 
+        <!-- Next Button -->
         {{#if (lt currentPage totalPages)}}
         <li class="page-item">
             <a class="page-link" href="/user/wishlist?page={{add currentPage 1}}">Next</a>
         </li>
         {{/if}}
     </ul>
-</nav> 
-
+</nav>
 
 
     {{> footer}}

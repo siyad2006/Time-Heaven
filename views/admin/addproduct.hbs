@@ -212,10 +212,23 @@
         <label for="regularPrice" class="form-label">Regular Price</label>
         <input type="text" class="form-control" id="regularPrice" name="regularprice" required>
       </div>
-      <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Color</label>
         <input type="text" class="form-control" id="exampleInputPassword1" name="color" required>
+      </div> --}}
+
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Color</label>
+        <select class="form-control" id="exampleInputPassword1" name="color" required>
+          <option value="" disabled selected>Select a color</option>
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="yellow">Yellow</option>
+          <option value="purple">Purple</option>
+        </select>
       </div>
+
       <div class="mb-3">
         <label for="exampleInputPassword1" class="form-label">Stock</label>
         <input type="number" class="form-control" id="exampleInputPassword1" name="quantity" required min="1">
@@ -309,7 +322,7 @@
         setupImageCropper('imageUpload2', 'previewImage2', 'cropImage2');
         setupImageCropper('imageUpload3', 'previewImage3', 'cropImage3');
       </script>
-      
+
       {{!--
       <div class="mb-3">
         <label for="brandInput" class="form-label">Brand</label>
@@ -334,13 +347,13 @@
       </div>
 
 
-      <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="statusSelect" class="form-label">Status</label>
         <select class="form-select" id="statusSelect" name="status">
           <option value="available">Available</option>
           <option value="out of stock">Out of Stock</option>
         </select>
-      </div>
+      </div> --}}
       <button type="submit" class="btn btn-primary">Add Product</button>
     </form>
 

@@ -125,8 +125,8 @@ const postEdit = async (req, res) => {
             {
                 name: val.productname.trim(),
                 discription: val.discription.trim(),
-                brand: val.brand.trim(),
-                category: val.category,
+                 
+                // category: val.category,
                 regularprice: val.regularprice,
                 quantity: val.quantity,
                 color: val.color.trim(),

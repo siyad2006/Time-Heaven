@@ -201,27 +201,42 @@
         <input type="text" class="form-control" id="description" value="{{product.discription}}" name="discription"
           required>
       </div>
-      <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="categorySelect" class="form-label">Category</label>
         <select class="form-select" id="categorySelect" name="category" required>
           <option value="">Select a category</option>
           {{#each categoris}}
-          {{!-- {{#if (eq this.isblocked "Listed")}} --}}
+          
           <option value="{{this._id}}">{{this.categoryname}}</option>
-          {{!-- {{/if}} --}}
+          
           {{/each}}
 
         </select>
-      </div>
+      </div> --}}
+
+       
       <div class="mb-3">
         <label for="regularPrice" class="form-label">Price</label>
         <input type="text" class="form-control" id="regularPrice" value="{{product.realprice}}" name="regularprice"
           required>
       </div>
-      <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="color" class="form-label">Color</label>
         <input type="text" class="form-control" id="color" value="{{product.color}}" name="color" required>
+      </div> --}}
+
+         <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Color</label>
+        <select class="form-control" id="exampleInputPassword1" name="color" required>
+          <option value="" disabled selected>Select a color</option>
+          <option value="red">Red</option>
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+          <option value="yellow">Yellow</option>
+          <option value="purple">Purple</option>
+        </select>
       </div>
+
       <div class="mb-3">
         <label for="quantity" class="form-label">Stock</label>
         <input type="number" class="form-control" id="quantity" value="{{product.quantity}}" name="quantity" required
@@ -284,13 +299,13 @@
       </div> --}}
 
 
-      <div class="mb-3">
+      {{!-- <div class="mb-3">
         <label for="statusSelect" class="form-label">Status</label>
         <select class="form-select" id="statusSelect" name="status">
           <option value="available">Available</option>
           <option value="out of stock">Out of Stock</option>
         </select>
-      </div>
+      </div> --}}
       <button type="submit" class="btn btn-primary">Edit</button>
     </form>
 

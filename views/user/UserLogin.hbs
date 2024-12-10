@@ -39,11 +39,11 @@
                 {{/if}}
 
 
-                <div class="form-wrapper">
+                {{!-- <div class="form-wrapper">
                     <input type="text" placeholder="Username" id="Name" name="username" class="form-control">
                     <i class="zmdi zmdi-account"></i>
-                </div>
-                <div class="form-wrapper">
+                </div> --}}
+                <div class="form-wrapper" style="margin-top: 80px;">
                     <input type="Email" placeholder="Email Address" name="Email" id="exampleInputEmail1"
                         class="form-control">
                     <i class="zmdi zmdi-email"></i>
@@ -53,10 +53,10 @@
                     <input type="password" placeholder="Password" id="pass" name="password" class="form-control">
                     <i class="zmdi zmdi-lock"></i>
                 </div>
-                <div class="form-wrapper">
+                {{!-- <div class="form-wrapper">
                     <input type="password" placeholder="Confirm Password" id="repass" class="form-control">
                     <i class="zmdi zmdi-lock"></i>
-                </div>
+                </div> --}}
                 <button type="submit" onclick="return validation()" style="margin-bottom: 5px;">Login
                     <i class="zmdi zmdi-arrow-right"></i>
                 </button>
@@ -116,7 +116,7 @@
             event.preventDefault()
 
             let x = document.getElementById('exampleInputEmail1').value.trim();
-            let y = document.getElementById('Name').value.trim();
+            
             let z = document.getElementById('pass').value;
 
             $.ajax({
@@ -124,7 +124,7 @@
                 url: '/user/userlogin',
                 data: {
                     Email: x,
-                    username: y,
+
                     password: z
 
                 },

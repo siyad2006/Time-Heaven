@@ -7,6 +7,9 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
+const walletDB = require('../../schema/wallet')
+const productDB = require('../../schema/productschema')
+const categoryDB= require('../../schema/category')
 
 exports.getordermanage = async (req, res) => {
   let limit = 10
@@ -19,11 +22,11 @@ exports.getordermanage = async (req, res) => {
   const totalPages = Math.ceil(totalOrders / limit);
 
   const out = await cheackoutDB
-  .find()
-  .sort({ createdAt: -1 }) 
-  .limit(limit)  
-  .skip(skip)            
-  .populate('userID');    
+    .find()
+    .sort({ createdAt: -1 })
+    .limit(limit)
+    .skip(skip)
+    .populate('userID');
 
   // const out = await cheackoutDB.find().limit(limit).skip(skip).sort({createdAt:-1}).populate('userID')
   res.render('admin/ordermanage', {
@@ -37,12 +40,197 @@ exports.getordermanage = async (req, res) => {
 exports.changestatus = async (req, res) => {
   const { orderid, status } = req.body
   console.log(orderid, status)
+  const nowdate = new Date();
+  if (status == 'canceled') {
 
-  await cheackoutDB.findByIdAndUpdate({ _id: orderid }, { status: status }).then(() => console.log('success'))
-  res.json({
-    success: true,
-    message: 'Order status updated successfully'
-  });
+    const order = await cheackoutDB.findById(orderid)
+
+    const userid = order.userID
+
+    if (order.paymentMethods == 'razorpay' || order.paymentMethods == 'wallet') {
+      order.status = 'canceled';
+      await order.save()
+
+      const wallet = await walletDB.findOne({ user: userid })
+
+      if (wallet) {
+        console.log('User already has a wallet');
+
+        const existingWallet = await walletDB.findOne({ user: userid }, { amount: 1, _id: 0 });
+
+        if (!existingWallet) {
+          throw new Error('Wallet not found for user');
+        }
+
+        console.log('thi is the  ', existingWallet)
+        const newAmount = wallet.amount += order.totalprice
+        await walletDB.updateOne(
+          { user: userid },
+          {
+            amount: newAmount,
+            $push: {
+              transaction: {
+                typeoftransaction: 'debit',
+                amountOfTransaction: order.totalprice,
+                dateOfTransaction: nowdate,
+              }
+            }
+          }
+        ).then(() => console.log('Successfully updated the wallet'));
+
+        const productsInorder = order.products
+
+        for (let item of productsInorder) {
+          const productid = item.productId
+          const qty = item.qty
+
+          const product = await productDB.findById(productid)
+
+          const category = await categoryDB.findById(product.category)
+
+          if (category) {
+            console.log('entered to the category ')
+
+            let categorysold = Number(category.sold -= qty)
+
+            category.sold = categorysold
+            await category.save()
+          }
+
+          if (product) {
+            const productqty = Number(product.quantity += qty)
+            const soldqty = Number(product.sold -= qty)
+            await productDB.findByIdAndUpdate(productid, {
+              quantity: productqty,
+              sold: soldqty
+            })
+          } else {
+
+            console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
+            continue; // Skip this iteration and move to the next item
+
+          }
+
+
+
+
+
+        }
+
+
+
+      } else {
+        // return console.log('this is from non existing wallet ')
+        const newwallet = new walletDB({
+          amount: order.totalprice,
+          user: userid,
+          transaction: [{
+            typeoftransaction: 'debit',
+            amountOfTransaction: order.totalprice,
+            dateOfTransaction: nowdate
+          }]
+        })
+
+        await newwallet.save()
+
+
+        const productsInorder = order.products
+
+        for (let item of productsInorder) {
+          const productid = item.productId
+          const qty = item.qty
+
+          const product = await productDB.findById(productid)
+
+
+          const category = await categoryDB.findById(product.category)
+
+          if (category) {
+            console.log('entered to the category ')
+
+            let categorysold = Number(category.sold -= qty)
+
+            category.sold = categorysold
+            await category.save()
+          }
+
+
+          if (product) {
+
+            const productqty = Number(product.quantity += qty)
+            const soldqty = Number(product.sold -= qty)
+            await productDB.findByIdAndUpdate(productid, {
+              quantity: productqty,
+              sold: soldqty
+            })
+
+          } else {
+
+            console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
+            continue; // Skip this iteration and move to the next item
+
+          }
+
+
+
+        }
+
+      }
+      return res.json({
+        success: true,
+        message: 'Order status updated successfully'
+      });
+    } else {
+
+      order.status = 'canceled';
+      await order.save()
+
+      const productsInorder = order.products
+
+      for (let item of productsInorder) {
+        const productid = item.productId
+        const qty = item.qty
+
+        const product = await productDB.findById(productid)
+
+        
+
+        if (product) {
+          const productqty = Number(product.quantity += qty)
+          const soldqty = Number(product.sold -= qty)
+          await productDB.findByIdAndUpdate(productid, {
+            quantity: productqty,
+            sold: soldqty
+          })
+        } else {
+
+          console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
+          continue; // Skip this iteration and move to the next item
+
+        }
+
+
+
+
+      }
+
+      return res.json({
+        success: true,
+        message: 'Order status updated successfully'
+      });
+
+    }
+
+  } else {
+    await cheackoutDB.findByIdAndUpdate({ _id: orderid }, { status: status }).then(() => console.log('success'))
+    res.json({
+      success: true,
+      message: 'Order status updated successfully'
+    });
+  }
+
+
+
 }
 
 
@@ -54,9 +242,7 @@ exports.changestatus = async (req, res) => {
 //   // console.log(req.query.filter)
 
 
-// }
-
-
+// } 
 exports.getsalesreport = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
@@ -92,8 +278,8 @@ exports.getsalesreport = async (req, res) => {
     }
 
     console.log('start and end date', startDate, endDate)
-    
- 
+
+
 
     if (startDate && endDate) {
       finalStartDate = new Date(startDate) || Date.now();
@@ -178,7 +364,7 @@ exports.getsalesreport = async (req, res) => {
       totalDiscount,
       salesData,
       valid: req.flash('date'),
-     
+
     });
   } catch (error) {
     console.error('Error generating sales report:', error);
@@ -276,86 +462,78 @@ exports.downloadpdf = async (req, res) => {
     // });
 
     // doc.end();
- 
+
     // Add a title page with styling
-doc.fontSize(28)
-.fillColor('#2C3E50')
-.text('Sales Report', { align: 'center' })
-.moveDown(0.5);
+    doc.fontSize(28)
+      .fillColor('#2C3E50')
+      .text('Sales Report', { align: 'center' })
+      .moveDown(0.5);
+ 
+    doc.fontSize(12)
+      .fillColor('#7F8C8D')
+      .text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'center' })
+      .moveDown(1.5);
+ 
+    doc.rect(50, doc.y, 500, 100)
+      .fillColor('#F8F9FA')
+      .fill();
+ 
+    doc.y -= 90;
+ 
+    doc.fontSize(16)
+      .fillColor('#2C3E50')
+      .text(`Total Orders: ${req.session.totalOrders}`, { align: 'left', indent: 20 })
+      .text(`Revenue: ₹${req.session.totalRevenue}`, { align: 'left', indent: 20 })
+      .text(`Discount: ₹${req.session.totalDiscount}`, { align: 'left', indent: 20 })
+      .moveDown(2);
 
-// Add current date
-doc.fontSize(12)
-.fillColor('#7F8C8D')
-.text(`Generated on: ${new Date().toLocaleDateString()}`, { align: 'center' })
-.moveDown(1.5);
+    doc.moveTo(50, doc.y)
+      .lineTo(550, doc.y)
+      .stroke()
+      .moveDown();
+ 
+    salesData.forEach((sale, index) => {
+      
+      if (index % 2 === 0) {
+        doc.rect(50, doc.y - 5, 500, 80)
+          .fillColor('#F8F9FA')
+          .fill();
+      }
 
-// Summary section in a box
-doc.rect(50, doc.y, 500, 100)
-.fillColor('#F8F9FA')
-.fill();
+      doc.fillColor('#2C3E50')
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text(`Order ${index + 1}`, { continued: true })
+        .font('Helvetica')
+        .fontSize(12)
+        .text(`    Date: ${new Date(sale.createdAt).toLocaleDateString()}`, { align: 'right' });
 
-// Reset position for summary text
-doc.y -= 90;
+      doc.fontSize(12)
+        .font('Helvetica')
+        .text(`Customer: ${sale.userID.username}`, { indent: 20 })
+        .text(`Order ID: ${sale._id}`, { indent: 20 })
+        .text(`Net Sales: ₹${sale.totalprice}`, { indent: 20 })
+        .text(`Discount: ₹${sale.discount}`, { indent: 20 })
+        .moveDown();
+ 
+      if (index < salesData.length - 1) {
+        doc.moveTo(70, doc.y)
+          .lineTo(530, doc.y)
+          .strokeColor('#E0E0E0')
+          .stroke()
+          .moveDown(0.5);
+      }
+ 
+      if (doc.y > 700) {
+        doc.addPage();
+      }
+    });
 
-// Summary statistics with better formatting
-doc.fontSize(16)
-.fillColor('#2C3E50')
-.text(`Total Orders: ${req.session.totalOrders}`, { align: 'left', indent: 20 })
-.text(`Revenue: ₹${req.session.totalRevenue}`, { align: 'left', indent: 20 })
-.text(`Discount: ₹${req.session.totalDiscount}`, { align: 'left', indent: 20 })
-.moveDown(2);
+    // Add footer
+    doc.fontSize(10)
+      .text('End of Sales Report', { align: 'center' });
 
-// Add a separator line
-doc.moveTo(50, doc.y)
-.lineTo(550, doc.y)
-.stroke()
-.moveDown();
-
-// Orders section
-salesData.forEach((sale, index) => {
- // Add alternating background for better readability
- if (index % 2 === 0) {
-     doc.rect(50, doc.y - 5, 500, 80)
-        .fillColor('#F8F9FA')
-        .fill();
- }
-
- doc.fillColor('#2C3E50')
-    .fontSize(14)
-    .font('Helvetica-Bold')
-    .text(`Order ${index + 1}`, { continued: true })
-    .font('Helvetica')
-    .fontSize(12)
-    .text(`    Date: ${new Date(sale.createdAt).toLocaleDateString()}`, { align: 'right' });
-
- doc.fontSize(12)
-    .font('Helvetica')
-    .text(`Customer: ${sale.userID.username}`, { indent: 20 })
-    .text(`Order ID: ${sale._id}`, { indent: 20 })
-    .text(`Net Sales: ₹${sale.totalprice}`, { indent: 20 })
-    .text(`Discount: ₹${sale.discount}`, { indent: 20 })
-    .moveDown();
-
- // Add a subtle separator between orders
- if (index < salesData.length - 1) {
-     doc.moveTo(70, doc.y)
-        .lineTo(530, doc.y)
-        .strokeColor('#E0E0E0')
-        .stroke()
-        .moveDown(0.5);
- }
-
- // Add new page if content is near the bottom
- if (doc.y > 700) {
-     doc.addPage();
- }
-});
-
-// Add footer
-doc.fontSize(10)
-.text('End of Sales Report', { align: 'center' });
-
-doc.end();
+    doc.end();
 
 
     res.download(filePath, 'sales_report.pdf', (err) => {

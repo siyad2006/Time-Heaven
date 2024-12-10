@@ -8,10 +8,11 @@ const productDB = require('../../schema/productschema')
 const category = require('../../schema/category')
 const addressDB = require('../../schema/address')
 const mongoose = require('mongoose')
-const offerDB= require('../../schema/offerSchema')
+const offerDB = require('../../schema/offerSchema')
+const cartDB = require('../../schema/cart')
 
 const userRegister = async (req, res) => {
-    if(req.session.regestered==true){
+    if (req.session.regestered == true) {
         return res.redirect('/')
     }
     console.log('User registration page accessed successfully.');
@@ -25,13 +26,13 @@ const postregister = async (req, res) => {
     const { username, Email, password } = req.body;
     console.log(username, Email, password);
 
- 
+
     // const exists = await UserDB.findOne({ username: username });
     // const mailExists = await UserDB.findOne({ Email: Email });
 
     const exists = await UserDB.findOne({ username: { $regex: `^${username}$`, $options: 'i' } });
     const mailExists = await UserDB.findOne({ Email: { $regex: `^${Email}$`, $options: 'i' } });
-    
+
 
     if (exists || mailExists) {
         req.flash('error', "the user is already exists")
@@ -96,7 +97,7 @@ const postregister = async (req, res) => {
 
 const otp = async (req, res) => {
     console.log('otp page got sucessfully')
-    if(req.session.regestered){
+    if (req.session.regestered) {
         return res.redirect('/user/login')
     }
     res.render('user/otp')
@@ -202,13 +203,13 @@ const resentotp = async (req, res) => {
 
 const userlogin = async (req, res) => {
     console.log(req.session)
-  if (req.session.isRegistered){
-    req.session.regestered=true
-   }
+    if (req.session.isRegistered) {
+        req.session.regestered = true
+    }
 
-   if(req.session.loginuser){
-    return res.redirect('/user/home')
-   }
+    if (req.session.loginuser) {
+        return res.redirect('/user/home')
+    }
 
     res.render('user/userLogin')
 }
@@ -221,23 +222,24 @@ const postlogin = async (req, res) => {
 
 
     try {
-        const { username, Email, password } = req.body
+        const { Email, password } = req.body
 
         const name = await UserDB.findOne({ Email })
+
 
 
         console.log(name);
 
         if (!name) {
 
-            res.json({ success: false, message: 'ithere is no user Exists in this  Email' })
+            return res.json({ success: false, message: 'ithere is no user Exists in this  Email' })
         }
 
 
         const cheakpassword = await bcrypt.compare(password, name.password)
         console.log(cheakpassword)
 
-        if (name.username == username) {
+        if (name.Email == Email) {
             if (cheakpassword) {
                 console.warn('user posted')
                 if (name.isblocked) {
@@ -245,7 +247,7 @@ const postlogin = async (req, res) => {
                 } else {
                     req.session.email_profile = Email
                     req.session.loginuser = true;
-                    req.session.regestered=true
+                    req.session.regestered = true
 
                     req.session.userId = name._id;
                     // console.log(req.session)
@@ -278,15 +280,17 @@ const postlogin = async (req, res) => {
 
 const lo = async (req, res) => {
     // console.log(req.session.passport.user)
-    console.log(req.session) 
+    console.log(req.session)
 
-    try{
-        const currentdate=Date.now()
-        const offers= await offerDB.find({expire:{$lt:currentdate}})
-        console.log('expire offers',offers)
-        for(let offer of offers){
-            const products= await productDB.find({existOffer:offer._id})
-            for(let item of products){
+
+
+    try {
+        const currentdate = Date.now()
+        const offers = await offerDB.find({ expire: { $lt: currentdate } })
+        console.log('expire offers', offers)
+        for (let offer of offers) {
+            const products = await productDB.find({ existOffer: offer._id })
+            for (let item of products) {
                 var id = item.id
                 const currentproduct = await productDB.findById({ _id: id }, { realprice: 1 })
                 let newid = currentproduct._id
@@ -302,17 +306,17 @@ const lo = async (req, res) => {
             await offerDB.findByIdAndDelete(offer._id)
         }
 
-    }catch(err){
-        console.log('an error occured from the     side of delete offer',err)
+    } catch (err) {
+        console.log('an error occured from the     side of delete offer', err)
     }
-    
+
     try {
-        
+
         if (req.session.passport && req.session.passport.user) {
             console.log('entered to passport');
             req.session.loginuser = true;
             req.session.userId = req.session.passport.user;
-        
+
 
             try {
                 const email = await UserDB.findOne({ _id: req.session.userId });
@@ -330,11 +334,19 @@ const lo = async (req, res) => {
         } else {
             console.log('no passport');
         }
- 
 
+        let cartCount = 0
+
+        const cart = await cartDB.findOne({ user: req.session.userId })
+        if (cart) {
+            cartCount = cart.products.length
+        }
+        req.session.cartCount = cartCount
+
+        console.log(cartCount)
         const userid = req.session.userId
         const products = await productDB.find({ isblocked: false }).limit(8).populate('category')
-        res.render('user/index', { products, userid });
+        res.render('user/index', { products, userid, cartCount });
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Server Error');
@@ -349,15 +361,14 @@ let productDetails = async (req, res) => {
     console.log(req.session)
     const product = await productDB.findById(ID).populate('category')
 
-    if(product.isblocked==true){
-      return   res.redirect('/')
+    if (product.isblocked == true) {
+        return res.redirect('/')
     }
 
-    const products= await productDB.find({category:product.category._id}).limit(4)
-    
-    res.render('user/productdetailied', { product, userid ,products});
-};
+    const products = await productDB.find({ category: product.category._id, isblocked: false }).limit(4)
 
+    res.render('user/productdetailied', { product, userid, products });
+};
 
 
 
@@ -366,11 +377,11 @@ const shoping = async (req, res) => {
     const skip = (page - 1) * limit;
     console.log(search)
     const categories = await category.find({ isblocked: "Listed" });
-    const categorys=req.query.category
-    console.log('this is category',categories)
+    const categorys = req.query.category
+    console.log('this is category', categories)
     console.log(search)
     let productsQuery = productDB.find({ isblocked: false }).populate('category').skip(skip).limit(limit);
-    if (search!==undefined) {
+    if (search !== undefined) {
         // const regex = new RegExp(search, 'i');
         console.log('entered to the earch')
         const regex = new RegExp(`^${search}`, 'i');
@@ -379,18 +390,18 @@ const shoping = async (req, res) => {
             name: { $regex: regex }
         });
     }
-    
-    if(categorys){
+
+    if (categorys) {
         console.log('entered to the categoryd')
-        productsQuery=productsQuery.find({category:categorys})
+        productsQuery = productsQuery.find({ category: categorys })
     }
 
-    if(search&&categorys){
+    if (search && categorys) {
         console.log('entered to the code of search and category')
         const regex = new RegExp(`^${search}`, 'i');
-        productsQuery=productsQuery.find({category:categorys , name: { $regex: regex }})
+        productsQuery = productsQuery.find({ category: categorys, name: { $regex: regex } })
     }
-    
+
 
 
 
@@ -419,13 +430,15 @@ const shoping = async (req, res) => {
 
     const products = await productsQuery.exec();
     const totalProducts = await productDB.countDocuments({ isblocked: false });
+    const cartCount = req.session.cartCount
 
     res.render('user/shoping', {
         products,
         currentPage: Number(page),
         totalPages: Math.ceil(totalProducts / limit),
         categories,
-        sortOption: sort
+        sortOption: sort,
+        cartCount
     });
 };
 
@@ -442,7 +455,7 @@ const userprofile = async (req, res) => {
             console.log('Session email_profile is missing');
             return res.redirect('/user/home'); // Redirect to login if email is missing
         }
- 
+
         const userid = await UserDB.aggregate([
             { $match: { Email: req.session.email_profile } },
             { $project: { _id: 1 } }
@@ -468,18 +481,20 @@ const userprofile = async (req, res) => {
 
 const logout = async (req, res) => {
     req.session.loginuser = false
-    req.session.userId=null
-    req.session.passport=false
-    req.session.regestered=false
-    req.session.totalAmount=null
+    req.session.userId = null
+    req.session.passport = false
+    req.session.regestered = false
+    req.session.totalAmount = null
+    req.session.realprice=null
+    req.session.discount=null
     console.log(req.session.userlogin)
     res.redirect('/user/login')
 }
 
 const editprofile = async (req, res) => {
     const ID = req.params.id
-    if(ID!==req.session.userId){
-     return   res.redirect('/user/home')
+    if (ID !== req.session.userId) {
+        return res.redirect('/user/home')
     }
     const user = await UserDB.findById(ID)
     res.render('user/editprofile', { user })
@@ -487,9 +502,9 @@ const editprofile = async (req, res) => {
 
 const updateprofile = async (req, res) => {
     const ID = req.params.id
- 
-    if(ID!==req.session.userId){
-     return   res.redirect('/user/home')
+
+    if (ID !== req.session.userId) {
+        return res.redirect('/user/home')
     }
     const username = req.body.username
     // const email = req.body.email
@@ -517,9 +532,9 @@ const updateprofile = async (req, res) => {
 
 const changepassword = async (req, res) => {
     const ID = req.params.id
-    
-    if(ID!==req.session.userId){
-        return   res.redirect('/user/home')
+
+    if (ID !== req.session.userId) {
+        return res.redirect('/user/home')
     }
 
     const user = await UserDB.findById(ID)
@@ -530,7 +545,7 @@ const changepassword = async (req, res) => {
 const updatepassword = async (req, res) => {
     try {
         const userId = req.params.id;
-        if(userId!==req.params.id){
+        if (userId !== req.params.id) {
             return res.redirect('/user/home')
         }
         const { password, newPassword, confirmPassword } = req.body;
@@ -573,8 +588,8 @@ const updatepassword = async (req, res) => {
 
 const address = async (req, res) => {
     const ID = req.params.id
-    if(ID!==req.session.userId){
-        return   res.redirect('/user/home')
+    if (ID !== req.session.userId) {
+        return res.redirect('/user/home')
     }
     const address = await addressDB.find({ user: ID }).limit(3)
     const user = await UserDB.findById(ID)
@@ -625,7 +640,7 @@ const createaddress = async (req, res) => {
 const deleteaddress = async (req, res) => {
     const ID = req.params.id
     const userid = req.params.user
-    if(userid!==req.session.userId){
+    if (userid !== req.session.userId) {
         return res.redirect('/user/home')
     }
 
@@ -646,9 +661,9 @@ const deleteaddress = async (req, res) => {
 const updateaddress = async (req, res) => {
     const ID = req.params.id;
     const userID = req.params.user;
-if(userID!==req.session.userId){
-    return res.redirect('/user/home')
-}
+    if (userID !== req.session.userId) {
+        return res.redirect('/user/home')
+    }
     // Validate ObjectIds
     if (!mongoose.Types.ObjectId.isValid(ID) || !mongoose.Types.ObjectId.isValid(userID)) {
         return res.status(400).send("Invalid ID format");
@@ -698,10 +713,10 @@ const updatingAddress = async (req, res) => {
 }
 
 
-const test=async (req,res)=>{
+const test = async (req, res) => {
     console.log('entered to the page of test')
-    const products=await productDB.find()
-    res.render('user/index',{products})
+    const products = await productDB.find()
+    res.render('user/index', { products })
 }
 
 module.exports = {

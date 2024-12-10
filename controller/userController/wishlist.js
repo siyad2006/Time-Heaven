@@ -3,6 +3,8 @@
 const wishlistDB=require('../../schema/wishlistSchema')
 const userDB= require('../../schema/userModel')
 const productDB= require('../../schema/productschema')
+
+
 exports.getpage=async (req,res)=>{
 
 
@@ -34,7 +36,7 @@ exports.getpage=async (req,res)=>{
         let limit=10
         let skip=(page-1)*limit
 
-        const wishlist= await wishlistDB.findOne({user:userid}).populate('products') 
+        const wishlist= await wishlistDB.findOne({user:userid}).populate( 'products' ) 
         const totalProducts = await wishlistDB.countDocuments({ user: userid });
         const totalPages = Math.ceil(totalProducts / limit);
 

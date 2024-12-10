@@ -17,6 +17,12 @@ const categorySchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'offer',
         required:false
+    },
+    sold:{
+        type:Number,
+        requried:false,
+        min:0,
+        default:0
     }
 });
 
