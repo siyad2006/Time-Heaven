@@ -227,6 +227,9 @@ Swal.fire({
                     <input type="number" value="{{offer.discountValue}}" name="persent" class="form-control"
                         id="discount" placeholder="Enter discount percentage" min="0" max="100" required>
                 </div>
+
+<input type="hidden" id="startDate" value="{{start}}">
+
                 <div class="form-group" >
                     <label for="discount">Start Date</label>
                     <input type="date" id="start" name="startdate" value="{{offer.start}}" class="form-control"
@@ -242,6 +245,8 @@ Swal.fire({
             </form>
         </div>
     </div>
+
+
     {{!-- <script>
         function validation(event){
             eve.preventDefault()

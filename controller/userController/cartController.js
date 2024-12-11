@@ -107,8 +107,8 @@ exports.getcart = async (req, res, next) => {
 
         console.log(req.session)
         const totalAmount = req.session.totalAmount
-
-        res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice });
+        const cartCount = req.session.cartCount || 0
+        res.render('user/cart', { userid, cart, products: cartProducts, limit: req.flash('limit'), coupuns: coupuns, totalAmount, discount: discount, realprice,cartCount });
     } catch (err) {
         console.log('error from get cart', err)
         res.redirect('/user/logout')

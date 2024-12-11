@@ -1,4 +1,5 @@
 const coupunDB = require('../../schema/coupunSchama')
+const cartDB= require('../../schema/cart')
 
 exports.getpage = async (req, res) => {
     const coupunname = await coupunDB.find();
@@ -42,7 +43,25 @@ exports.addcoupun = async (req, res) => {
 
 
 exports.deletecoupun=async (req,res)=>{
+
+    try {
+        
+    } catch (error) {
+        console.log('an error occured when delete the coupun',error )
+    }
+
     const id=req.params.id
+
+    const carts= await cartDB.find({coupun:id})
+
+    for ( let items of carts){
+        const singleCart= await cartDB.findById(items._id)
+
+        singleCart.coupun=null
+
+        await singleCart.save()
+    }
+
     await coupunDB.findByIdAndDelete(id)
     res.redirect('/admin/coupun')
 }

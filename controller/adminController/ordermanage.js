@@ -86,7 +86,8 @@ exports.changestatus = async (req, res) => {
 
           const product = await productDB.findById(productid)
 
-          const category = await categoryDB.findById(product.category)
+          if(product){
+              const category = await categoryDB.findById(product.category)
 
           if (category) {
             console.log('entered to the category ')
@@ -97,6 +98,9 @@ exports.changestatus = async (req, res) => {
             await category.save()
           }
 
+          }
+
+        
           if (product) {
             const productqty = Number(product.quantity += qty)
             const soldqty = Number(product.sold -= qty)
@@ -167,7 +171,7 @@ exports.changestatus = async (req, res) => {
           } else {
 
             console.log(`Product with ID ${item.productId} does not exist. Skipping...`);
-            continue; // Skip this iteration and move to the next item
+            continue;  
 
           }
 
@@ -247,7 +251,7 @@ exports.getsalesreport = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
 
-    let query = { status: { $nin: ['canceled', 'return'] } };
+    let query = { status: { $nin: ['canceled', 'return','payment-pending'] } };
     let finalStartDate = new Date();
     let finalEndDate = new Date();
 

@@ -122,7 +122,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const count = document.getElementById('cart-count')?.textContent || '0';
-            const cart = document.getElementById('cartCount').value
+            const cart = document.getElementById('cartCount').value || 0
             console.log('this is the value from backend', cart)
             console.log('This is the value from the header:', count);
             document.getElementById('cart-count').textContent = cart

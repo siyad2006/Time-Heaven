@@ -65,14 +65,15 @@ const dashboard = async (req, res) => {
         const totalUsers = await UserDB.countDocuments();
 
 
-        const paymentPending = await checkoutDB.aggregate([
-            { $match: { status: { $in: ['payment-pending'] } } },
-            { $count: 'pendingcount' }
-        ])
+        // const paymentPending = await checkoutDB.aggregate([
+        //     { $match: { status: { $in: ['payment-pending'] } } },
+        //     { $count: 'pendingcount' }
+        // ])
 
-        console.log('this is the pending count ', paymentPending[0].pendingcount)
+        // console.log('this is the pending count ', paymentPending[0].pendingcount)
 
-        let pendingCount = paymentPending[0].pendingcount || 0
+        // let pendingCount = paymentPending[0].pendingcount || 0
+        let pendingCount = 0
         const totalsaless = await checkoutDB.aggregate([
             { $match: { status: { $nin: ['canceled', 'return', 'payment-pending'] } } },
             { $group: { _id: null, totalsales: { $sum: '$totalprice' } } },

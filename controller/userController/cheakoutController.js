@@ -39,6 +39,16 @@ exports.getcheackout = async (req, res) => {
 
 
     const cartItem = await cartDB.findById(cartId);
+
+    if( req.session.discount > 0){
+        if(cartItem.coupun == null  ){
+            
+        req.session.discount=0
+        req.flash('limit', `Sorry your coupun is not available now `);
+        return res.redirect('/user/cart')
+        }
+    }
+
     const address = await AddressDB.find({ user: userId });
     const cartTotal = req.session.totalAmount
     console.log('this is the total amount from cart in cheackot :', cartTotal)
@@ -1089,6 +1099,7 @@ exports.return = async (req, res) => {
 
 
 
+
                 singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
 
                 singleItem.quantity += buyedqty;
@@ -1626,34 +1637,7 @@ exports.repay = async (req, res) => {
             console.log('it bedore 24 hourse ')
 
             const items = checkout.products
-            // for (let pro of items) {
-            //     const id = pro.productId;
-            //     const singleItem = await productDB.findById(id);
-            //     const buyedqty = pro.qty;
-
-            //     if (!singleItem) {
-            //         console.log(`Product with ID ${id} not found`);
-            //         // return res.status(404).send(`Product with ID ${id} not found`);
-            //         continue 
-            //     }
-
-            //     if (singleItem.quantity < buyedqty) {
-            //         console.log(`Insufficient stock for product with ID ${id}`);
-            //         return res.status(400).send(`Not enough stock for product with ID ${id}`);
-            //     }
-
-
-
-            //     singleItem.sold = Number(singleItem.sold || 0) - Number(pro.qty);
-
-            //     singleItem.quantity += buyedqty;
-
-
-
-
-            //     await singleItem.save();
-            // }
-
+             
 
             for (let pro of items) {
                 const id = pro.productId;
@@ -1712,21 +1696,7 @@ exports.repay = async (req, res) => {
         checkout.totalprice = totalprice;
         await checkout.save();
 
-        // for (const item of checkout.products) {
-        //     const product = await productDB.findById(item.productId);
-        //     if (!product) continue;
-
-        //     product.quantity -= item.qty;
-
-        //     if (product.quantity <= 0) {
-        //         flag2=true
-        //         product.status = 'out of stock';
-        //     }
-
-        //     await product.save();
-        // }
-
-
+       
 
         if (flag1 == true || flag2 == true) {
             return res.redirect(`/user/myorders/${uid}`)
@@ -1746,7 +1716,7 @@ exports.repay = async (req, res) => {
         });
 
         const options = {
-            amount: Math.round(total * 100), // Convert to smallest currency unit (e.g., paise)
+            amount: Math.round(total * 100),
             currency: "INR",
             receipt: `receipt_${new Date().getTime()}`,
             notes: {

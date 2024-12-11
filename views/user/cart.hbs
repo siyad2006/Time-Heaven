@@ -75,6 +75,27 @@
     </section>
 
 
+    <input type="hidden" value="{{cartCount}}" id="cartCount">
+
+    <script>
+        console.log('console is working for this page ')
+    </script>
+
+    <script>
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const count = document.getElementById('cart-count')?.textContent || '0';
+            const cart = document.getElementById('cartCount').value || 0
+            console.log('this is the value from backend', cart)
+            console.log('This is the value from the header:', count);
+            document.getElementById('cart-count').textContent = cart
+        });
+
+    </script>
+
+
+
 
     <div class="container-fluid " style="margin-top: 20px;">
 
@@ -351,7 +372,7 @@
                     const decrementButtons = document.querySelectorAll(".decrement-btn");
                     const incrementButtons = document.querySelectorAll(".increment-btn1");
                     const quantityInputs = document.querySelectorAll(".quantity-input");
-                    let Subtotal=document.getElementById('subtotal-amount')
+                    let Subtotal = document.getElementById('subtotal-amount')
 
                     const updateCart = async (productId, qty) => {
                         try {
@@ -378,7 +399,7 @@
                                     const totalElement = document.getElementById('total-amount');
                                     totalElement.textContent = newTotalAmount
                                 }
-                                Subtotal.textContent=data.subtotal
+                                Subtotal.textContent = data.subtotal
                             } else {
                                 alert(data.message);
                             }
@@ -571,18 +592,18 @@
             <div class="row mt-4">
                 <div class="col-md-6 offset-md-6 cart-summary">
                     <!-- Subtotal Section -->
-                    <div                   
-                        class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded" style="margin-top: 15px;">
+                    <div class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded"
+                        style="margin-top: 15px;">
                         <span class="fw-bold">Subtotal:</span>
                         <span id="subtotal-amount" class="fw-bold text-primary">Rs: {{realprice}}</span>
                     </div>
- 
+
                     <div
                         class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded mt-3">
                         <span class="fw-bold">Discount Applied:</span>
                         <span id="discount-amount" class="fw-bold text-danger">Rs: {{discount}}</span>
                     </div>
- 
+
                     <div
                         class="total-section d-flex justify-content-between align-items-center p-3 bg-light shadow-sm rounded mt-3">
                         <span class="fw-bold">Total:</span>

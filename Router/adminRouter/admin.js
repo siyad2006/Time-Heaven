@@ -13,10 +13,11 @@ const offer=require('../../controller/adminController/offerController')
 router.get('/login', adminAuth.adminLogin, AdminController.login)
 router.post('/login', AdminController.postLogin)
 router.get('/usermanage', adminAuth.isAdmin, AdminController.usermanage)
-router.get('/dashboard',  AdminController.dashboard);
+router.get('/dashboard',adminAuth.isAdmin, AdminController.dashboard);
 router.post('/blockuser/:id', AdminController.blockuser)
 router.post('/unblockuser/:id', AdminController.unblockuser)
 router.get('/category', adminAuth.isAdmin, AdminController.category)
+
 router.post('/addcategory', AdminController.addcateory)
 router.post('/creatcategory', AdminController.creatcategory)
 router.post('/blockcategory/:id', AdminController.blockcategory)
@@ -30,7 +31,6 @@ router.post('/add', upload, productController.add)
 router.get('/products', adminAuth.isAdmin, productController.getproduct)
 router.post('/block/:id', productController.blockproduct)
 router.post('/unblock/:id', productController.unblockproduct)
- 
 router.post('/deleteproduct/:id', productController.deleteproduct)
 router.get('/editproduct/:id', upload, productController.editproduct)
 router.post('/Edit/:id', upload, productController.postEdit)
@@ -49,7 +49,7 @@ router.post('/posteditoffer/:id',offer.posteditoffer)
 router.get('/salesreport',adminAuth.isAdmin,order.getsalesreport)
 router.get('/salesreport/pdf',adminAuth.isAdmin,order.downloadpdf)
 router.get('/salesreport/excel',adminAuth.isAdmin,order.downloadExcel)
-router.get('/orderdetails/:id',order.orderview) // add session here 
+router.get('/orderdetails/:id',adminAuth.isAdmin,order.orderview) // add session here 
 router.get('/productoffer',adminAuth.isAdmin,offer.getproductoffer)
 router.post('/product-offer',offer.postproductoffer)
 
